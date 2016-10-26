@@ -1,21 +1,17 @@
 package com.balancedbytes.mystuff.games;
 
 import java.sql.Date;
-import java.util.List;
 
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
-import javax.xml.bind.annotation.XmlAttribute;
-import javax.xml.bind.annotation.XmlElement;
-import javax.xml.bind.annotation.XmlElementWrapper;
 import javax.xml.bind.annotation.XmlRootElement;
+
+import com.balancedbytes.mystuff.RestData;
 
 @XmlRootElement
 @XmlAccessorType(XmlAccessType.FIELD)
-public class Game {
+public class Game extends RestData {
 
-	@XmlAttribute
-	private long id;  // primary key
 	private String name;
 	private int editionYear;
 	private int playersMin;
@@ -26,21 +22,10 @@ public class Game {
 	private int ageMin;
 	private Date lastPlayed;
 	private int rating;
-	@XmlElementWrapper(name="authors")
-	@XmlElement(name="author")
-	private List<Author> authors;
-	@XmlElementWrapper(name="publishers")
-	@XmlElement(name="publisher")
-	private List<Publisher> publishers;
+	private Authors authors;
+	private Publishers publishers;
+	private Awards awards;
 
-	public long getId() {
-		return id;
-	}
-	
-	public void setId(long id) {
-		this.id = id;
-	}
-	
 	public String getName() {
 		return name;
 	}
@@ -121,20 +106,28 @@ public class Game {
 		this.rating = rating;
 	}
 
-	public List<Author> getAuthors() {
+	public Authors getAuthors() {
 		return authors;
 	}
-
-	public void setAuthors(List<Author> authors) {
+	
+	public void setAuthors(Authors authors) {
 		this.authors = authors;
 	}
-
-	public List<Publisher> getPublishers() {
+	
+	public Publishers getPublishers() {
 		return publishers;
 	}
 	
-	public void setPublishers(List<Publisher> publishers) {
+	public void setPublishers(Publishers publishers) {
 		this.publishers = publishers;
+	}
+	
+	public Awards getAwards() {
+		return awards;
+	}
+	
+	public void setAwards(Awards awards) {
+		this.awards = awards;
 	}
 
 }

@@ -12,19 +12,17 @@ import com.balancedbytes.mystuff.games.Country;
 
 public class CountryDataAccess {
 
-	private static final String _SQL_FIND_ALL = 
+	private static final String _SQL_FIND_ALL_COUNTRIES = 
 		"SELECT * FROM countries";
 
-    public List<Country> findAll() throws SQLException {
+    public List<Country> findAllCountries() throws SQLException {
     	List<Country> countries = new ArrayList<>();
         try (Connection c = ConnectionHelper.getConnection()){
-            PreparedStatement ps = c.prepareStatement(_SQL_FIND_ALL);
+            PreparedStatement ps = c.prepareStatement(_SQL_FIND_ALL_COUNTRIES);
             ResultSet rs = ps.executeQuery();
             while (rs.next()) {
                 countries.add(processRow(rs));
             }
-		} finally {
-			// connection will be automatically closed by try-with-resource
 		}
         return countries;
     }

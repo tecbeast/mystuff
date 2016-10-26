@@ -12,5 +12,9 @@ public final class MyStuffUtil {
 			return 0;
 		}
 	}
+	
+	public static boolean isProvided(String text) {
+		return ((text != null) && (text.length() > 0));
+	}
 
 }

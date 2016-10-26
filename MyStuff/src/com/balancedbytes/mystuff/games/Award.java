@@ -8,11 +8,12 @@ import com.balancedbytes.mystuff.RestData;
 
 @XmlRootElement
 @XmlAccessorType(XmlAccessType.FIELD)
-public class Publisher extends RestData {
+public class Award extends RestData {
 
 	private String name;
 	private Country country;
-	
+	private Integer year;
+			
 	public String getName() {
 		return name;
 	}
@@ -27,6 +28,14 @@ public class Publisher extends RestData {
 	
 	public void setCountry(Country country) {
 		this.country = country;
+	}
+	
+	public Integer getYear() {
+		return year;
+	}
+	
+	public void setYear(Integer year) {
+		this.year = year;
 	}
 
 }

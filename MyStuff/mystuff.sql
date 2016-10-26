@@ -67,8 +67,8 @@ CREATE TABLE awards (
 CREATE TABLE game_awards (
 	game_id BIGINT NOT NULL,
 	award_id BIGINT NOT NULL,
-	award_year INTEGER NOT NULL,
-	PRIMARY KEY(game_id, award_id, award_year),
+	year INTEGER NOT NULL,
+	PRIMARY KEY(game_id, award_id, year),
 	FOREIGN KEY(game_id) REFERENCES games(id),
 	FOREIGN KEY(award_id) REFERENCES awards(id)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;

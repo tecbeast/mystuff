@@ -21,7 +21,7 @@ public class CountryCache {
 	
 	private void initInternal() throws SQLException {
 		countryByCode.clear();
-		List<Country> countries = countryDataAccess.findAll();
+		List<Country> countries = countryDataAccess.findAllCountries();
 		for (Country country : countries) {
 			addInternal(country);
 		}
