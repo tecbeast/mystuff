@@ -6,11 +6,12 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 
 import com.balancedbytes.mystuff.ConnectionHelper;
+import com.balancedbytes.mystuff.RestDataAccess;
 import com.balancedbytes.mystuff.MyStuffUtil;
 import com.balancedbytes.mystuff.games.Game;
 import com.balancedbytes.mystuff.games.Games;
 
-public class GameDataAccess {
+public class GameDataAccess extends RestDataAccess<Game> {
 	
 	private static final String _SQL_FIND_ALL_GAMES = 
 		"SELECT * FROM games ORDER BY name";
@@ -36,16 +37,18 @@ public class GameDataAccess {
 		+ " ON game_awards.game_id = games.id"
 		+ " WHERE game_awards.award_id = ?"
 		+ " ORDER BY games.name";
-
+	private static final String _SQL_FIND_GAMES_BY_AWARD_ID_AND_YEAR =
+		"SELECT game_awards.award_id, games.*, game_awards.year"
+		+ " FROM game_awards LEFT JOIN games"
+		+ " ON game_awards.game_id = games.id"
+		+ " WHERE game_awards.award_id = ? AND game_awards.year = ?"
+		+ " ORDER BY games.name";
 
     public Games findAllGames() throws SQLException {
     	Games games = new Games();
         try (Connection c = ConnectionHelper.getConnection()){
             PreparedStatement ps = c.prepareStatement(_SQL_FIND_ALL_GAMES);
-            ResultSet rs = ps.executeQuery();
-            while (rs.next()) {
-                games.add(processRow(rs));
-            }
+            processResultSet(ps.executeQuery(), games);
 		}
         return games;
     }
@@ -55,10 +58,7 @@ public class GameDataAccess {
         try (Connection c = ConnectionHelper.getConnection()){
             PreparedStatement ps = c.prepareStatement(_SQL_FIND_GAME_BY_ID);
             ps.setLong(1, MyStuffUtil.parseLong(id));
-            ResultSet rs = ps.executeQuery();
-            while (rs.next()) {
-                game = processRow(rs);
-            }
+            game = processResultSet(ps.executeQuery());
 		}
         return game;
     }
@@ -76,10 +76,7 @@ public class GameDataAccess {
         try (Connection c = ConnectionHelper.getConnection()){
             PreparedStatement ps = c.prepareStatement(_SQL_FIND_GAMES_BY_NAME);
             ps.setString(1, pattern);
-            ResultSet rs = ps.executeQuery();
-            while (rs.next()) {
-                games.add(processRow(rs));
-            }
+            processResultSet(ps.executeQuery(), games);
 		}
         return games;
     }
@@ -109,7 +106,19 @@ public class GameDataAccess {
         return games;
     }
 
-    private Game processRow(ResultSet rs) throws SQLException {
+    public Games findGamesByAwardIdAndYear(String awardId, String year) throws SQLException {
+    	Games games = new Games();
+        try (Connection c = ConnectionHelper.getConnection()) {
+            PreparedStatement ps = c.prepareStatement(_SQL_FIND_GAMES_BY_AWARD_ID_AND_YEAR);
+            ps.setLong(1, MyStuffUtil.parseLong(awardId));
+            ps.setInt(2, MyStuffUtil.parseInt(year));
+            processResultSet(ps.executeQuery(), games);
+		}
+        return games;
+    }
+
+    @Override
+    protected Game processRow(ResultSet rs) throws SQLException {
     	Game game = new Game();
     	game.setId(rs.getString("id"));
     	game.setName(rs.getString("name"));

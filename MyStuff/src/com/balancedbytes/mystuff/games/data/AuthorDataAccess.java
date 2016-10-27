@@ -6,12 +6,13 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 
 import com.balancedbytes.mystuff.ConnectionHelper;
+import com.balancedbytes.mystuff.RestDataAccess;
 import com.balancedbytes.mystuff.MyStuffUtil;
 import com.balancedbytes.mystuff.games.Author;
 import com.balancedbytes.mystuff.games.Authors;
 import com.balancedbytes.mystuff.games.CountryCache;
 
-public class AuthorDataAccess {
+public class AuthorDataAccess extends RestDataAccess<Author> {
 
 	private static final String _SQL_FIND_ALL_AUTHORS = 
 		"SELECT * FROM authors ORDER BY last_name,first_name";
@@ -32,10 +33,7 @@ public class AuthorDataAccess {
     	Authors authors = new Authors();
         try (Connection c = ConnectionHelper.getConnection()){
             PreparedStatement ps = c.prepareStatement(_SQL_FIND_ALL_AUTHORS);
-            ResultSet rs = ps.executeQuery();
-            while (rs.next()) {
-                authors.add(processRow(rs));
-            }
+            processResultSet(ps.executeQuery(), authors);
 		}
         return authors;
     }
@@ -45,10 +43,7 @@ public class AuthorDataAccess {
         try (Connection c = ConnectionHelper.getConnection()){
             PreparedStatement ps = c.prepareStatement(_SQL_FIND_AUTHOR_BY_ID);
             ps.setLong(1, MyStuffUtil.parseLong(id));
-            ResultSet rs = ps.executeQuery();
-            while (rs.next()) {
-                author = processRow(rs);
-            }
+            author = processResultSet(ps.executeQuery());
 		}
         return author;
     }
@@ -67,10 +62,7 @@ public class AuthorDataAccess {
             PreparedStatement ps = c.prepareStatement(_SQL_FIND_AUTHORS_BY_NAME);
             ps.setString(1, pattern);
             ps.setString(2, pattern);
-            ResultSet rs = ps.executeQuery();
-            while (rs.next()) {
-                authors.add(processRow(rs));
-            }
+            processResultSet(ps.executeQuery(), authors);
 		}
         return authors;
     }
@@ -80,15 +72,13 @@ public class AuthorDataAccess {
         try (Connection c = ConnectionHelper.getConnection()){
             PreparedStatement ps = c.prepareStatement(_SQL_FIND_AUTHORS_BY_GAME_ID);
             ps.setLong(1, MyStuffUtil.parseLong(gameId));
-            ResultSet rs = ps.executeQuery();
-            while (rs.next()) {
-                authors.add(processRow(rs));
-            }
+            processResultSet(ps.executeQuery(), authors);
 		}
         return authors;
     }
-
-    private Author processRow(ResultSet rs) throws SQLException {
+    
+    @Override
+    protected Author processRow(ResultSet rs) throws SQLException {
     	Author author = new Author();
     	author.setId(rs.getString("id"));
     	author.setFirstName(rs.getString("first_name"));

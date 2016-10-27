@@ -1,10 +1,16 @@
 package com.balancedbytes.mystuff.games.rest;
 
+import java.net.URI;
 import java.sql.SQLException;
+import java.util.Map;
 
 import javax.ws.rs.core.UriBuilder;
 import javax.ws.rs.core.UriInfo;
 
+import com.balancedbytes.mystuff.HashMapBuilder;
+import com.balancedbytes.mystuff.MyStuffUtil;
+import com.balancedbytes.mystuff.RestData;
+import com.balancedbytes.mystuff.RestDataCollection;
 import com.balancedbytes.mystuff.games.Authors;
 import com.balancedbytes.mystuff.games.Awards;
 import com.balancedbytes.mystuff.games.Game;
@@ -17,101 +23,89 @@ import com.balancedbytes.mystuff.games.data.PublisherDataAccess;
 
 public class GamesResourceHelper {
 
-	private GameDataAccess gameData = new GameDataAccess();
-	private AuthorDataAccess authorData = new AuthorDataAccess();
-	private PublisherDataAccess publisherData = new PublisherDataAccess();
-	private AwardDataAccess awardData = new AwardDataAccess();
+	private UriInfo uriInfo;
 	
-	public Games findAllGames(UriInfo uriInfo) throws SQLException {
-		return expand(gameData.findAllGames(), uriInfo);
+	public GamesResourceHelper(UriInfo uriInfo) {
+		this.uriInfo = uriInfo;
 	}
 	
-	public Games findGamesByName(String name, UriInfo uriInfo) throws SQLException {
-		return expand(gameData.findGamesByName(name), uriInfo, name);
+	public Games findAllGames() throws SQLException {
+		return expand(new GameDataAccess().findAllGames());
 	}
 	
-	public Game findGameById(String gameId, UriInfo uriInfo) throws SQLException {
-		return expand(gameData.findGameById(gameId), uriInfo);
+	public Games findGamesByName(String name) throws SQLException {
+		return expand(new GameDataAccess().findGamesByName(name), HashMapBuilder.build("name", name));
+	}
+	
+	public Game findGameById(String gameId) throws SQLException {
+		return expand(new GameDataAccess().findGameById(gameId));
 	}
 
-	public Games findGamesByAuthorId(String authorId, UriInfo uriInfo) throws SQLException {
-		return expand(gameData.findGamesByAuthorId(authorId), uriInfo);
+	public Games findGamesByAuthorId(String authorId) throws SQLException {
+		return expand(new GameDataAccess().findGamesByAuthorId(authorId));
 	}
 
-	public Games findGamesByPublisherId(String publisherId, UriInfo uriInfo) throws SQLException {
-		return expand(gameData.findGamesByPublisherId(publisherId), uriInfo);
+	public Games findGamesByPublisherId(String publisherId) throws SQLException {
+		return expand(new GameDataAccess().findGamesByPublisherId(publisherId));
 	}
 
-	public Games findGamesByAwardId(String awardId, UriInfo uriInfo) throws SQLException {
-		return expand(gameData.findGamesByAwardId(awardId), uriInfo);
+	public Games findGamesByAwardId(String awardId) throws SQLException {
+		return expand(new GameDataAccess().findGamesByAwardId(awardId));
 	}
 
-	public Authors findAuthorsByGameId(String gameId, UriInfo uriInfo) throws SQLException {
-		if ((gameId == null) || (uriInfo == null)) {
-			return null;
-		}
-		Authors authors = authorData.findAuthorsByGameId(gameId);
-		authors.setHref(getGamesUriBuilder(uriInfo, gameId).path("authors").toString());
-		authors.buildHrefOnChildren(uriInfo.getBaseUriBuilder().path("authors"));
+	public Games findGamesByAwardIdAndYear(String awardId, String year) throws SQLException {
+		return expand(new GameDataAccess().findGamesByAwardIdAndYear(awardId, year), HashMapBuilder.build("year", year));
+	}
+
+	public Authors findAuthorsByGameId(String gameId) throws SQLException {
+		Authors authors = new AuthorDataAccess().findAuthorsByGameId(gameId);
+		buildLinks(authors, gameId, "authors");
 		return authors;
 	}
 
-	public Publishers findPublishersByGameId(String gameId, UriInfo uriInfo) throws SQLException {
-		if ((gameId == null) || (uriInfo == null)) {
-			return null;
-		}
-		Publishers publishers = publisherData.findPublishersByGameId(gameId);
-		publishers.setHref(getGamesUriBuilder(uriInfo, gameId).path("publishers").toString());
-		publishers.buildHrefOnChildren(uriInfo.getBaseUriBuilder().path("publishers"));
+	public Publishers findPublishersByGameId(String gameId) throws SQLException {
+		Publishers publishers = new PublisherDataAccess().findPublishersByGameId(gameId);
+		buildLinks(publishers, gameId, "publishers");
 		return publishers;
 	}
 
-	public Awards findAwardsByGameId(String gameId, UriInfo uriInfo) throws SQLException {
-		if ((gameId == null) || (uriInfo == null)) {
-			return null;
-		}
-		Awards awards = awardData.findAwardsByGameId(gameId);
-		awards.setHref(getGamesUriBuilder(uriInfo, gameId).path("awards").toString());
-		awards.buildHrefOnChildren(uriInfo.getBaseUriBuilder().path("awards"));
+	public Awards findAwardsByGameId(String gameId) throws SQLException {
+		Awards awards = new AwardDataAccess().findAwardsByGameId(gameId);
+		buildLinks(awards, gameId, "awards");
 		return awards;
 	}
 	
-    private Game expand(Game game, UriInfo uriInfo) throws SQLException {
-		if ((game == null) || (uriInfo == null)) {
-			return game;
+    private Game expand(Game game) throws SQLException {
+		if (game == null) {
+			return null;
 		}
-		game.setAuthors(findAuthorsByGameId(game.getId(), uriInfo));
-		game.setPublishers(findPublishersByGameId(game.getId(), uriInfo));
-		game.setAwards(findAwardsByGameId(game.getId(), uriInfo));
-    	return game;
+		game.setAuthors(findAuthorsByGameId(game.getId()));
+		game.setPublishers(findPublishersByGameId(game.getId()));
+		game.setAwards(findAwardsByGameId(game.getId()));
+		return game;
     }
 
-    private Games expand(Games games, UriInfo uriInfo) throws SQLException {
-    	return expand(games, uriInfo, null);
+    private Games expand(Games games) throws SQLException {
+    	return expand(games, null);
     }
 
-    private Games expand(Games games, UriInfo uriInfo, String name) throws SQLException {
-		if ((games == null) || (uriInfo == null)) {
-			return games;
-		}
-		UriBuilder uriBuilder = getGamesUriBuilder(uriInfo);
-		if (name != null) {
-			uriBuilder.queryParam("name", name);
-		}
-		games.setHref(uriBuilder.toString());
-		games.buildHrefOnChildren(getGamesUriBuilder(uriInfo));
+    private Games expand(Games games, Map<String, String> queryParams) throws SQLException {
 		for (Game game : games.getGames()) {
-			expand(game, uriInfo);
+			expand(game);
 		}
-    	return games;
+		UriBuilder uriBuilderCollection = MyStuffUtil.setQueryParams(uriInfo.getRequestUriBuilder(), queryParams);
+		games.buildLinks(uriBuilderCollection.build(), getGamesUri());
+		return games;
+    }
+
+    private void buildLinks(RestDataCollection<? extends RestData> dataCollection, String gameId, String path) {
+		URI uriCollection = UriBuilder.fromUri(getGamesUri()).path(gameId).path(path).build();
+		URI uriElements = uriInfo.getBaseUriBuilder().path(path).build();
+		dataCollection.buildLinks(uriCollection, uriElements);    	
     }
     
-    private UriBuilder getGamesUriBuilder(UriInfo uriInfo) {
-		return uriInfo.getBaseUriBuilder().path("games");
-    }
-    
-    private UriBuilder getGamesUriBuilder(UriInfo uriInfo, String gameId) {
-		return getGamesUriBuilder(uriInfo).path(gameId);
-    }
+    private URI getGamesUri() {
+    	return uriInfo.getBaseUriBuilder().path("games").build();
+    }    
     
 }

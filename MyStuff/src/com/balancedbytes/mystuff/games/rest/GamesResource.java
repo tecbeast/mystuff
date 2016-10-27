@@ -28,17 +28,16 @@ public class GamesResource {
 
 	@Context
 	private UriInfo uriInfo;
-	private GamesResourceHelper gamesHelper = new GamesResourceHelper();
 	
 	@GET
 	@Produces({ MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON })
 	public Games findGames(@QueryParam("name") String name) throws SQLException {
 		if (MyStuffUtil.isProvided(name)) {
 			_LOG.info("findGamesByName(" + name + ")");
-			return gamesHelper.findGamesByName(name, uriInfo);
+			return new GamesResourceHelper(uriInfo).findGamesByName(name);
 		} else {
 			_LOG.info("findAllGames()");
-			return gamesHelper.findAllGames(uriInfo);
+			return new GamesResourceHelper(uriInfo).findAllGames();
 		}
 	}
 
@@ -47,7 +46,7 @@ public class GamesResource {
 	@Produces({ MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON })
 	public Game findGameById(@PathParam("id") String id) throws SQLException {
 		_LOG.info("findGameById(" + id + ")");
-		return gamesHelper.findGameById(id, uriInfo);
+		return new GamesResourceHelper(uriInfo).findGameById(id);
 	}
 
 	@GET
@@ -55,7 +54,7 @@ public class GamesResource {
 	@Produces({ MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON })
 	public Authors findAuthorsByGameId(@PathParam("id") String id) throws SQLException {
 		_LOG.info("findAuthorsByGameId(" + id + ")");
-		return gamesHelper.findAuthorsByGameId(id, uriInfo);
+		return new GamesResourceHelper(uriInfo).findAuthorsByGameId(id);
 	}
 
 	@GET
@@ -63,7 +62,7 @@ public class GamesResource {
 	@Produces({ MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON })
 	public Publishers findPublishersByGameId(@PathParam("id") String id) throws SQLException {
 		_LOG.info("findPublishersByGameId(" + id + ")");
-		return gamesHelper.findPublishersByGameId(id, uriInfo);
+		return new GamesResourceHelper(uriInfo).findPublishersByGameId(id);
 	}
 
 	@GET
@@ -71,7 +70,7 @@ public class GamesResource {
 	@Produces({ MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON })
 	public Awards findAwardsByGameId(@PathParam("id") String id) throws SQLException {
 		_LOG.info("findAwardsByGameId(" + id + ")");
-		return gamesHelper.findAwardsByGameId(id, uriInfo);
+		return new GamesResourceHelper(uriInfo).findAwardsByGameId(id);
 	}
 
 }

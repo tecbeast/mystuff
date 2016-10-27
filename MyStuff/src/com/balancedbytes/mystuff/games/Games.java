@@ -12,7 +12,7 @@ public class Games extends RestDataCollection<Game> {
 	
 	@XmlElement(name="game")
 	public List<Game> getGames() {
-		return getChildren();
+		return getElements();
 	}
 	
 }

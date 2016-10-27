@@ -12,7 +12,7 @@ public class Authors extends RestDataCollection<Author> {
 	
 	@XmlElement(name="author")
 	public List<Author> getAuthors() {
-		return getChildren();
+		return getElements();
 	}
 	
 }

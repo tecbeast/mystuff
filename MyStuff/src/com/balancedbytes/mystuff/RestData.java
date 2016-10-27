@@ -1,5 +1,7 @@
 package com.balancedbytes.mystuff;
 
+import java.net.URI;
+
 import javax.ws.rs.core.UriBuilder;
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
@@ -30,9 +32,9 @@ public abstract class RestData {
 		this.href = href;
 	}
 	
-	public void buildHref(UriBuilder uriBuilder) {
-		if (uriBuilder != null) {
-			setHref(uriBuilder.clone().path(getId()).toString());
+	public void buildLink(URI uri) {
+		if (uri != null) {
+			setHref(UriBuilder.fromUri(uri).path(getId()).toString());
 		}
 	}
 

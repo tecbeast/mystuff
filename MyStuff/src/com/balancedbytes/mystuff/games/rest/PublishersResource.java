@@ -6,18 +6,18 @@ import javax.ws.rs.GET;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
+import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
-import javax.ws.rs.core.UriBuilder;
 import javax.ws.rs.core.UriInfo;
 
 import org.apache.juli.logging.Log;
 import org.apache.juli.logging.LogFactory;
 
+import com.balancedbytes.mystuff.MyStuffUtil;
 import com.balancedbytes.mystuff.games.Games;
 import com.balancedbytes.mystuff.games.Publisher;
 import com.balancedbytes.mystuff.games.Publishers;
-import com.balancedbytes.mystuff.games.data.PublisherDataAccess;
 
 @Path("/publishers")
 public class PublishersResource {
@@ -26,27 +26,25 @@ public class PublishersResource {
 
 	@Context
 	private UriInfo uriInfo;
-	private PublisherDataAccess publisherData = new PublisherDataAccess();
-	private GamesResourceHelper gamesHelper = new GamesResourceHelper();
 	
 	@GET
 	@Produces({ MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON })
-	public Publishers findPublishers() throws SQLException {
-		_LOG.info("findPublishers()");
-		Publishers publishers = publisherData.findAllPublishers();
-		publishers.setHref(getPublishersUriBuilder().toString());
-		publishers.buildHrefOnChildren(getPublishersUriBuilder());
-		return publishers;
+	public Publishers findPublishers(@QueryParam("name") String name) throws SQLException {
+		if (MyStuffUtil.isProvided(name)) {
+			_LOG.info("findPublishersByName(" + name + ")");
+			return new PublishersResourceHelper(uriInfo).findPublishersByName(name);
+		} else {
+			_LOG.info("findAllPublishers()");
+			return new PublishersResourceHelper(uriInfo).findAllPublishers();
+		}
 	}
-
+	
 	@GET
 	@Path("{id}")
 	@Produces({ MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON })
 	public Publisher findPublisherById(@PathParam("id") String id) throws SQLException {
 		_LOG.info("findPublisherById(" + id + ")");
-		Publisher publisher = publisherData.findPublisherById(id);
-		publisher.buildHref(getPublishersUriBuilder());
-		return publisher;
+		return new PublishersResourceHelper(uriInfo).findPublisherById(id);
 	}
 	
 	@GET
@@ -54,11 +52,7 @@ public class PublishersResource {
 	@Produces({ MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON })
 	public Games findGamesByPublisherId(@PathParam("id") String id) throws SQLException {
 		_LOG.info("findGamesByPublisherId(" + id + ")");
-		return gamesHelper.findGamesByPublisherId(id, uriInfo);
-	}
-
-	private UriBuilder getPublishersUriBuilder() {
-		return uriInfo.getBaseUriBuilder().path("publishers");
+		return new GamesResourceHelper(uriInfo).findGamesByPublisherId(id);
 	}
 	
 }

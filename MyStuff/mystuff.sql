@@ -345,23 +345,28 @@ INSERT INTO countries VALUES('ZW','Simbabwe');
 
 /* Table games: id, name, edition_year, players_min, players_max, playtime_min, playtime_max, playtime_per_player, age_min, last_played, rating */
 INSERT INTO games VALUES(1, 'Die Siedler von Catan', 1995, 3, 4, 60, null, false, 10, '2016-04-19', null);
-INSERT INTO games VALUES(2, '6 nimmt!', 1994, 2, 10, 45, null, false, 10, '2016-04-19', null);
+INSERT INTO games VALUES(2, '6 nimmt!', 1994, 2, 10, 45, null, false, 10, null, null);
+INSERT INTO games VALUES(3, 'Colt Express', 2014, 2, 6, 30, null, false, 10, null, null);
 
 /* Table authors: id, last_name, first_name, country_code */
 INSERT INTO authors VALUES(1, 'Teuber', 'Klaus', 'DE');
 INSERT INTO authors VALUES(2, 'Kramer', 'Wolfgang', 'DE');
+INSERT INTO authors VALUES(3, 'Raimbault', 'Christophe', 'FR');
 
 /* Table game_authors: game_id, author_id */
 INSERT INTO game_authors VALUES(1, 1);
 INSERT INTO game_authors VALUES(2, 2);
+INSERT INTO game_authors VALUES(3, 3);
 
 /* Table publishers: id, name, country_code */
 INSERT INTO publishers VALUES(1, 'Kosmos', 'DE');
 INSERT INTO publishers VALUES(2, 'Amigo', 'DE');
+INSERT INTO publishers VALUES(3, 'Ludonaute', 'FR');
 
 /* Table game_publishers: game_id, publisher_id */
 INSERT INTO game_publishers VALUES(1, 1);
 INSERT INTO game_publishers VALUES(2, 2);
+INSERT INTO game_publishers VALUES(3, 3);
 
 /* Table awards: id, name, award_year, country_code */
 INSERT INTO awards VALUES(1, 'Spiel des Jahres', 'DE');
@@ -372,6 +377,7 @@ INSERT INTO awards VALUES(3, 'Auswahlliste Spiel des Jahres', 'DE');
 INSERT INTO game_awards VALUES(1, 1, 1995);
 INSERT INTO game_awards VALUES(1, 2, 1995);
 INSERT INTO game_awards VALUES(2, 3, 1994);
+INSERT INTO game_awards VALUES(3, 1, 2015);
 
 /* Table notes: id, added, note */
 INSERT INTO notes VALUES(1, '2016-10-24 23:04:00', 'Ein erster Kommentar');

@@ -12,7 +12,7 @@ public class Awards extends RestDataCollection<Award> {
 	
 	@XmlElement(name="award")
 	public List<Award> getAwards() {
-		return getChildren();
+		return getElements();
 	}
 
 }
