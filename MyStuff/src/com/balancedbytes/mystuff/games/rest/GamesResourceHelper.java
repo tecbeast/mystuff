@@ -82,6 +82,7 @@ public class GamesResourceHelper {
 		game.setAuthors(findAuthorsByGameId(game.getId()));
 		game.setPublishers(findPublishersByGameId(game.getId()));
 		game.setAwards(findAwardsByGameId(game.getId()));
+		game.buildLink(getGamesUri());
 		return game;
     }
 

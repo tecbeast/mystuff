@@ -4,22 +4,21 @@ import java.net.URI;
 import java.util.ArrayList;
 import java.util.List;
 
-import javax.xml.bind.annotation.XmlAttribute;
+import javax.ws.rs.core.Link;
+import javax.xml.bind.annotation.XmlElement;
+import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 
 public abstract class RestDataCollection<T extends RestData> {
 	
-	private String href;
+	private List<Link> links = new ArrayList<>();
 	private List<T> elements = new ArrayList<>();
 
-	@XmlAttribute
-	public String getHref() {
-		return href;
+	@XmlElement(name="link")
+	@XmlJavaTypeAdapter(Link.JaxbAdapter.class)
+	public List<Link> getLinks() {
+		return links;
 	}
 
-	protected void setHref(String href) {
-		this.href = href;
-	}
-	
 	public void add(T element) {
 		if (element != null) {
 			elements.add(element);
@@ -39,7 +38,8 @@ public abstract class RestDataCollection<T extends RestData> {
 	}
 	
 	public void buildLinks(URI uriCollection, URI uriElements) {
-		setHref(uriCollection.toString());
+		links.clear();
+		links.add(Link.fromUri(uriCollection).rel("self").build());
 		for (T element : elements) {
 			element.buildLink(uriElements);
 		}
