@@ -4,6 +4,7 @@ import java.net.URI;
 import java.sql.SQLException;
 import java.util.Map;
 
+import javax.ws.rs.core.Response;
 import javax.ws.rs.core.UriBuilder;
 import javax.ws.rs.core.UriInfo;
 
@@ -37,6 +38,20 @@ public class AuthorsResourceHelper {
 		Author author = new AuthorDataAccess().findAuthorById(id);
 		author.buildLink(getAuthorsUri());
 		return author;
+	}
+
+	public Author createAuthor(Author author) throws SQLException {
+		new AuthorDataAccess().createAuthor(author);
+		author.buildLink(getAuthorsUri());
+		return author;
+	}
+
+	public Response deleteAuthor(String id) throws SQLException {
+		if (new AuthorDataAccess().deleteAuthor(id)) {
+		    return Response.noContent().build();
+	    } else {
+	        return Response.status(Response.Status.NOT_FOUND).build();
+	    }
 	}
 
 	private void buildLinks(Authors authors) {

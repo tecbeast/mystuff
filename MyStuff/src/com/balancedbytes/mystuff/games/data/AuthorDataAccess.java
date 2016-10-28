@@ -6,8 +6,8 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 
 import com.balancedbytes.mystuff.ConnectionHelper;
-import com.balancedbytes.mystuff.RestDataAccess;
 import com.balancedbytes.mystuff.MyStuffUtil;
+import com.balancedbytes.mystuff.RestDataAccess;
 import com.balancedbytes.mystuff.games.Author;
 import com.balancedbytes.mystuff.games.Authors;
 import com.balancedbytes.mystuff.games.CountryCache;
@@ -28,6 +28,12 @@ public class AuthorDataAccess extends RestDataAccess<Author> {
 		+ " ON game_authors.author_id = authors.id"
 		+ " WHERE game_authors.game_id = ?"
 		+ " ORDER BY authors.last_name,authors.first_name";
+	private static final String _SQL_CREATE_AUTHOR =
+		"INSERT INTO authors"
+		+ " (last_name, first_name, country_code)"
+		+ " VALUES (?, ?, ?)";
+	private static final String _SQL_DELETE_AUTHOR =
+		"DELETE FROM authors WHERE id = ?";
 
     public Authors findAllAuthors() throws SQLException {
     	Authors authors = new Authors();
@@ -75,6 +81,30 @@ public class AuthorDataAccess extends RestDataAccess<Author> {
             processResultSet(ps.executeQuery(), authors);
 		}
         return authors;
+    }
+    
+    public void createAuthor(Author author) throws SQLException {
+        try (Connection c = ConnectionHelper.getConnection()) {
+            PreparedStatement ps = c.prepareStatement(_SQL_CREATE_AUTHOR, new String[] { "id" });
+            ps.setString(1, author.getLastName());
+            ps.setString(2, author.getFirstName());
+            ps.setString(3, author.getCountry().getCode());
+            ps.executeUpdate();
+            ResultSet rs = ps.getGeneratedKeys();
+            while (rs.next()) {
+            	author.setId(rs.getString(1));
+            }
+        }
+    }
+    
+    public boolean deleteAuthor(String id) throws SQLException {
+    	int count = 0;
+        try (Connection c = ConnectionHelper.getConnection()) {
+            PreparedStatement ps = c.prepareStatement(_SQL_DELETE_AUTHOR);
+            ps.setLong(1, MyStuffUtil.parseLong(id));
+            count = ps.executeUpdate();
+        }
+        return (count == 1);
     }
     
     @Override

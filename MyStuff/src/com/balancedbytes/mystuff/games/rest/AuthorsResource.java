@@ -2,13 +2,17 @@ package com.balancedbytes.mystuff.games.rest;
 
 import java.sql.SQLException;
 
+import javax.ws.rs.Consumes;
+import javax.ws.rs.DELETE;
 import javax.ws.rs.GET;
+import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
 import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.Response;
 import javax.ws.rs.core.UriInfo;
 
 import org.apache.juli.logging.Log;
@@ -53,6 +57,22 @@ public class AuthorsResource {
 	public Games findGamesByAuthorId(@PathParam("id") String id) throws SQLException {
 		_LOG.info("findGamesByAuthorId(" + id + ")");
 		return new GamesResourceHelper(uriInfo).findGamesByAuthorId(id);
+	}
+	
+	@POST
+	@Consumes({ MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON })
+	@Produces({ MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON })
+	public Author createAuthor(Author author) throws SQLException {
+		_LOG.info("createAuthor()");
+		return new AuthorsResourceHelper(uriInfo).createAuthor(author);
+	}
+	
+	@DELETE
+	@Path("{id}")
+	@Produces({ MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON })
+	public Response deleteAuthor(@PathParam("id") String id) throws SQLException {
+		_LOG.info("deleteAuthor(" + id + ")");
+		return new AuthorsResourceHelper(uriInfo).deleteAuthor(id);
 	}
 	
 }
