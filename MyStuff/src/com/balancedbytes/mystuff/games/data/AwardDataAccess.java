@@ -28,7 +28,13 @@ public class AwardDataAccess extends RestDataAccess<Award> {
 		+ " ON game_awards.award_id = awards.id"
 		+ " WHERE game_awards.game_id = ?"
 		+ " ORDER BY awards.name";
-	
+	private static final String _SQL_CREATE_AWARD =
+		"INSERT INTO awards"
+		+ " (name, country_code)"
+		+ " VALUES (?, ?)";
+	private static final String _SQL_DELETE_AWARD =
+		"DELETE FROM awards WHERE id = ?";
+
     public Awards findAllAwards() throws SQLException {
     	Awards awards = new Awards();
         try (Connection c = ConnectionHelper.getConnection()){
@@ -74,6 +80,29 @@ public class AwardDataAccess extends RestDataAccess<Award> {
             processResultSet(ps.executeQuery(), awards);
 		}
         return awards;
+    }
+    
+    public void createAward(Award award) throws SQLException {
+        try (Connection c = ConnectionHelper.getConnection()) {
+            PreparedStatement ps = c.prepareStatement(_SQL_CREATE_AWARD, new String[] { "id" });
+            ps.setString(1, award.getName());
+            ps.setString(2, award.getCountry().getCode());
+            ps.executeUpdate();
+            ResultSet rs = ps.getGeneratedKeys();
+            while (rs.next()) {
+            	award.setId(rs.getString(1));
+            }
+        }
+    }
+    
+    public boolean deleteAward(String id) throws SQLException {
+    	int count = 0;
+        try (Connection c = ConnectionHelper.getConnection()) {
+            PreparedStatement ps = c.prepareStatement(_SQL_DELETE_AWARD);
+            ps.setLong(1, MyStuffUtil.parseLong(id));
+            count = ps.executeUpdate();
+        }
+        return (count == 1);
     }
 
     @Override

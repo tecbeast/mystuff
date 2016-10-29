@@ -4,6 +4,7 @@ import java.net.URI;
 import java.sql.SQLException;
 import java.util.Map;
 
+import javax.ws.rs.core.Response;
 import javax.ws.rs.core.UriBuilder;
 import javax.ws.rs.core.UriInfo;
 
@@ -37,6 +38,20 @@ public class PublishersResourceHelper {
 		Publisher publisher = new PublisherDataAccess().findPublisherById(id);
 		publisher.buildLink(getPublishersUri());
 		return publisher;
+	}
+	
+	public Publisher createPublisher(Publisher publisher) throws SQLException {
+		new PublisherDataAccess().createPublisher(publisher);
+		publisher.buildLink(getPublishersUri());
+		return publisher;
+	}
+
+	public Response deletePublisher(String id) throws SQLException {
+		if (new PublisherDataAccess().deletePublisher(id)) {
+		    return Response.noContent().build();
+	    } else {
+	        return Response.status(Response.Status.NOT_FOUND).build();
+	    }
 	}
 
 	private void buildLinks(Publishers publishers) {

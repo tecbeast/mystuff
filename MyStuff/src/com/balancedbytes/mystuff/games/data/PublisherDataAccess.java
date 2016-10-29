@@ -28,6 +28,12 @@ public class PublisherDataAccess extends RestDataAccess<Publisher> {
 		+ " ON game_publishers.publisher_id = publishers.id"
 		+ " WHERE game_publishers.game_id = ?"
 		+ " ORDER BY publishers.name";
+	private static final String _SQL_CREATE_PUBLISHER =
+		"INSERT INTO publishers"
+		+ " (name, country_code)"
+		+ " VALUES (?, ?)";
+	private static final String _SQL_DELETE_PUBLISHER =
+		"DELETE FROM publishers WHERE id = ?";
 
     public Publishers findAllPublishers() throws SQLException {
     	Publishers publishers = new Publishers();
@@ -74,6 +80,29 @@ public class PublisherDataAccess extends RestDataAccess<Publisher> {
             processResultSet(ps.executeQuery(), publishers);
 		}
         return publishers;
+    }
+
+    public void createPublisher(Publisher publisher) throws SQLException {
+        try (Connection c = ConnectionHelper.getConnection()) {
+            PreparedStatement ps = c.prepareStatement(_SQL_CREATE_PUBLISHER, new String[] { "id" });
+            ps.setString(1, publisher.getName());
+            ps.setString(2, publisher.getCountry().getCode());
+            ps.executeUpdate();
+            ResultSet rs = ps.getGeneratedKeys();
+            while (rs.next()) {
+            	publisher.setId(rs.getString(1));
+            }
+        }
+    }
+    
+    public boolean deletePublisher(String id) throws SQLException {
+    	int count = 0;
+        try (Connection c = ConnectionHelper.getConnection()) {
+            PreparedStatement ps = c.prepareStatement(_SQL_DELETE_PUBLISHER);
+            ps.setLong(1, MyStuffUtil.parseLong(id));
+            count = ps.executeUpdate();
+        }
+        return (count == 1);
     }
 
     @Override

@@ -4,6 +4,7 @@ import java.net.URI;
 import java.sql.SQLException;
 import java.util.Map;
 
+import javax.ws.rs.core.Response;
 import javax.ws.rs.core.UriBuilder;
 import javax.ws.rs.core.UriInfo;
 
@@ -73,6 +74,20 @@ public class GamesResourceHelper {
 		Awards awards = new AwardDataAccess().findAwardsByGameId(gameId);
 		buildLinks(awards, gameId, "awards");
 		return awards;
+	}
+	
+	public Game createGame(Game game) throws SQLException {
+		new GameDataAccess().createGame(game);
+		game.buildLink(getGamesUri());
+		return game;
+	}
+
+	public Response deleteGame(String id) throws SQLException {
+		if (new GameDataAccess().deleteGame(id)) {
+		    return Response.noContent().build();
+	    } else {
+	        return Response.status(Response.Status.NOT_FOUND).build();
+	    }
 	}
 	
     private Game expand(Game game) throws SQLException {

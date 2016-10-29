@@ -6,10 +6,16 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 
 import com.balancedbytes.mystuff.ConnectionHelper;
-import com.balancedbytes.mystuff.RestDataAccess;
 import com.balancedbytes.mystuff.MyStuffUtil;
+import com.balancedbytes.mystuff.RestDataAccess;
+import com.balancedbytes.mystuff.games.Author;
+import com.balancedbytes.mystuff.games.Authors;
+import com.balancedbytes.mystuff.games.Award;
+import com.balancedbytes.mystuff.games.Awards;
 import com.balancedbytes.mystuff.games.Game;
 import com.balancedbytes.mystuff.games.Games;
+import com.balancedbytes.mystuff.games.Publisher;
+import com.balancedbytes.mystuff.games.Publishers;
 
 public class GameDataAccess extends RestDataAccess<Game> {
 	
@@ -43,6 +49,31 @@ public class GameDataAccess extends RestDataAccess<Game> {
 		+ " ON game_awards.game_id = games.id"
 		+ " WHERE game_awards.award_id = ? AND game_awards.year = ?"
 		+ " ORDER BY games.name";
+	private static final String _SQL_CREATE_GAME =
+		"INSERT INTO games"
+		+ " (name, edition_year, players_min, players_max, playtime_min,"
+		+ " playtime_max, playtime_per_player, age_min, last_played, rating)"
+		+ " VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
+	private static final String _SQL_CREATE_GAME_AUTHORS =
+		"INSERT INTO game_authors"
+		+ " (game_id, author_id)"
+		+ " VALUES (?, ?)";
+	private static final String _SQL_CREATE_GAME_PUBLISHERS =
+		"INSERT INTO game_publishers"
+		+ " (game_id, publisher_id)"
+		+ " VALUES (?, ?)";
+	private static final String _SQL_CREATE_GAME_AWARDS =
+		"INSERT INTO game_awards"
+		+ " (game_id, award_id, year)"
+		+ " VALUES (?, ?)";
+	private static final String _SQL_DELETE_GAME =
+		"DELETE FROM games WHERE id = ?";
+	private static final String _SQL_DELETE_GAME_AUTHORS =
+		"DELETE FROM game_authors WHERE game_id = ?";
+	private static final String _SQL_DELETE_GAME_PUBLISHERS =
+		"DELETE FROM game_publishers WHERE game_id = ?";
+	private static final String _SQL_DELETE_GAME_AWARDS =
+		"DELETE FROM game_awards WHERE game_id = ?";
 
     public Games findAllGames() throws SQLException {
     	Games games = new Games();
@@ -115,6 +146,110 @@ public class GameDataAccess extends RestDataAccess<Game> {
             processResultSet(ps.executeQuery(), games);
 		}
         return games;
+    }
+    
+    public void createGame(Game game) throws SQLException {
+        try (Connection c = ConnectionHelper.getConnection()) {
+        	createGame(c, game);
+        	Authors authors = game.getAuthors();
+        	if ((authors != null) && (authors.size() > 0)) {
+        		for (Author author : authors.getAuthors()) {
+        			createGameAuthor(c, game, author);
+        		}
+        	}
+        	Publishers publishers = game.getPublishers();
+        	if ((publishers != null) && (publishers.size() > 0)) {
+        		for (Publisher publisher : publishers.getPublishers()) {
+        			createGamePublisher(c, game, publisher);
+        		}
+        	}
+        	Awards awards = game.getAwards();
+        	if ((awards != null) && (awards.size() > 0)) {
+        		for (Award award : awards.getAwards()) {
+        			createGameAward(c, game, award);
+        		}
+        	}
+        }
+    }
+
+    private void createGame(Connection c, Game game) throws SQLException {
+    	try (PreparedStatement ps = c.prepareStatement(_SQL_CREATE_GAME, new String[] { "id" })) {
+    		ps.setString(1, game.getName());
+    		ps.setInt(2, game.getEditionYear());
+    		ps.setInt(3, game.getPlayersMin());
+    		ps.setInt(4, game.getPlayersMax());
+	        ps.setInt(5, game.getPlaytimeMin());
+	        ps.setInt(6, game.getPlaytimeMax());
+	        ps.setBoolean(7, game.isPlaytimePerPlayer());
+	        ps.setInt(8, game.getAgeMin());
+	        ps.setDate(9, game.getLastPlayed());
+	        ps.setInt(10, game.getRating());
+	        ps.executeUpdate();
+	        ResultSet rs = ps.getGeneratedKeys();
+	        while (rs.next()) {
+	        	game.setId(rs.getString(1));
+	        }
+    	}
+    }
+
+    private boolean createGameAuthor(Connection c, Game game, Author author) throws SQLException {
+    	try (PreparedStatement ps = c.prepareStatement(_SQL_CREATE_GAME_AUTHORS)) {
+    		ps.setLong(1, MyStuffUtil.parseLong(game.getId()));
+    		ps.setLong(2, MyStuffUtil.parseLong(author.getId()));
+    		return (ps.executeUpdate() == 1);
+    	}
+    }
+
+    private boolean createGamePublisher(Connection c, Game game, Publisher publisher) throws SQLException {
+    	try (PreparedStatement ps = c.prepareStatement(_SQL_CREATE_GAME_PUBLISHERS)) {
+    		ps.setLong(1, MyStuffUtil.parseLong(game.getId()));
+    		ps.setLong(2, MyStuffUtil.parseLong(publisher.getId()));
+    		return (ps.executeUpdate() == 1);
+    	}
+    }
+
+    private boolean createGameAward(Connection c, Game game, Award award) throws SQLException {
+    	try (PreparedStatement ps = c.prepareStatement(_SQL_CREATE_GAME_AWARDS)) {
+    		ps.setLong(1, MyStuffUtil.parseLong(game.getId()));
+    		ps.setLong(2, MyStuffUtil.parseLong(award.getId()));
+    		ps.setInt(3, award.getYear());
+    		return (ps.executeUpdate() == 1);
+    	}
+    }
+
+    public boolean deleteGame(String id) throws SQLException {
+    	boolean deleted = false;
+    	long gameId = MyStuffUtil.parseLong(id);
+        try (Connection c = ConnectionHelper.getConnection()) {
+        	deleted |= deleteGame(c, gameId);
+        	deleted |= deleteGameAuthors(c, gameId);
+        	deleted |= deleteGamePublishers(c, gameId);
+        	deleted |= deleteGameAwards(c, gameId);
+        }
+        return deleted;
+    }
+    
+    private boolean deleteGame(Connection c, long gameId) throws SQLException {
+    	return executeDeleteSql(c, _SQL_DELETE_GAME, gameId);
+    }
+
+    private boolean deleteGameAuthors(Connection c, long gameId) throws SQLException {
+    	return executeDeleteSql(c, _SQL_DELETE_GAME_AUTHORS, gameId);
+    }
+
+    private boolean deleteGamePublishers(Connection c, long gameId) throws SQLException {
+    	return executeDeleteSql(c, _SQL_DELETE_GAME_PUBLISHERS, gameId);
+    }
+
+    private boolean deleteGameAwards(Connection c, long gameId) throws SQLException {
+    	return executeDeleteSql(c, _SQL_DELETE_GAME_AWARDS, gameId);
+    }
+    
+    private boolean executeDeleteSql(Connection c, String sql, long gameId) throws SQLException {
+    	try (PreparedStatement ps = c.prepareStatement(sql)) {
+    		ps.setLong(1, gameId);
+    		return (ps.executeUpdate() == 1);
+    	}
     }
 
     @Override

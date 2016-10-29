@@ -4,6 +4,7 @@ import java.net.URI;
 import java.sql.SQLException;
 import java.util.Map;
 
+import javax.ws.rs.core.Response;
 import javax.ws.rs.core.UriBuilder;
 import javax.ws.rs.core.UriInfo;
 
@@ -37,6 +38,20 @@ public class AwardsResourceHelper {
 		Award award = new AwardDataAccess().findAwardById(id);
 		award.buildLink(getAwardsUri());
 		return award;
+	}
+
+	public Award createAward(Award award) throws SQLException {
+		new AwardDataAccess().createAward(award);
+		award.buildLink(getAwardsUri());
+		return award;
+	}
+
+	public Response deleteAward(String id) throws SQLException {
+		if (new AwardDataAccess().deleteAward(id)) {
+		    return Response.noContent().build();
+	    } else {
+	        return Response.status(Response.Status.NOT_FOUND).build();
+	    }
 	}
 
 	private void buildLinks(Awards awards) {
