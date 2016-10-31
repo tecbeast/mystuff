@@ -6,6 +6,7 @@ import javax.ws.rs.Consumes;
 import javax.ws.rs.DELETE;
 import javax.ws.rs.GET;
 import javax.ws.rs.POST;
+import javax.ws.rs.PUT;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
@@ -43,22 +44,6 @@ public class PublishersResource {
 		}
 	}
 	
-	@GET
-	@Path("{id}")
-	@Produces({ MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON })
-	public Publisher findPublisherById(@PathParam("id") String id) throws SQLException {
-		_LOG.info("findPublisherById(" + id + ")");
-		return new PublishersResourceHelper(uriInfo).findPublisherById(id);
-	}
-	
-	@GET
-	@Path("{id}/games")
-	@Produces({ MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON })
-	public Games findGamesByPublisherId(@PathParam("id") String id) throws SQLException {
-		_LOG.info("findGamesByPublisherId(" + id + ")");
-		return new GamesResourceHelper(uriInfo).findGamesByPublisherId(id);
-	}
-	
 	@POST
 	@Consumes({ MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON })
 	@Produces({ MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON })
@@ -67,6 +52,23 @@ public class PublishersResource {
 		return new PublishersResourceHelper(uriInfo).createPublisher(publisher);
 	}
 	
+	@GET
+	@Path("{id}")
+	@Produces({ MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON })
+	public Publisher findPublisherById(@PathParam("id") String id) throws SQLException {
+		_LOG.info("findPublisherById(" + id + ")");
+		return new PublishersResourceHelper(uriInfo).findPublisherById(id);
+	}
+	
+	@PUT
+	@Path("{id}")
+	@Produces({ MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON })
+	public Publisher updatePublisher(@PathParam("id") String id, Publisher publisher) throws SQLException {
+		_LOG.info("updatePublisher(" + id + ")");
+		publisher.setId(id);
+		return new PublishersResourceHelper(uriInfo).updatePublisher(publisher);
+	}
+
 	@DELETE
 	@Path("{id}")
 	@Produces({ MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON })
@@ -74,5 +76,13 @@ public class PublishersResource {
 		_LOG.info("deletePublisher(" + id + ")");
 		return new PublishersResourceHelper(uriInfo).deletePublisher(id);
 	}
-	
+
+	@GET
+	@Path("{id}/games")
+	@Produces({ MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON })
+	public Games findGamesByPublisherId(@PathParam("id") String id) throws SQLException {
+		_LOG.info("findGamesByPublisherId(" + id + ")");
+		return new GamesResourceHelper(uriInfo).findGamesByPublisherId(id);
+	}
+
 }

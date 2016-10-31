@@ -32,6 +32,10 @@ public class AuthorDataAccess extends RestDataAccess<Author> {
 		"INSERT INTO authors"
 		+ " (last_name, first_name, country_code)"
 		+ " VALUES (?, ?, ?)";
+	private static final String _SQL_UPDATE_AUTHOR =
+		"UPDATE authors"
+		+ " SET last_name = ?, first_name = ?, country_code = ?"
+		+ " WHERE id = ?";
 	private static final String _SQL_DELETE_AUTHOR =
 		"DELETE FROM authors WHERE id = ?";
 
@@ -96,15 +100,24 @@ public class AuthorDataAccess extends RestDataAccess<Author> {
             }
         }
     }
-    
+
+    public boolean updateAuthor(Author author) throws SQLException {
+        try (Connection c = ConnectionHelper.getConnection()) {
+            PreparedStatement ps = c.prepareStatement(_SQL_UPDATE_AUTHOR);
+            ps.setString(1, author.getLastName());
+            ps.setString(2, author.getFirstName());
+            ps.setString(3, author.getCountry().getCode());
+            ps.setLong(4, MyStuffUtil.parseLong(author.getId()));
+            return (ps.executeUpdate() == 1);
+        }
+    }
+
     public boolean deleteAuthor(String id) throws SQLException {
-    	int count = 0;
         try (Connection c = ConnectionHelper.getConnection()) {
             PreparedStatement ps = c.prepareStatement(_SQL_DELETE_AUTHOR);
             ps.setLong(1, MyStuffUtil.parseLong(id));
-            count = ps.executeUpdate();
+            return (ps.executeUpdate() == 1);
         }
-        return (count == 1);
     }
     
     @Override

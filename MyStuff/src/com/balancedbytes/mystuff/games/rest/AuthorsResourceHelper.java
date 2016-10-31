@@ -46,6 +46,12 @@ public class AuthorsResourceHelper {
 		return author;
 	}
 
+	public Author updateAuthor(Author author) throws SQLException {
+		new AuthorDataAccess().updateAuthor(author);
+		author.buildLink(getAuthorsUri());
+		return author;
+	}
+
 	public Response deleteAuthor(String id) throws SQLException {
 		if (new AuthorDataAccess().deleteAuthor(id)) {
 		    return Response.noContent().build();
@@ -53,7 +59,7 @@ public class AuthorsResourceHelper {
 	        return Response.status(Response.Status.NOT_FOUND).build();
 	    }
 	}
-
+	
 	private void buildLinks(Authors authors) {
 		buildLinks(authors, null);
 	}

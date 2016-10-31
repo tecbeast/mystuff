@@ -6,6 +6,7 @@ import javax.ws.rs.Consumes;
 import javax.ws.rs.DELETE;
 import javax.ws.rs.GET;
 import javax.ws.rs.POST;
+import javax.ws.rs.PUT;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
@@ -43,6 +44,14 @@ public class AuthorsResource {
 		}
 	}
 
+	@POST
+	@Consumes({ MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON })
+	@Produces({ MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON })
+	public Author createAuthor(Author author) throws SQLException {
+		_LOG.info("createAuthor()");
+		return new AuthorsResourceHelper(uriInfo).createAuthor(author);
+	}
+
 	@GET
 	@Path("{id}")
 	@Produces({ MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON })
@@ -51,28 +60,29 @@ public class AuthorsResource {
 		return new AuthorsResourceHelper(uriInfo).findAuthorById(id);
 	}
 	
-	@GET
-	@Path("{id}/games")
+	@PUT
+	@Path("{id}")
 	@Produces({ MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON })
-	public Games findGamesByAuthorId(@PathParam("id") String id) throws SQLException {
-		_LOG.info("findGamesByAuthorId(" + id + ")");
-		return new GamesResourceHelper(uriInfo).findGamesByAuthorId(id);
+	public Author updateAuthor(@PathParam("id") String id, Author author) throws SQLException {
+		_LOG.info("updateAuthor(" + id + ")");
+		author.setId(id);
+		return new AuthorsResourceHelper(uriInfo).updateAuthor(author);
 	}
-	
-	@POST
-	@Consumes({ MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON })
-	@Produces({ MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON })
-	public Author createAuthor(Author author) throws SQLException {
-		_LOG.info("createAuthor()");
-		return new AuthorsResourceHelper(uriInfo).createAuthor(author);
-	}
-	
+
 	@DELETE
 	@Path("{id}")
 	@Produces({ MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON })
 	public Response deleteAuthor(@PathParam("id") String id) throws SQLException {
 		_LOG.info("deleteAuthor(" + id + ")");
 		return new AuthorsResourceHelper(uriInfo).deleteAuthor(id);
+	}
+
+	@GET
+	@Path("{id}/games")
+	@Produces({ MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON })
+	public Games findGamesByAuthorId(@PathParam("id") String id) throws SQLException {
+		_LOG.info("findGamesByAuthorId(" + id + ")");
+		return new GamesResourceHelper(uriInfo).findGamesByAuthorId(id);
 	}
 	
 }

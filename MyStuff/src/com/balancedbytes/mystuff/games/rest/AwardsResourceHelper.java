@@ -45,6 +45,12 @@ public class AwardsResourceHelper {
 		award.buildLink(getAwardsUri());
 		return award;
 	}
+	
+	public Award updateAward(Award award) throws SQLException {
+		new AwardDataAccess().updateAward(award);
+		award.buildLink(getAwardsUri());
+		return award;
+	}
 
 	public Response deleteAward(String id) throws SQLException {
 		if (new AwardDataAccess().deleteAward(id)) {

@@ -46,6 +46,12 @@ public class PublishersResourceHelper {
 		return publisher;
 	}
 
+	public Publisher updatePublisher(Publisher publisher) throws SQLException {
+		new PublisherDataAccess().updatePublisher(publisher);
+		publisher.buildLink(getPublishersUri());
+		return publisher;
+	}
+
 	public Response deletePublisher(String id) throws SQLException {
 		if (new PublisherDataAccess().deletePublisher(id)) {
 		    return Response.noContent().build();

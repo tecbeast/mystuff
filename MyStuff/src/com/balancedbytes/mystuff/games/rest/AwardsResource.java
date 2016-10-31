@@ -6,6 +6,7 @@ import javax.ws.rs.Consumes;
 import javax.ws.rs.DELETE;
 import javax.ws.rs.GET;
 import javax.ws.rs.POST;
+import javax.ws.rs.PUT;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
@@ -43,6 +44,14 @@ public class AwardsResource {
 		}
 	}
 
+	@POST
+	@Consumes({ MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON })
+	@Produces({ MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON })
+	public Award createAward(Award award) throws SQLException {
+		_LOG.info("createAward()");
+		return new AwardsResourceHelper(uriInfo).createAward(award);
+	}
+	
 	@GET
 	@Path("{id}")
 	@Produces({ MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON })
@@ -51,6 +60,23 @@ public class AwardsResource {
 		return new AwardsResourceHelper(uriInfo).findAwardById(id);
 	}
 	
+	@PUT
+	@Path("{id}")
+	@Produces({ MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON })
+	public Award updateAward(@PathParam("id") String id, Award award) throws SQLException {
+		_LOG.info("updateAward(" + id + ")");
+		award.setId(id);
+		return new AwardsResourceHelper(uriInfo).updateAward(award);
+	}
+
+	@DELETE
+	@Path("{id}")
+	@Produces({ MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON })
+	public Response deleteAward(@PathParam("id") String id) throws SQLException {
+		_LOG.info("deleteAward(" + id + ")");
+		return new AwardsResourceHelper(uriInfo).deleteAward(id);
+	}
+
 	@GET
 	@Path("{id}/games")
 	@Produces({ MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON })
@@ -63,21 +89,5 @@ public class AwardsResource {
 			return new GamesResourceHelper(uriInfo).findGamesByAwardId(id);
 		}
 	}
-	
-	@POST
-	@Consumes({ MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON })
-	@Produces({ MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON })
-	public Award createAward(Award award) throws SQLException {
-		_LOG.info("createAward()");
-		return new AwardsResourceHelper(uriInfo).createAward(award);
-	}
-	
-	@DELETE
-	@Path("{id}")
-	@Produces({ MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON })
-	public Response deleteAward(@PathParam("id") String id) throws SQLException {
-		_LOG.info("deleteAward(" + id + ")");
-		return new AwardsResourceHelper(uriInfo).deleteAward(id);
-	}
-	
+
 }

@@ -32,6 +32,10 @@ public class PublisherDataAccess extends RestDataAccess<Publisher> {
 		"INSERT INTO publishers"
 		+ " (name, country_code)"
 		+ " VALUES (?, ?)";
+	private static final String _SQL_UPDATE_PUBLISHER =
+		"UPDATE publishers"
+		+ " SET name = ?, country_code = ?"
+		+ " WHERE id = ?";
 	private static final String _SQL_DELETE_PUBLISHER =
 		"DELETE FROM publishers WHERE id = ?";
 
@@ -92,6 +96,16 @@ public class PublisherDataAccess extends RestDataAccess<Publisher> {
             while (rs.next()) {
             	publisher.setId(rs.getString(1));
             }
+        }
+    }
+    
+    public boolean updatePublisher(Publisher publisher) throws SQLException {
+        try (Connection c = ConnectionHelper.getConnection()) {
+            PreparedStatement ps = c.prepareStatement(_SQL_UPDATE_PUBLISHER);
+            ps.setString(1, publisher.getName());
+            ps.setString(2, publisher.getCountry().getCode());
+            ps.setLong(3, MyStuffUtil.parseLong(publisher.getId()));
+            return (ps.executeUpdate() == 1);
         }
     }
     

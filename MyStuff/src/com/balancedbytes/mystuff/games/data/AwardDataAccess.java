@@ -32,6 +32,10 @@ public class AwardDataAccess extends RestDataAccess<Award> {
 		"INSERT INTO awards"
 		+ " (name, country_code)"
 		+ " VALUES (?, ?)";
+	private static final String _SQL_UPDATE_AWARD =
+		"UPDATE awards"
+		+ " SET name = ?, country_code = ?"
+		+ " WHERE id = ?";
 	private static final String _SQL_DELETE_AWARD =
 		"DELETE FROM awards WHERE id = ?";
 
@@ -94,15 +98,23 @@ public class AwardDataAccess extends RestDataAccess<Award> {
             }
         }
     }
-    
+
+    public boolean updateAward(Award award) throws SQLException {
+        try (Connection c = ConnectionHelper.getConnection()) {
+            PreparedStatement ps = c.prepareStatement(_SQL_UPDATE_AWARD);
+            ps.setString(1, award.getName());
+            ps.setString(2, award.getCountry().getCode());
+            ps.setLong(3, MyStuffUtil.parseLong(award.getId()));
+            return (ps.executeUpdate() == 1);
+        }
+    }
+
     public boolean deleteAward(String id) throws SQLException {
-    	int count = 0;
         try (Connection c = ConnectionHelper.getConnection()) {
             PreparedStatement ps = c.prepareStatement(_SQL_DELETE_AWARD);
             ps.setLong(1, MyStuffUtil.parseLong(id));
-            count = ps.executeUpdate();
+            return (ps.executeUpdate() == 1);
         }
-        return (count == 1);
     }
 
     @Override

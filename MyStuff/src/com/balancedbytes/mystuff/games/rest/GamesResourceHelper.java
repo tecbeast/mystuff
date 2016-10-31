@@ -81,6 +81,12 @@ public class GamesResourceHelper {
 		game.buildLink(getGamesUri());
 		return game;
 	}
+	
+	public Game updateGame(Game game) throws SQLException {
+		new GameDataAccess().updateGame(game);
+		game.buildLink(getGamesUri());
+		return game;
+	}
 
 	public Response deleteGame(String id) throws SQLException {
 		if (new GameDataAccess().deleteGame(id)) {
