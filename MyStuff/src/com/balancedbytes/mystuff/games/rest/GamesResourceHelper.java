@@ -14,11 +14,13 @@ import com.balancedbytes.mystuff.games.Authors;
 import com.balancedbytes.mystuff.games.Awards;
 import com.balancedbytes.mystuff.games.Game;
 import com.balancedbytes.mystuff.games.Games;
+import com.balancedbytes.mystuff.games.Images;
 import com.balancedbytes.mystuff.games.Publishers;
 import com.balancedbytes.mystuff.games.data.AuthorDataAccess;
 import com.balancedbytes.mystuff.games.data.AwardDataAccess;
 import com.balancedbytes.mystuff.games.data.GameDataAccess;
 import com.balancedbytes.mystuff.games.data.GameDataFilter;
+import com.balancedbytes.mystuff.games.data.ImageDataAccess;
 import com.balancedbytes.mystuff.games.data.PublisherDataAccess;
 
 public class GamesResourceHelper {
@@ -68,13 +70,19 @@ public class GamesResourceHelper {
 		buildLinks(publishers, gameId, "publishers");
 		return publishers;
 	}
+	
+	public Images findImagesByGameId(String gameId) throws SQLException {
+		Images images = new ImageDataAccess().findImagesByGameId(gameId);
+		buildLinks(images, gameId, "images");
+		return images;
+	}
 
 	public Awards findAwardsByGameId(String gameId) throws SQLException {
 		Awards awards = new AwardDataAccess().findAwardsByGameId(gameId);
 		buildLinks(awards, gameId, "awards");
 		return awards;
 	}
-	
+
 	public Game createGame(Game game) throws SQLException {
 		new GameDataAccess().createGame(game);
 		game.buildLink(getGamesUri());
@@ -99,9 +107,22 @@ public class GamesResourceHelper {
 		if (game == null) {
 			return null;
 		}
-		game.setAuthors(findAuthorsByGameId(game.getId()));
-		game.setPublishers(findPublishersByGameId(game.getId()));
-		game.setAwards(findAwardsByGameId(game.getId()));
+		Authors authors = findAuthorsByGameId(game.getId());
+		if (authors.size() > 0) {
+			game.setAuthors(authors);
+		}
+		Publishers publishers = findPublishersByGameId(game.getId());
+		if (publishers.size() > 0) {
+			game.setPublishers(publishers);
+		}
+		Images images = findImagesByGameId(game.getId());
+		if (images.size() > 0) {
+			game.setImages(images);
+		}
+		Awards awards = findAwardsByGameId(game.getId());
+		if (awards.size() > 0) {
+			game.setAwards(awards);
+		}
 		game.buildLink(getGamesUri());
 		return game;
     }

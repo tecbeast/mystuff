@@ -10,7 +10,6 @@ import com.balancedbytes.mystuff.MyStuffUtil;
 import com.balancedbytes.mystuff.RestDataAccess;
 import com.balancedbytes.mystuff.games.Author;
 import com.balancedbytes.mystuff.games.Authors;
-import com.balancedbytes.mystuff.games.CountryCache;
 
 public class AuthorDataAccess extends RestDataAccess<Author> {
 

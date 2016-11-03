@@ -1,11 +1,11 @@
-package com.balancedbytes.mystuff.games;
+package com.balancedbytes.mystuff.games.data;
 
 import java.sql.SQLException;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import com.balancedbytes.mystuff.games.data.CountryDataAccess;
+import com.balancedbytes.mystuff.games.Country;
 
 public class CountryCache {
 

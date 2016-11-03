@@ -24,6 +24,7 @@ import com.balancedbytes.mystuff.games.Authors;
 import com.balancedbytes.mystuff.games.Awards;
 import com.balancedbytes.mystuff.games.Game;
 import com.balancedbytes.mystuff.games.Games;
+import com.balancedbytes.mystuff.games.Images;
 import com.balancedbytes.mystuff.games.Publishers;
 import com.balancedbytes.mystuff.games.data.GameDataFilter;
 import com.balancedbytes.mystuff.rest.compress.Compress;
@@ -109,6 +110,15 @@ public class GamesResource {
 	public Publishers findPublishersByGameId(@PathParam("id") String id) throws SQLException {
 		_LOG.info("findPublishersByGameId(" + id + ")");
 		return new GamesResourceHelper(uriInfo).findPublishersByGameId(id);
+	}
+
+	@GET
+	@Path("{id}/images")
+	@Compress
+	@Produces({ MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML })
+	public Images findImagesByGameId(@PathParam("id") String id) throws SQLException {
+		_LOG.info("findImagesByGameId(" + id + ")");
+		return new GamesResourceHelper(uriInfo).findImagesByGameId(id);
 	}
 
 	@GET

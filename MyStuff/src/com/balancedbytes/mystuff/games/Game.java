@@ -24,6 +24,7 @@ public class Game extends RestData {
 	private int rating;
 	private Authors authors;
 	private Publishers publishers;
+	private Images images;
 	private Awards awards;
 
 	public String getName() {
@@ -120,6 +121,14 @@ public class Game extends RestData {
 	
 	public void setPublishers(Publishers publishers) {
 		this.publishers = publishers;
+	}
+	
+	public Images getImages() {
+		return images;
+	}
+	
+	public void setImages(Images images) {
+		this.images = images;
 	}
 	
 	public Awards getAwards() {

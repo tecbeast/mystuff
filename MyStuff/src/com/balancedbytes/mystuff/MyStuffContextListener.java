@@ -9,7 +9,7 @@ import javax.servlet.annotation.WebListener;
 import org.apache.juli.logging.Log;
 import org.apache.juli.logging.LogFactory;
 
-import com.balancedbytes.mystuff.games.CountryCache;
+import com.balancedbytes.mystuff.games.data.CountryCache;
 
 @WebListener
 public class MyStuffContextListener implements ServletContextListener {

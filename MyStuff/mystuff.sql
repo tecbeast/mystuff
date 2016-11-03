@@ -73,6 +73,24 @@ CREATE TABLE game_awards (
 	FOREIGN KEY(award_id) REFERENCES awards(id)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
+CREATE TABLE images (
+	id BIGINT NOT NULL AUTO_INCREMENT,
+	role VARCHAR(40) NOT NULL,
+	width INTEGER,
+	height INTEGER,
+	url VARCHAR(255) NOT NULL,
+	description VARCHAR(120),
+	PRIMARY KEY(id)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+CREATE TABLE game_images (
+	game_id BIGINT NOT NULL,
+	image_id BIGINT NOT NULL,
+	PRIMARY KEY(game_id, image_id),
+	FOREIGN KEY(game_id) REFERENCES games(id),
+	FOREIGN KEY(image_id) REFERENCES images(id)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
 CREATE TABLE notes (
 	id BIGINT NOT NULL AUTO_INCREMENT,
 	added DATETIME,
@@ -378,6 +396,12 @@ INSERT INTO game_awards VALUES(1, 1, 1995);
 INSERT INTO game_awards VALUES(1, 2, 1995);
 INSERT INTO game_awards VALUES(2, 3, 1994);
 INSERT INTO game_awards VALUES(3, 1, 2015);
+
+/* Table images: id, description, role, width, height, url */
+INSERT INTO images VALUES(1, "box", 1067, 1500, "https://images-na.ssl-images-amazon.com/images/I/91ReTacJ0WL._SL1500_.jpg", "Box von 6 Nimmt (Amazon)");
+
+/* Table game_images: game_id, image_id */
+INSERT INTO game_images VALUES(2, 1);
 
 /* Table notes: id, added, note */
 INSERT INTO notes VALUES(1, '2016-10-24 23:04:00', 'Ein erster Kommentar');

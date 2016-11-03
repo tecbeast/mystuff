@@ -9,6 +9,7 @@ import javax.ws.rs.core.Application;
 import com.balancedbytes.mystuff.games.rest.AuthorsResource;
 import com.balancedbytes.mystuff.games.rest.AwardsResource;
 import com.balancedbytes.mystuff.games.rest.GamesResource;
+import com.balancedbytes.mystuff.games.rest.ImagesResource;
 import com.balancedbytes.mystuff.games.rest.PublishersResource;
 import com.balancedbytes.mystuff.rest.compress.GZIPWriterInterceptor;
 import com.balancedbytes.mystuff.rest.json.ObjectMapperContextResolver;
@@ -30,6 +31,7 @@ public class MyStuffApplication extends Application {
 		set.add(AwardsResource.class);
 		set.add(GamesResource.class);
 		set.add(PublishersResource.class);
+		set.add(ImagesResource.class);
 		return set;
 	}
 
