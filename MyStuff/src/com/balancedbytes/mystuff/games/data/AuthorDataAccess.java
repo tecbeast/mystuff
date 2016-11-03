@@ -18,7 +18,7 @@ public class AuthorDataAccess extends RestDataAccess<Author> {
 		"SELECT * FROM authors ORDER BY last_name,first_name";
 	private static final String _SQL_FIND_AUTHOR_BY_ID =
 		"SELECT * FROM authors WHERE id = ?";
-	private static final String _SQL_FIND_AUTHORS_BY_NAME =
+	private static final String _SQL_FIND_AUTHORS_FILTERED =
 		"SELECT * FROM authors "
 		+ " WHERE UPPER(last_name) LIKE ? OR UPPER(first_name) LIKE ?"
 		+ " ORDER BY last_name,first_name";
@@ -58,20 +58,20 @@ public class AuthorDataAccess extends RestDataAccess<Author> {
         return author;
     }
     
-    public Authors findAuthorsByName(String name) throws SQLException {
+    public Authors findAuthorsFiltered(AuthorDataFilter filter) throws SQLException {
+    	if ((filter == null) || filter.isEmpty()) {
+    		return findAllAuthors();
+    	}
     	Authors authors = new Authors();
-    	if (name == null) {
+    	String namePattern = filter.getName().trim().toUpperCase();
+    	if (namePattern.length() == 0) {
     		return authors;
     	}
-    	String pattern = name.trim().toUpperCase();
-    	if (pattern.length() == 0) {
-    		return authors;
-    	}
-    	pattern = new StringBuilder().append("%").append(pattern).append("%").toString();
+    	namePattern = new StringBuilder().append("%").append(namePattern).append("%").toString();
         try (Connection c = ConnectionHelper.getConnection()){
-            PreparedStatement ps = c.prepareStatement(_SQL_FIND_AUTHORS_BY_NAME);
-            ps.setString(1, pattern);
-            ps.setString(2, pattern);
+            PreparedStatement ps = c.prepareStatement(_SQL_FIND_AUTHORS_FILTERED);
+            ps.setString(1, namePattern);
+            ps.setString(2, namePattern);
             processResultSet(ps.executeQuery(), authors);
 		}
         return authors;

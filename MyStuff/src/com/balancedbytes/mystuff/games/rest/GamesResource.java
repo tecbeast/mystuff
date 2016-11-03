@@ -25,6 +25,8 @@ import com.balancedbytes.mystuff.games.Awards;
 import com.balancedbytes.mystuff.games.Game;
 import com.balancedbytes.mystuff.games.Games;
 import com.balancedbytes.mystuff.games.Publishers;
+import com.balancedbytes.mystuff.games.data.GameDataFilter;
+import com.balancedbytes.mystuff.rest.compress.Compress;
 
 @Path("/games")
 public class GamesResource {
@@ -35,20 +37,30 @@ public class GamesResource {
 	private UriInfo uriInfo;
 	
 	@GET
-	@Produces({ MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON })
-	public Games findGames(@QueryParam("name") String name) throws SQLException {
-		if (MyStuffUtil.isProvided(name)) {
-			_LOG.info("findGamesByName(" + name + ")");
-			return new GamesResourceHelper(uriInfo).findGamesByName(name);
-		} else {
+	@Compress
+	@Produces({ MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML })
+	public Games findGames(
+		@QueryParam("name") String name,
+		@QueryParam("minPlayers") String minPlayers,
+		@QueryParam("maxPlayers") String maxPlayers
+	) throws SQLException {
+		GameDataFilter filter = new GameDataFilter();
+		filter.setName(name);
+		filter.setMinPlayers(MyStuffUtil.parseInt(minPlayers));
+		filter.setMaxPlayers(MyStuffUtil.parseInt(maxPlayers));
+		if (filter.isEmpty()) {
 			_LOG.info("findAllGames()");
 			return new GamesResourceHelper(uriInfo).findAllGames();
+		} else {
+			_LOG.info("findGamesFiltered(" + filter + ")");
+			return new GamesResourceHelper(uriInfo).findGamesFiltered(filter);
 		}
 	}
 
 	@POST
-	@Consumes({ MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON })
-	@Produces({ MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON })
+	@Compress
+	@Consumes({ MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML })
+	@Produces({ MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML })
 	public Game createGame(Game game) throws SQLException {
 		_LOG.info("createGame()");
 		return new GamesResourceHelper(uriInfo).createGame(game);
@@ -56,7 +68,8 @@ public class GamesResource {
 	
 	@GET
 	@Path("{id}")
-	@Produces({ MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON })
+	@Compress
+	@Produces({ MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML })
 	public Game findGameById(@PathParam("id") String id) throws SQLException {
 		_LOG.info("findGameById(" + id + ")");
 		return new GamesResourceHelper(uriInfo).findGameById(id);
@@ -64,7 +77,8 @@ public class GamesResource {
 	
 	@PUT
 	@Path("{id}")
-	@Produces({ MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON })
+	@Compress
+	@Produces({ MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML })
 	public Game updateGame(@PathParam("id") String id, Game game) throws SQLException {
 		_LOG.info("updateGame(" + id + ")");
 		game.setId(id);
@@ -73,7 +87,7 @@ public class GamesResource {
 
 	@DELETE
 	@Path("{id}")
-	@Produces({ MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON })
+	@Produces({ MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML })
 	public Response deleteGame(@PathParam("id") String id) throws SQLException {
 		_LOG.info("deleteGame(" + id + ")");
 		return new GamesResourceHelper(uriInfo).deleteGame(id);
@@ -81,7 +95,8 @@ public class GamesResource {
 
 	@GET
 	@Path("{id}/authors")
-	@Produces({ MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON })
+	@Compress
+	@Produces({ MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML })
 	public Authors findAuthorsByGameId(@PathParam("id") String id) throws SQLException {
 		_LOG.info("findAuthorsByGameId(" + id + ")");
 		return new GamesResourceHelper(uriInfo).findAuthorsByGameId(id);
@@ -89,7 +104,8 @@ public class GamesResource {
 
 	@GET
 	@Path("{id}/publishers")
-	@Produces({ MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON })
+	@Compress
+	@Produces({ MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML })
 	public Publishers findPublishersByGameId(@PathParam("id") String id) throws SQLException {
 		_LOG.info("findPublishersByGameId(" + id + ")");
 		return new GamesResourceHelper(uriInfo).findPublishersByGameId(id);
@@ -97,7 +113,8 @@ public class GamesResource {
 
 	@GET
 	@Path("{id}/awards")
-	@Produces({ MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON })
+	@Compress
+	@Produces({ MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML })
 	public Awards findAwardsByGameId(@PathParam("id") String id) throws SQLException {
 		_LOG.info("findAwardsByGameId(" + id + ")");
 		return new GamesResourceHelper(uriInfo).findAwardsByGameId(id);

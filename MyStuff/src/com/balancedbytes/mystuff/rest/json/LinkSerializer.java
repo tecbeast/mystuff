@@ -1,4 +1,4 @@
-package com.balancedbytes.mystuff.json;
+package com.balancedbytes.mystuff.rest.json;
 
 import java.io.IOException;
 

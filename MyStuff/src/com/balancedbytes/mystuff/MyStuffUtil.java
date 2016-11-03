@@ -1,6 +1,6 @@
 package com.balancedbytes.mystuff;
 
-import java.util.Map;
+import java.util.SortedMap;
 
 import javax.ws.rs.core.UriBuilder;
 
@@ -32,14 +32,15 @@ public final class MyStuffUtil {
 		return ((text != null) && (text.length() > 0));
 	}
 	
-	public static UriBuilder setQueryParams(UriBuilder uriBuilder, Map<String, String> queryParams) {
+	public static UriBuilder setQueryParams(UriBuilder uriBuilder, RestDataFilter filter) {
 		if (uriBuilder == null) {
 			return null;
 		}
 		uriBuilder.replaceQuery(null);
-		if ((queryParams != null) && (queryParams.size() > 0)) {
-			for (String key : queryParams.keySet()) {
-				uriBuilder.queryParam(key, queryParams.get(key));
+		if (filter != null) {
+			SortedMap<String, Object> params = filter.toSortedMap();
+			for (String key : params.keySet()) {
+				uriBuilder.queryParam(key, params.get(key));
 			}
 		}
 		return uriBuilder;

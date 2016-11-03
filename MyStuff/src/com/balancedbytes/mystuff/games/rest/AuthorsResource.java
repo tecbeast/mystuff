@@ -19,10 +19,11 @@ import javax.ws.rs.core.UriInfo;
 import org.apache.juli.logging.Log;
 import org.apache.juli.logging.LogFactory;
 
-import com.balancedbytes.mystuff.MyStuffUtil;
 import com.balancedbytes.mystuff.games.Author;
 import com.balancedbytes.mystuff.games.Authors;
 import com.balancedbytes.mystuff.games.Games;
+import com.balancedbytes.mystuff.games.data.AuthorDataFilter;
+import com.balancedbytes.mystuff.rest.compress.Compress;
 
 @Path("/authors")
 public class AuthorsResource {
@@ -33,20 +34,24 @@ public class AuthorsResource {
 	private UriInfo uriInfo;
 	
 	@GET
-	@Produces({ MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON })
+	@Compress
+	@Produces({ MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML })
 	public Authors findAuthors(@QueryParam("name") String name) throws SQLException {
-		if (MyStuffUtil.isProvided(name)) {
-			_LOG.info("findAuthorsByName(" + name + ")");
-			return new AuthorsResourceHelper(uriInfo).findAuthorsByName(name);
-		} else {
+		AuthorDataFilter filter = new AuthorDataFilter();
+		filter.setName(name);
+		if (filter.isEmpty()) {
 			_LOG.info("findAllAuthors()");
 			return new AuthorsResourceHelper(uriInfo).findAllAuthors();
+		} else {
+			_LOG.info("findAuthorsFiltered(" + filter + ")");
+			return new AuthorsResourceHelper(uriInfo).findAuthorsFiltered(filter);
 		}
 	}
 
 	@POST
-	@Consumes({ MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON })
-	@Produces({ MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON })
+	@Compress
+	@Consumes({ MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML })
+	@Produces({ MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML })
 	public Author createAuthor(Author author) throws SQLException {
 		_LOG.info("createAuthor()");
 		return new AuthorsResourceHelper(uriInfo).createAuthor(author);
@@ -54,7 +59,8 @@ public class AuthorsResource {
 
 	@GET
 	@Path("{id}")
-	@Produces({ MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON })
+	@Compress
+	@Produces({ MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML })
 	public Author findAuthorById(@PathParam("id") String id) throws SQLException {
 		_LOG.info("findAuthorById(" + id + ")");
 		return new AuthorsResourceHelper(uriInfo).findAuthorById(id);
@@ -62,7 +68,8 @@ public class AuthorsResource {
 	
 	@PUT
 	@Path("{id}")
-	@Produces({ MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON })
+	@Compress
+	@Produces({ MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML })
 	public Author updateAuthor(@PathParam("id") String id, Author author) throws SQLException {
 		_LOG.info("updateAuthor(" + id + ")");
 		author.setId(id);
@@ -71,7 +78,8 @@ public class AuthorsResource {
 
 	@DELETE
 	@Path("{id}")
-	@Produces({ MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON })
+	@Compress
+	@Produces({ MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML })
 	public Response deleteAuthor(@PathParam("id") String id) throws SQLException {
 		_LOG.info("deleteAuthor(" + id + ")");
 		return new AuthorsResourceHelper(uriInfo).deleteAuthor(id);
@@ -79,7 +87,8 @@ public class AuthorsResource {
 
 	@GET
 	@Path("{id}/games")
-	@Produces({ MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON })
+	@Compress
+	@Produces({ MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML })
 	public Games findGamesByAuthorId(@PathParam("id") String id) throws SQLException {
 		_LOG.info("findGamesByAuthorId(" + id + ")");
 		return new GamesResourceHelper(uriInfo).findGamesByAuthorId(id);

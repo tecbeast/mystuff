@@ -18,7 +18,7 @@ public class AwardDataAccess extends RestDataAccess<Award> {
 		"SELECT * FROM awards ORDER BY name";
 	private static final String _SQL_FIND_AWARD_BY_ID =
 		"SELECT * FROM awards WHERE id = ?";
-	private static final String _SQL_FIND_AWARDS_BY_NAME =
+	private static final String _SQL_FIND_AWARDS_FILTERED =
 		"SELECT * FROM awards "
 		+ " WHERE UPPER(name) LIKE ?"
 		+ " ORDER BY name";
@@ -58,19 +58,19 @@ public class AwardDataAccess extends RestDataAccess<Award> {
         return award;
     }
     
-    public Awards findAwardsByName(String name) throws SQLException {
+    public Awards findAwardsFiltered(AwardDataFilter filter) throws SQLException {
+    	if ((filter == null) || filter.isEmpty()) {
+    		return findAllAwards();
+    	}
     	Awards awards = new Awards();
-    	if (name == null) {
+    	String namePattern = filter.getName().trim().toUpperCase();
+    	if (namePattern.length() == 0) {
     		return awards;
     	}
-    	String pattern = name.trim().toUpperCase();
-    	if (pattern.length() == 0) {
-    		return awards;
-    	}
-    	pattern = new StringBuilder().append("%").append(pattern).append("%").toString();
+    	namePattern = new StringBuilder().append("%").append(namePattern).append("%").toString();
         try (Connection c = ConnectionHelper.getConnection()){
-            PreparedStatement ps = c.prepareStatement(_SQL_FIND_AWARDS_BY_NAME);
-            ps.setString(1, pattern);
+            PreparedStatement ps = c.prepareStatement(_SQL_FIND_AWARDS_FILTERED);
+            ps.setString(1, namePattern);
             processResultSet(ps.executeQuery(), awards);
 		}
         return awards;

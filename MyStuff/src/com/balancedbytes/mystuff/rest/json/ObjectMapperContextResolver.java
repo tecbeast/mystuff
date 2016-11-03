@@ -1,4 +1,4 @@
-package com.balancedbytes.mystuff.json;
+package com.balancedbytes.mystuff.rest.json;
 
 import javax.ws.rs.core.Link;
 import javax.ws.rs.ext.ContextResolver;

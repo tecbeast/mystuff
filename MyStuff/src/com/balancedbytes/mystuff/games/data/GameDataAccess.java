@@ -23,8 +23,10 @@ public class GameDataAccess extends RestDataAccess<Game> {
 		"SELECT * FROM games ORDER BY name";
 	private static final String _SQL_FIND_GAME_BY_ID =
 		"SELECT * FROM games WHERE id = ?";
-	private static final String _SQL_FIND_GAMES_BY_NAME =
-		"SELECT * FROM games WHERE UPPER(name) LIKE ? ORDER BY name";
+	private static final String _SQL_FIND_GAMES_FILTERED =
+		"SELECT * FROM games"
+		+ " WHERE UPPER(name) LIKE ? AND players_min >= ? AND players_max <= ?"
+		+ " ORDER BY name";
 	private static final String _SQL_FIND_GAMES_BY_AUTHOR_ID =
 		"SELECT game_authors.author_id, games.*"
 		+ " FROM game_authors LEFT JOIN games"
@@ -43,7 +45,7 @@ public class GameDataAccess extends RestDataAccess<Game> {
 		+ " ON game_awards.game_id = games.id"
 		+ " WHERE game_awards.award_id = ?"
 		+ " ORDER BY games.name";
-	private static final String _SQL_FIND_GAMES_BY_AWARD_ID_AND_YEAR =
+	private static final String _SQL_FIND_GAMES_BY_AWARD_ID_FILTERED =
 		"SELECT game_awards.award_id, games.*, game_awards.year"
 		+ " FROM game_awards LEFT JOIN games"
 		+ " ON game_awards.game_id = games.id"
@@ -100,19 +102,26 @@ public class GameDataAccess extends RestDataAccess<Game> {
         return game;
     }
     
-    public Games findGamesByName(String name) throws SQLException {
+    public Games findGamesFiltered(GameDataFilter filter) throws SQLException {
+    	if ((filter == null) || filter.isEmpty()) {
+    		return findAllGames();
+    	}
     	Games games = new Games();
-    	if (name == null) {
-    		return games;
+    	String namePattern = "%";
+    	String trimmedUpperCaseName = MyStuffUtil.isProvided(filter.getName()) ? filter.getName().trim().toUpperCase() : null;
+    	if (MyStuffUtil.isProvided(trimmedUpperCaseName)) {
+        	namePattern = new StringBuilder().append("%").append(trimmedUpperCaseName).append("%").toString();
     	}
-    	String pattern = name.trim().toUpperCase();
-    	if (pattern.length() == 0) {
-    		return games;
+    	int playersMin = filter.getMinPlayers();
+    	int playersMax = filter.getMaxPlayers();
+    	if (playersMax == 0) {
+    		playersMax = Byte.MAX_VALUE;
     	}
-    	pattern = new StringBuilder().append("%").append(pattern).append("%").toString();
         try (Connection c = ConnectionHelper.getConnection()){
-            PreparedStatement ps = c.prepareStatement(_SQL_FIND_GAMES_BY_NAME);
-            ps.setString(1, pattern);
+            PreparedStatement ps = c.prepareStatement(_SQL_FIND_GAMES_FILTERED);
+            ps.setString(1, namePattern);
+            ps.setInt(2, playersMin);
+            ps.setInt(3, playersMax);
             processResultSet(ps.executeQuery(), games);
 		}
         return games;
@@ -143,12 +152,15 @@ public class GameDataAccess extends RestDataAccess<Game> {
         return games;
     }
 
-    public Games findGamesByAwardIdAndYear(String awardId, String year) throws SQLException {
+    public Games findGamesByAwardIdFiltered(String awardId, GameDataFilter filter) throws SQLException {
+    	if ((filter == null) || filter.isEmpty()) {
+    		return findGamesByAwardId(awardId);
+    	}
     	Games games = new Games();
         try (Connection c = ConnectionHelper.getConnection()) {
-            PreparedStatement ps = c.prepareStatement(_SQL_FIND_GAMES_BY_AWARD_ID_AND_YEAR);
+            PreparedStatement ps = c.prepareStatement(_SQL_FIND_GAMES_BY_AWARD_ID_FILTERED);
             ps.setLong(1, MyStuffUtil.parseLong(awardId));
-            ps.setInt(2, MyStuffUtil.parseInt(year));
+            ps.setInt(2, filter.getYear());
             processResultSet(ps.executeQuery(), games);
 		}
         return games;

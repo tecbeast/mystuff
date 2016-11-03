@@ -18,7 +18,7 @@ public class PublisherDataAccess extends RestDataAccess<Publisher> {
 		"SELECT * FROM publishers ORDER BY name";
 	private static final String _SQL_FIND_PUBLISHER_BY_ID =
 		"SELECT * FROM publishers WHERE id = ?";
-	private static final String _SQL_FIND_PUBLISHERS_BY_NAME =
+	private static final String _SQL_FIND_PUBLISHERS_FILTERED =
 		"SELECT * FROM publishers "
 		+ " WHERE UPPER(name) LIKE ?"
 		+ " ORDER BY name";
@@ -58,19 +58,19 @@ public class PublisherDataAccess extends RestDataAccess<Publisher> {
         return publisher;
     }
     
-    public Publishers findPublishersByName(String name) throws SQLException {
+    public Publishers findPublishersFiltered(PublisherDataFilter filter) throws SQLException {
+    	if ((filter == null) || filter.isEmpty()) {
+    		return findAllPublishers();
+    	}
     	Publishers publishers = new Publishers();
-    	if (name == null) {
+    	String namePattern = filter.getName().trim().toUpperCase();
+    	if (namePattern.length() == 0) {
     		return publishers;
     	}
-    	String pattern = name.trim().toUpperCase();
-    	if (pattern.length() == 0) {
-    		return publishers;
-    	}
-    	pattern = new StringBuilder().append("%").append(pattern).append("%").toString();
+    	namePattern = new StringBuilder().append("%").append(namePattern).append("%").toString();
         try (Connection c = ConnectionHelper.getConnection()){
-            PreparedStatement ps = c.prepareStatement(_SQL_FIND_PUBLISHERS_BY_NAME);
-            ps.setString(1, pattern);
+            PreparedStatement ps = c.prepareStatement(_SQL_FIND_PUBLISHERS_FILTERED);
+            ps.setString(1, namePattern);
             processResultSet(ps.executeQuery(), publishers);
 		}
         return publishers;

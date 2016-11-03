@@ -19,10 +19,11 @@ import javax.ws.rs.core.UriInfo;
 import org.apache.juli.logging.Log;
 import org.apache.juli.logging.LogFactory;
 
-import com.balancedbytes.mystuff.MyStuffUtil;
 import com.balancedbytes.mystuff.games.Games;
 import com.balancedbytes.mystuff.games.Publisher;
 import com.balancedbytes.mystuff.games.Publishers;
+import com.balancedbytes.mystuff.games.data.PublisherDataFilter;
+import com.balancedbytes.mystuff.rest.compress.Compress;
 
 @Path("/publishers")
 public class PublishersResource {
@@ -33,20 +34,24 @@ public class PublishersResource {
 	private UriInfo uriInfo;
 	
 	@GET
-	@Produces({ MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON })
+	@Compress
+	@Produces({ MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML })
 	public Publishers findPublishers(@QueryParam("name") String name) throws SQLException {
-		if (MyStuffUtil.isProvided(name)) {
-			_LOG.info("findPublishersByName(" + name + ")");
-			return new PublishersResourceHelper(uriInfo).findPublishersByName(name);
-		} else {
+		PublisherDataFilter filter = new PublisherDataFilter();
+		filter.setName(name);
+		if (filter.isEmpty()) {
 			_LOG.info("findAllPublishers()");
 			return new PublishersResourceHelper(uriInfo).findAllPublishers();
+		} else {
+			_LOG.info("findPublishersFiltered(" + filter + ")");
+			return new PublishersResourceHelper(uriInfo).findPublishersFiltered(filter);
 		}
 	}
 	
 	@POST
-	@Consumes({ MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON })
-	@Produces({ MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON })
+	@Compress
+	@Consumes({ MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML })
+	@Produces({ MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML })
 	public Publisher createPublisher(Publisher publisher) throws SQLException {
 		_LOG.info("createPublisher()");
 		return new PublishersResourceHelper(uriInfo).createPublisher(publisher);
@@ -54,7 +59,8 @@ public class PublishersResource {
 	
 	@GET
 	@Path("{id}")
-	@Produces({ MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON })
+	@Compress
+	@Produces({ MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML })
 	public Publisher findPublisherById(@PathParam("id") String id) throws SQLException {
 		_LOG.info("findPublisherById(" + id + ")");
 		return new PublishersResourceHelper(uriInfo).findPublisherById(id);
@@ -62,7 +68,8 @@ public class PublishersResource {
 	
 	@PUT
 	@Path("{id}")
-	@Produces({ MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON })
+	@Compress
+	@Produces({ MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML })
 	public Publisher updatePublisher(@PathParam("id") String id, Publisher publisher) throws SQLException {
 		_LOG.info("updatePublisher(" + id + ")");
 		publisher.setId(id);
@@ -71,7 +78,7 @@ public class PublishersResource {
 
 	@DELETE
 	@Path("{id}")
-	@Produces({ MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON })
+	@Produces({ MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML })
 	public Response deletePublisher(@PathParam("id") String id) throws SQLException {
 		_LOG.info("deletePublisher(" + id + ")");
 		return new PublishersResourceHelper(uriInfo).deletePublisher(id);
@@ -79,7 +86,8 @@ public class PublishersResource {
 
 	@GET
 	@Path("{id}/games")
-	@Produces({ MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON })
+	@Compress
+	@Produces({ MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML })
 	public Games findGamesByPublisherId(@PathParam("id") String id) throws SQLException {
 		_LOG.info("findGamesByPublisherId(" + id + ")");
 		return new GamesResourceHelper(uriInfo).findGamesByPublisherId(id);

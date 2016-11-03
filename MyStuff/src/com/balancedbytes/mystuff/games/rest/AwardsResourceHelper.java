@@ -2,17 +2,16 @@ package com.balancedbytes.mystuff.games.rest;
 
 import java.net.URI;
 import java.sql.SQLException;
-import java.util.Map;
 
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.UriBuilder;
 import javax.ws.rs.core.UriInfo;
 
-import com.balancedbytes.mystuff.HashMapBuilder;
 import com.balancedbytes.mystuff.MyStuffUtil;
 import com.balancedbytes.mystuff.games.Award;
 import com.balancedbytes.mystuff.games.Awards;
 import com.balancedbytes.mystuff.games.data.AwardDataAccess;
+import com.balancedbytes.mystuff.games.data.AwardDataFilter;
 
 public class AwardsResourceHelper {
 
@@ -28,9 +27,9 @@ public class AwardsResourceHelper {
 		return awards;
 	}
 	
-	public Awards findAwardsByName(String name) throws SQLException {
-		Awards awards = new AwardDataAccess().findAwardsByName(name);
-		buildLinks(awards, HashMapBuilder.build("name", name));
+	public Awards findAwardsFiltered(AwardDataFilter filter) throws SQLException {
+		Awards awards = new AwardDataAccess().findAwardsFiltered(filter);
+		buildLinks(awards, filter);
 		return awards;
 	}
 	
@@ -64,8 +63,8 @@ public class AwardsResourceHelper {
 		buildLinks(awards, null);
 	}
 
-	private void buildLinks(Awards awards, Map<String, String> queryParams) {
-		UriBuilder uriBuilderCollection = MyStuffUtil.setQueryParams(uriInfo.getRequestUriBuilder(), queryParams);
+	private void buildLinks(Awards awards, AwardDataFilter filter) {
+		UriBuilder uriBuilderCollection = MyStuffUtil.setQueryParams(uriInfo.getRequestUriBuilder(), filter);
 		awards.buildLinks(uriBuilderCollection.build(), getAwardsUri());
 	}
 	
