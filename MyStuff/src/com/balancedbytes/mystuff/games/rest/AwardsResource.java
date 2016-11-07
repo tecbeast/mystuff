@@ -20,6 +20,7 @@ import org.apache.juli.logging.Log;
 import org.apache.juli.logging.LogFactory;
 
 import com.balancedbytes.mystuff.MyStuffUtil;
+import com.balancedbytes.mystuff.RestDataPaging;
 import com.balancedbytes.mystuff.games.Award;
 import com.balancedbytes.mystuff.games.Awards;
 import com.balancedbytes.mystuff.games.Games;
@@ -38,15 +39,21 @@ public class AwardsResource {
 	@GET
 	@Compress
 	@Produces({ MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML })
-	public Awards findAwards(@QueryParam("name") String name) throws SQLException {
+	public Awards findAwards(
+		@QueryParam("name") String name,
+		@QueryParam("page") String page,
+		@QueryParam("pageSize") String pageSize
+	) throws SQLException {
+		RestDataPaging paging = new RestDataPaging();
+		paging.init(page, pageSize);
 		AwardDataFilter filter = new AwardDataFilter();
 		filter.setName(name);
 		if (filter.isEmpty()) {
 			_LOG.info("findAllAwards()");
-			return new AwardsResourceHelper(uriInfo).findAllAwards();
+			return new AwardsResourceHelper(uriInfo).findAllAwards(paging);
 		} else {
 			_LOG.info("findAwardsFiltered(" + filter + ")");
-			return new AwardsResourceHelper(uriInfo).findAwardsFiltered(filter);
+			return new AwardsResourceHelper(uriInfo).findAwardsFiltered(filter, paging);
 		}
 	}
 
@@ -90,15 +97,22 @@ public class AwardsResource {
 	@Path("{id}/games")
 	@Compress
 	@Produces({ MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML })
-	public Games findGamesByAwardId(@PathParam("id") String id, @QueryParam("year") String year) throws SQLException {
+	public Games findGamesByAwardId(
+		@PathParam("id") String id,
+		@QueryParam("year") String year,
+		@QueryParam("page") String page,
+		@QueryParam("pageSize") String pageSize
+	) throws SQLException {
+		RestDataPaging paging = new RestDataPaging();
+		paging.init(page, pageSize);
 		GameDataFilter filter = new GameDataFilter();
 		filter.setYear(MyStuffUtil.parseInt(year));
 		if (filter.isEmpty()) {
 			_LOG.info("findGamesByAwardId(" + id + ")");
-			return new GamesResourceHelper(uriInfo).findGamesByAwardId(id);
+			return new GamesResourceHelper(uriInfo).findGamesByAwardId(id, paging);
 		} else {
 			_LOG.info("findGamesByAwardIdFiltered(" + id + "," + filter + ")");
-			return new GamesResourceHelper(uriInfo).findGamesByAwardIdFiltered(id, filter);
+			return new GamesResourceHelper(uriInfo).findGamesByAwardIdFiltered(id, filter, paging);
 		}
 	}
 

@@ -1,12 +1,14 @@
 package com.balancedbytes.mystuff;
 
-import java.net.URI;
 import java.util.ArrayList;
 import java.util.List;
 
 import javax.ws.rs.core.Link;
 import javax.xml.bind.annotation.XmlElement;
+import javax.xml.bind.annotation.XmlTransient;
 import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
+
+import com.fasterxml.jackson.annotation.JsonIgnore;
 
 public abstract class RestDataCollection<T extends RestData> {
 	
@@ -18,31 +20,39 @@ public abstract class RestDataCollection<T extends RestData> {
 	public List<Link> getLinks() {
 		return links;
 	}
-
-	public void add(T element) {
+	
+	public void addLink(Link link) {
+		if (link != null) {
+			links.add(link);
+		}
+	}
+	
+	public void addElement(T element) {
 		if (element != null) {
 			elements.add(element);
 		}
 	}
 	
-	protected List<T> getElements() {
+	@JsonIgnore
+	@XmlTransient
+	public List<T> getElements() {
 		return elements;
 	}
 	
-	public int size() {
-		return elements.size();
+	public boolean hasElements() {
+		return (elements.size() > 0);
 	}
 	
-	public void clear() {
+	public void clearElements() {
 		elements.clear();
 	}
 	
-	public void buildLinks(URI uriCollection, URI uriElements) {
+	public boolean hasLinks() {
+		return (links.size() > 0);
+	}
+	
+	public void clearLinks() {
 		links.clear();
-		links.add(Link.fromUri(uriCollection).rel("self").build());
-		for (T element : elements) {
-			element.buildLink(uriElements);
-		}
 	}
 
 }

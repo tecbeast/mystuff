@@ -20,6 +20,7 @@ import org.apache.juli.logging.Log;
 import org.apache.juli.logging.LogFactory;
 
 import com.balancedbytes.mystuff.MyStuffUtil;
+import com.balancedbytes.mystuff.RestDataPaging;
 import com.balancedbytes.mystuff.games.Authors;
 import com.balancedbytes.mystuff.games.Awards;
 import com.balancedbytes.mystuff.games.Game;
@@ -43,18 +44,22 @@ public class GamesResource {
 	public Games findGames(
 		@QueryParam("name") String name,
 		@QueryParam("minPlayers") String minPlayers,
-		@QueryParam("maxPlayers") String maxPlayers
+		@QueryParam("maxPlayers") String maxPlayers,
+		@QueryParam("page") String page,
+		@QueryParam("pageSize") String pageSize
 	) throws SQLException {
+		RestDataPaging paging = new RestDataPaging();
+		paging.init(page, pageSize);
 		GameDataFilter filter = new GameDataFilter();
 		filter.setName(name);
 		filter.setMinPlayers(MyStuffUtil.parseInt(minPlayers));
 		filter.setMaxPlayers(MyStuffUtil.parseInt(maxPlayers));
 		if (filter.isEmpty()) {
 			_LOG.info("findAllGames()");
-			return new GamesResourceHelper(uriInfo).findAllGames();
+			return new GamesResourceHelper(uriInfo).findAllGames(paging);
 		} else {
 			_LOG.info("findGamesFiltered(" + filter + ")");
-			return new GamesResourceHelper(uriInfo).findGamesFiltered(filter);
+			return new GamesResourceHelper(uriInfo).findGamesFiltered(filter, paging);
 		}
 	}
 

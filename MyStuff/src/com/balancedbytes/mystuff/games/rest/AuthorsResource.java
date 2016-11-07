@@ -19,6 +19,7 @@ import javax.ws.rs.core.UriInfo;
 import org.apache.juli.logging.Log;
 import org.apache.juli.logging.LogFactory;
 
+import com.balancedbytes.mystuff.RestDataPaging;
 import com.balancedbytes.mystuff.games.Author;
 import com.balancedbytes.mystuff.games.Authors;
 import com.balancedbytes.mystuff.games.Games;
@@ -36,15 +37,21 @@ public class AuthorsResource {
 	@GET
 	@Compress
 	@Produces({ MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML })
-	public Authors findAuthors(@QueryParam("name") String name) throws SQLException {
+	public Authors findAuthors(
+		@QueryParam("name") String name,
+		@QueryParam("page") String page,
+		@QueryParam("pageSize") String pageSize
+	) throws SQLException {
+		RestDataPaging paging = new RestDataPaging();
+		paging.init(page, pageSize);
 		AuthorDataFilter filter = new AuthorDataFilter();
 		filter.setName(name);
 		if (filter.isEmpty()) {
 			_LOG.info("findAllAuthors()");
-			return new AuthorsResourceHelper(uriInfo).findAllAuthors();
+			return new AuthorsResourceHelper(uriInfo).findAllAuthors(paging);
 		} else {
 			_LOG.info("findAuthorsFiltered(" + filter + ")");
-			return new AuthorsResourceHelper(uriInfo).findAuthorsFiltered(filter);
+			return new AuthorsResourceHelper(uriInfo).findAuthorsFiltered(filter, paging);
 		}
 	}
 
@@ -89,9 +96,15 @@ public class AuthorsResource {
 	@Path("{id}/games")
 	@Compress
 	@Produces({ MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML })
-	public Games findGamesByAuthorId(@PathParam("id") String id) throws SQLException {
+	public Games findGamesByAuthorId(
+		@PathParam("id") String id,
+		@QueryParam("page") String page,
+		@QueryParam("pageSize") String pageSize
+	) throws SQLException {
 		_LOG.info("findGamesByAuthorId(" + id + ")");
-		return new GamesResourceHelper(uriInfo).findGamesByAuthorId(id);
+		RestDataPaging paging = new RestDataPaging();
+		paging.init(page, pageSize);
+		return new GamesResourceHelper(uriInfo).findGamesByAuthorId(id, paging);
 	}
 	
 }

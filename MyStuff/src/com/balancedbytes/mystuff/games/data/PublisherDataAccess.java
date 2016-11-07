@@ -8,6 +8,7 @@ import java.sql.SQLException;
 import com.balancedbytes.mystuff.ConnectionHelper;
 import com.balancedbytes.mystuff.MyStuffUtil;
 import com.balancedbytes.mystuff.RestDataAccess;
+import com.balancedbytes.mystuff.RestDataPaging;
 import com.balancedbytes.mystuff.games.Publisher;
 import com.balancedbytes.mystuff.games.Publishers;
 
@@ -38,11 +39,11 @@ public class PublisherDataAccess extends RestDataAccess<Publisher> {
 	private static final String _SQL_DELETE_PUBLISHER =
 		"DELETE FROM publishers WHERE id = ?";
 
-    public Publishers findAllPublishers() throws SQLException {
+    public Publishers findAllPublishers(RestDataPaging paging) throws SQLException {
     	Publishers publishers = new Publishers();
         try (Connection c = ConnectionHelper.getConnection()){
             PreparedStatement ps = c.prepareStatement(_SQL_FIND_ALL_PUBLISHERS);
-            processResultSet(ps.executeQuery(), publishers);
+            processResultSet(ps.executeQuery(), publishers, paging);
 		}
         return publishers;
     }
@@ -57,9 +58,9 @@ public class PublisherDataAccess extends RestDataAccess<Publisher> {
         return publisher;
     }
     
-    public Publishers findPublishersFiltered(PublisherDataFilter filter) throws SQLException {
+    public Publishers findPublishersFiltered(PublisherDataFilter filter, RestDataPaging paging) throws SQLException {
     	if ((filter == null) || filter.isEmpty()) {
-    		return findAllPublishers();
+    		return findAllPublishers(paging);
     	}
     	Publishers publishers = new Publishers();
     	String namePattern = filter.getName().trim().toUpperCase();
@@ -70,17 +71,17 @@ public class PublisherDataAccess extends RestDataAccess<Publisher> {
         try (Connection c = ConnectionHelper.getConnection()){
             PreparedStatement ps = c.prepareStatement(_SQL_FIND_PUBLISHERS_FILTERED);
             ps.setString(1, namePattern);
-            processResultSet(ps.executeQuery(), publishers);
+            processResultSet(ps.executeQuery(), publishers, paging);
 		}
         return publishers;
     }
 
-    public Publishers findPublishersByGameId(String gameId) throws SQLException {
+    public Publishers findPublishersByGameId(String gameId, RestDataPaging paging) throws SQLException {
     	Publishers publishers = new Publishers();
         try (Connection c = ConnectionHelper.getConnection()){
             PreparedStatement ps = c.prepareStatement(_SQL_FIND_PUBLISHERS_BY_GAME_ID);
             ps.setLong(1, MyStuffUtil.parseLong(gameId));
-            processResultSet(ps.executeQuery(), publishers);
+            processResultSet(ps.executeQuery(), publishers, paging);
 		}
         return publishers;
     }

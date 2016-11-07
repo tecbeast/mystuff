@@ -1,15 +1,11 @@
 package com.balancedbytes.mystuff.games.rest;
 
-import java.net.URI;
 import java.sql.SQLException;
 
 import javax.ws.rs.core.Response;
-import javax.ws.rs.core.UriBuilder;
 import javax.ws.rs.core.UriInfo;
 
-import com.balancedbytes.mystuff.MyStuffUtil;
-import com.balancedbytes.mystuff.RestData;
-import com.balancedbytes.mystuff.RestDataCollection;
+import com.balancedbytes.mystuff.RestDataPaging;
 import com.balancedbytes.mystuff.games.Authors;
 import com.balancedbytes.mystuff.games.Awards;
 import com.balancedbytes.mystuff.games.Game;
@@ -23,76 +19,81 @@ import com.balancedbytes.mystuff.games.data.GameDataFilter;
 import com.balancedbytes.mystuff.games.data.ImageDataAccess;
 import com.balancedbytes.mystuff.games.data.PublisherDataAccess;
 
-public class GamesResourceHelper {
+public class GamesResourceHelper extends ResourceHelper {
+	
+	public static final String BASE_PATH = "games";
 
-	private UriInfo uriInfo;
-	
 	public GamesResourceHelper(UriInfo uriInfo) {
-		this.uriInfo = uriInfo;
+		super(uriInfo);
 	}
 	
-	public Games findAllGames() throws SQLException {
-		return expand(new GameDataAccess().findAllGames());
+	public Games findAllGames(RestDataPaging paging) throws SQLException {
+		Games games = new GameDataAccess().findAllGames(paging);
+		return expand(games, paging, null);
 	}
 	
-	public Games findGamesFiltered(GameDataFilter filter) throws SQLException {
-		return expand(new GameDataAccess().findGamesFiltered(filter), filter);
+	public Games findGamesFiltered(GameDataFilter filter, RestDataPaging paging) throws SQLException {
+		Games games = new GameDataAccess().findGamesFiltered(filter, paging);
+		return expand(games, paging, null);
 	}
 	
 	public Game findGameById(String gameId) throws SQLException {
-		return expand(new GameDataAccess().findGameById(gameId));
+		Game game = new GameDataAccess().findGameById(gameId);
+		return expand(game);
 	}
 
-	public Games findGamesByAuthorId(String authorId) throws SQLException {
-		return expand(new GameDataAccess().findGamesByAuthorId(authorId));
+	public Games findGamesByAuthorId(String authorId, RestDataPaging paging) throws SQLException {
+		Games games = new GameDataAccess().findGamesByAuthorId(authorId, paging);
+		return expand(games, paging, null);
 	}
 
-	public Games findGamesByPublisherId(String publisherId) throws SQLException {
-		return expand(new GameDataAccess().findGamesByPublisherId(publisherId));
+	public Games findGamesByPublisherId(String publisherId, RestDataPaging paging) throws SQLException {
+		Games games = new GameDataAccess().findGamesByPublisherId(publisherId, paging);
+		return expand(games, paging, null);
 	}
 
-	public Games findGamesByAwardId(String awardId) throws SQLException {
-		return expand(new GameDataAccess().findGamesByAwardId(awardId));
+	public Games findGamesByAwardId(String awardId, RestDataPaging paging) throws SQLException {
+		Games games = new GameDataAccess().findGamesByAwardId(awardId, paging);
+		return expand(games, paging, null);
 	}
 
-	public Games findGamesByAwardIdFiltered(String awardId, GameDataFilter filter) throws SQLException {
-		return expand(new GameDataAccess().findGamesByAwardIdFiltered(awardId, filter), filter);
+	public Games findGamesByAwardIdFiltered(String awardId, GameDataFilter filter, RestDataPaging paging) throws SQLException {
+		Games games = new GameDataAccess().findGamesByAwardIdFiltered(awardId, filter, paging);
+		return expand(games, paging, filter);
 	}
 
 	public Authors findAuthorsByGameId(String gameId) throws SQLException {
-		Authors authors = new AuthorDataAccess().findAuthorsByGameId(gameId);
-		buildLinks(authors, gameId, "authors");
+		Authors authors = new AuthorDataAccess().findAuthorsByGameId(gameId, null);
+		addLinks(authors, null, null, AuthorsResourceHelper.BASE_PATH);
 		return authors;
 	}
 
 	public Publishers findPublishersByGameId(String gameId) throws SQLException {
-		Publishers publishers = new PublisherDataAccess().findPublishersByGameId(gameId);
-		buildLinks(publishers, gameId, "publishers");
+		Publishers publishers = new PublisherDataAccess().findPublishersByGameId(gameId, null);
+		addLinks(publishers, null, null, PublishersResourceHelper.BASE_PATH);
 		return publishers;
 	}
 	
 	public Images findImagesByGameId(String gameId) throws SQLException {
-		Images images = new ImageDataAccess().findImagesByGameId(gameId);
-		buildLinks(images, gameId, "images");
+		Images images = new ImageDataAccess().findImagesByGameId(gameId, null);
+		addLinks(images, null, null, ImagesResourceHelper.BASE_PATH);
 		return images;
 	}
 
 	public Awards findAwardsByGameId(String gameId) throws SQLException {
-		Awards awards = new AwardDataAccess().findAwardsByGameId(gameId);
-		buildLinks(awards, gameId, "awards");
+		Awards awards = new AwardDataAccess().findAwardsByGameId(gameId, null);
+		addLinks(awards, null, null, AwardsResourceHelper.BASE_PATH);
 		return awards;
 	}
 
 	public Game createGame(Game game) throws SQLException {
 		new GameDataAccess().createGame(game);
-		game.buildLink(getGamesUri());
-		return game;
+		return addLinks(game);
 	}
 	
 	public Game updateGame(Game game) throws SQLException {
 		new GameDataAccess().updateGame(game);
-		game.buildLink(getGamesUri());
-		return game;
+		return addLinks(game);
 	}
 
 	public Response deleteGame(String id) throws SQLException {
@@ -108,46 +109,36 @@ public class GamesResourceHelper {
 			return null;
 		}
 		Authors authors = findAuthorsByGameId(game.getId());
-		if (authors.size() > 0) {
+		if (authors.hasElements()) {
 			game.setAuthors(authors);
 		}
 		Publishers publishers = findPublishersByGameId(game.getId());
-		if (publishers.size() > 0) {
+		if (publishers.hasElements()) {
 			game.setPublishers(publishers);
 		}
 		Images images = findImagesByGameId(game.getId());
-		if (images.size() > 0) {
+		if (images.hasElements()) {
 			game.setImages(images);
 		}
 		Awards awards = findAwardsByGameId(game.getId());
-		if (awards.size() > 0) {
+		if (awards.hasElements()) {
 			game.setAwards(awards);
 		}
-		game.buildLink(getGamesUri());
+		addLinks(game, BASE_PATH);
 		return game;
     }
 
-    private Games expand(Games games) throws SQLException {
-    	return expand(games, null);
-    }
-
-    private Games expand(Games games, GameDataFilter filter) throws SQLException {
+    private Games expand(Games games, RestDataPaging paging, GameDataFilter filter) throws SQLException {
 		for (Game game : games.getGames()) {
 			expand(game);
 		}
-		UriBuilder uriBuilderCollection = MyStuffUtil.setQueryParams(uriInfo.getRequestUriBuilder(), filter);
-		games.buildLinks(uriBuilderCollection.build(), getGamesUri());
+		addLinks(games, paging, filter, BASE_PATH);
 		return games;
     }
-
-    private void buildLinks(RestDataCollection<? extends RestData> dataCollection, String gameId, String path) {
-		URI uriCollection = UriBuilder.fromUri(getGamesUri()).path(gameId).path(path).build();
-		URI uriElements = uriInfo.getBaseUriBuilder().path(path).build();
-		dataCollection.buildLinks(uriCollection, uriElements);    	
-    }
     
-    private URI getGamesUri() {
-    	return uriInfo.getBaseUriBuilder().path("games").build();
-    }    
+    private Game addLinks(Game game) {
+    	addLinks(game, BASE_PATH);
+    	return game;
+    }
     
 }
