@@ -8,6 +8,7 @@ import java.sql.SQLException;
 import com.balancedbytes.mystuff.ConnectionHelper;
 import com.balancedbytes.mystuff.MyStuffUtil;
 import com.balancedbytes.mystuff.RestDataAccess;
+import com.balancedbytes.mystuff.RestDataPaging;
 import com.balancedbytes.mystuff.games.Author;
 import com.balancedbytes.mystuff.games.Authors;
 import com.balancedbytes.mystuff.games.Award;
@@ -83,11 +84,11 @@ public class GameDataAccess extends RestDataAccess<Game> {
 	private static final String _SQL_DELETE_GAME_AWARDS =
 		"DELETE FROM game_awards WHERE game_id = ?";
 
-    public Games findAllGames() throws SQLException {
+    public Games findAllGames(RestDataPaging paging) throws SQLException {
     	Games games = new Games();
         try (Connection c = ConnectionHelper.getConnection()){
             PreparedStatement ps = c.prepareStatement(_SQL_FIND_ALL_GAMES);
-            processResultSet(ps.executeQuery(), games);
+            processResultSet(ps.executeQuery(), games, paging);
 		}
         return games;
     }
@@ -102,9 +103,9 @@ public class GameDataAccess extends RestDataAccess<Game> {
         return game;
     }
     
-    public Games findGamesFiltered(GameDataFilter filter) throws SQLException {
+    public Games findGamesFiltered(GameDataFilter filter, RestDataPaging paging) throws SQLException {
     	if ((filter == null) || filter.isEmpty()) {
-    		return findAllGames();
+    		return findAllGames(paging);
     	}
     	Games games = new Games();
     	String namePattern = "%";
@@ -122,46 +123,43 @@ public class GameDataAccess extends RestDataAccess<Game> {
             ps.setString(1, namePattern);
             ps.setInt(2, playersMin);
             ps.setInt(3, playersMax);
-            processResultSet(ps.executeQuery(), games);
+            processResultSet(ps.executeQuery(), games, paging);
 		}
         return games;
     }
     
-    public Games findGamesByAuthorId(String authorId) throws SQLException {
-    	return findGamesBySomeId(_SQL_FIND_GAMES_BY_AUTHOR_ID, authorId);
+    public Games findGamesByAuthorId(String authorId, RestDataPaging paging) throws SQLException {
+    	return findGamesBySomeId(_SQL_FIND_GAMES_BY_AUTHOR_ID, authorId, paging);
     }
 
-    public Games findGamesByPublisherId(String publisherId) throws SQLException {
-    	return findGamesBySomeId(_SQL_FIND_GAMES_BY_PUBLISHER_ID, publisherId);
+    public Games findGamesByPublisherId(String publisherId, RestDataPaging paging) throws SQLException {
+    	return findGamesBySomeId(_SQL_FIND_GAMES_BY_PUBLISHER_ID, publisherId, paging);
     }
 
-    public Games findGamesByAwardId(String awardId) throws SQLException {
-    	return findGamesBySomeId(_SQL_FIND_GAMES_BY_AWARD_ID, awardId);
+    public Games findGamesByAwardId(String awardId, RestDataPaging paging) throws SQLException {
+    	return findGamesBySomeId(_SQL_FIND_GAMES_BY_AWARD_ID, awardId, paging);
     }
 
-    private Games findGamesBySomeId(String sql, String id) throws SQLException {
+    private Games findGamesBySomeId(String sql, String id, RestDataPaging paging) throws SQLException {
     	Games games = new Games();
         try (Connection c = ConnectionHelper.getConnection()){
             PreparedStatement ps = c.prepareStatement(sql);
             ps.setLong(1, MyStuffUtil.parseLong(id));
-            ResultSet rs = ps.executeQuery();
-            while (rs.next()) {
-                games.add(processRow(rs));
-            }
+            processResultSet(ps.executeQuery(), games, paging);
 		}
         return games;
     }
 
-    public Games findGamesByAwardIdFiltered(String awardId, GameDataFilter filter) throws SQLException {
+    public Games findGamesByAwardIdFiltered(String awardId, GameDataFilter filter, RestDataPaging paging) throws SQLException {
     	if ((filter == null) || filter.isEmpty()) {
-    		return findGamesByAwardId(awardId);
+    		return findGamesByAwardId(awardId, paging);
     	}
     	Games games = new Games();
         try (Connection c = ConnectionHelper.getConnection()) {
             PreparedStatement ps = c.prepareStatement(_SQL_FIND_GAMES_BY_AWARD_ID_FILTERED);
             ps.setLong(1, MyStuffUtil.parseLong(awardId));
             ps.setInt(2, filter.getYear());
-            processResultSet(ps.executeQuery(), games);
+            processResultSet(ps.executeQuery(), games, paging);
 		}
         return games;
     }
@@ -176,19 +174,19 @@ public class GameDataAccess extends RestDataAccess<Game> {
     private boolean createGameDependencies(Connection c, Game game) throws SQLException {
     	boolean created = false;
     	Authors authors = game.getAuthors();
-    	if ((authors != null) && (authors.size() > 0)) {
+    	if ((authors != null) && authors.hasElements()) {
     		for (Author author : authors.getAuthors()) {
     			created |= createGameAuthor(c, game, author);
     		}
     	}
     	Publishers publishers = game.getPublishers();
-    	if ((publishers != null) && (publishers.size() > 0)) {
+    	if ((publishers != null) && publishers.hasElements()) {
     		for (Publisher publisher : publishers.getPublishers()) {
     			created |= createGamePublisher(c, game, publisher);
     		}
     	}
     	Awards awards = game.getAwards();
-    	if ((awards != null) && (awards.size() > 0)) {
+    	if ((awards != null) && awards.hasElements()) {
     		for (Award award : awards.getAwards()) {
     			created |= createGameAward(c, game, award);
     		}

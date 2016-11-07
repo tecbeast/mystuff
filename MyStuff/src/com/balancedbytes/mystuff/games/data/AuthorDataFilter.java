@@ -24,7 +24,7 @@ public class AuthorDataFilter extends RestDataFilter {
 	}
 	
 	@Override
-	protected SortedMap<String, Object> toSortedMap() {
+	public SortedMap<String, Object> toSortedMap() {
 		SortedMap<String, Object> map = new TreeMap<String, Object>();
 		if (MyStuffUtil.isProvided(name)) {
 			map.put("name", name);

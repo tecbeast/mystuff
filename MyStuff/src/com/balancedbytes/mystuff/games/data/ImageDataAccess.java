@@ -8,6 +8,7 @@ import java.sql.SQLException;
 import com.balancedbytes.mystuff.ConnectionHelper;
 import com.balancedbytes.mystuff.MyStuffUtil;
 import com.balancedbytes.mystuff.RestDataAccess;
+import com.balancedbytes.mystuff.RestDataPaging;
 import com.balancedbytes.mystuff.games.Image;
 import com.balancedbytes.mystuff.games.Images;
 
@@ -34,11 +35,11 @@ public class ImageDataAccess extends RestDataAccess<Image> {
 	private static final String _SQL_DELETE_IMAGE =
 		"DELETE FROM images WHERE id = ?";
 
-    public Images findAllImages() throws SQLException {
+    public Images findAllImages(RestDataPaging paging) throws SQLException {
     	Images images = new Images();
         try (Connection c = ConnectionHelper.getConnection()){
             PreparedStatement ps = c.prepareStatement(_SQL_FIND_ALL_IMAGES);
-            processResultSet(ps.executeQuery(), images);
+            processResultSet(ps.executeQuery(), images, paging);
 		}
         return images;
     }
@@ -53,12 +54,12 @@ public class ImageDataAccess extends RestDataAccess<Image> {
         return image;
     }
     
-    public Images findImagesByGameId(String gameId) throws SQLException {
+    public Images findImagesByGameId(String gameId, RestDataPaging paging) throws SQLException {
     	Images images = new Images();
         try (Connection c = ConnectionHelper.getConnection()){
             PreparedStatement ps = c.prepareStatement(_SQL_FIND_IMAGES_BY_GAME_ID);
             ps.setLong(1, MyStuffUtil.parseLong(gameId));
-            processResultSet(ps.executeQuery(), images);
+            processResultSet(ps.executeQuery(), images, paging);
 		}
         return images;
     }

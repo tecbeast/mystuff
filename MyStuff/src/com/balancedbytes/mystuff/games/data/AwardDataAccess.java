@@ -8,6 +8,7 @@ import java.sql.SQLException;
 import com.balancedbytes.mystuff.ConnectionHelper;
 import com.balancedbytes.mystuff.MyStuffUtil;
 import com.balancedbytes.mystuff.RestDataAccess;
+import com.balancedbytes.mystuff.RestDataPaging;
 import com.balancedbytes.mystuff.games.Award;
 import com.balancedbytes.mystuff.games.Awards;
 
@@ -38,11 +39,11 @@ public class AwardDataAccess extends RestDataAccess<Award> {
 	private static final String _SQL_DELETE_AWARD =
 		"DELETE FROM awards WHERE id = ?";
 
-    public Awards findAllAwards() throws SQLException {
+    public Awards findAllAwards(RestDataPaging paging) throws SQLException {
     	Awards awards = new Awards();
         try (Connection c = ConnectionHelper.getConnection()){
             PreparedStatement ps = c.prepareStatement(_SQL_FIND_ALL_AWARDS);
-            processResultSet(ps.executeQuery(), awards);
+            processResultSet(ps.executeQuery(), awards, paging);
 		}
         return awards;
     }
@@ -57,9 +58,9 @@ public class AwardDataAccess extends RestDataAccess<Award> {
         return award;
     }
     
-    public Awards findAwardsFiltered(AwardDataFilter filter) throws SQLException {
+    public Awards findAwardsFiltered(AwardDataFilter filter, RestDataPaging paging) throws SQLException {
     	if ((filter == null) || filter.isEmpty()) {
-    		return findAllAwards();
+    		return findAllAwards(paging);
     	}
     	Awards awards = new Awards();
     	String namePattern = filter.getName().trim().toUpperCase();
@@ -70,17 +71,17 @@ public class AwardDataAccess extends RestDataAccess<Award> {
         try (Connection c = ConnectionHelper.getConnection()){
             PreparedStatement ps = c.prepareStatement(_SQL_FIND_AWARDS_FILTERED);
             ps.setString(1, namePattern);
-            processResultSet(ps.executeQuery(), awards);
+            processResultSet(ps.executeQuery(), awards, paging);
 		}
         return awards;
     }
 
-    public Awards findAwardsByGameId(String gameId) throws SQLException {
+    public Awards findAwardsByGameId(String gameId, RestDataPaging paging) throws SQLException {
     	Awards awards = new Awards();
         try (Connection c = ConnectionHelper.getConnection()){
             PreparedStatement ps = c.prepareStatement(_SQL_FIND_AWARDS_BY_GAME_ID);
             ps.setLong(1, MyStuffUtil.parseLong(gameId));
-            processResultSet(ps.executeQuery(), awards);
+            processResultSet(ps.executeQuery(), awards, paging);
 		}
         return awards;
     }

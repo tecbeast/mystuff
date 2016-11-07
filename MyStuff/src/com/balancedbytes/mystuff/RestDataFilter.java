@@ -6,7 +6,7 @@ public abstract class RestDataFilter {
 	
 	public abstract boolean isEmpty();
 
-	protected abstract SortedMap<String, Object> toSortedMap();
+	public abstract SortedMap<String, Object> toSortedMap();
 	
 	@Override
 	public String toString() {

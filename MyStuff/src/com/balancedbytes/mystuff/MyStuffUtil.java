@@ -1,9 +1,5 @@
 package com.balancedbytes.mystuff;
 
-import java.util.SortedMap;
-
-import javax.ws.rs.core.UriBuilder;
-
 public final class MyStuffUtil {
 
 	public static long parseLong(String text) {
@@ -32,18 +28,4 @@ public final class MyStuffUtil {
 		return ((text != null) && (text.length() > 0));
 	}
 	
-	public static UriBuilder setQueryParams(UriBuilder uriBuilder, RestDataFilter filter) {
-		if (uriBuilder == null) {
-			return null;
-		}
-		uriBuilder.replaceQuery(null);
-		if (filter != null) {
-			SortedMap<String, Object> params = filter.toSortedMap();
-			for (String key : params.keySet()) {
-				uriBuilder.queryParam(key, params.get(key));
-			}
-		}
-		return uriBuilder;
-	}
-
 }

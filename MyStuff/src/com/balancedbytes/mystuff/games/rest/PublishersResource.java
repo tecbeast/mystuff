@@ -19,6 +19,7 @@ import javax.ws.rs.core.UriInfo;
 import org.apache.juli.logging.Log;
 import org.apache.juli.logging.LogFactory;
 
+import com.balancedbytes.mystuff.RestDataPaging;
 import com.balancedbytes.mystuff.games.Games;
 import com.balancedbytes.mystuff.games.Publisher;
 import com.balancedbytes.mystuff.games.Publishers;
@@ -36,15 +37,21 @@ public class PublishersResource {
 	@GET
 	@Compress
 	@Produces({ MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML })
-	public Publishers findPublishers(@QueryParam("name") String name) throws SQLException {
+	public Publishers findPublishers(
+		@QueryParam("name") String name,
+		@QueryParam("page") String page,
+		@QueryParam("pageSize") String pageSize
+	) throws SQLException {
+		RestDataPaging paging = new RestDataPaging();
+		paging.init(page, pageSize);
 		PublisherDataFilter filter = new PublisherDataFilter();
 		filter.setName(name);
 		if (filter.isEmpty()) {
 			_LOG.info("findAllPublishers()");
-			return new PublishersResourceHelper(uriInfo).findAllPublishers();
+			return new PublishersResourceHelper(uriInfo).findAllPublishers(paging);
 		} else {
 			_LOG.info("findPublishersFiltered(" + filter + ")");
-			return new PublishersResourceHelper(uriInfo).findPublishersFiltered(filter);
+			return new PublishersResourceHelper(uriInfo).findPublishersFiltered(filter, paging);
 		}
 	}
 	
@@ -88,9 +95,15 @@ public class PublishersResource {
 	@Path("{id}/games")
 	@Compress
 	@Produces({ MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML })
-	public Games findGamesByPublisherId(@PathParam("id") String id) throws SQLException {
+	public Games findGamesByPublisherId(
+		@PathParam("id") String id,
+		@QueryParam("page") String page,
+		@QueryParam("pageSize") String pageSize
+	) throws SQLException {
 		_LOG.info("findGamesByPublisherId(" + id + ")");
-		return new GamesResourceHelper(uriInfo).findGamesByPublisherId(id);
+		RestDataPaging paging = new RestDataPaging();
+		paging.init(page, pageSize);
+		return new GamesResourceHelper(uriInfo).findGamesByPublisherId(id, paging);
 	}
 
 }

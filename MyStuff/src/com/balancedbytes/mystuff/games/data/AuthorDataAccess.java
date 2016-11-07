@@ -8,6 +8,7 @@ import java.sql.SQLException;
 import com.balancedbytes.mystuff.ConnectionHelper;
 import com.balancedbytes.mystuff.MyStuffUtil;
 import com.balancedbytes.mystuff.RestDataAccess;
+import com.balancedbytes.mystuff.RestDataPaging;
 import com.balancedbytes.mystuff.games.Author;
 import com.balancedbytes.mystuff.games.Authors;
 
@@ -37,12 +38,12 @@ public class AuthorDataAccess extends RestDataAccess<Author> {
 		+ " WHERE id = ?";
 	private static final String _SQL_DELETE_AUTHOR =
 		"DELETE FROM authors WHERE id = ?";
-
-    public Authors findAllAuthors() throws SQLException {
+	
+    public Authors findAllAuthors(RestDataPaging paging) throws SQLException {
     	Authors authors = new Authors();
         try (Connection c = ConnectionHelper.getConnection()){
             PreparedStatement ps = c.prepareStatement(_SQL_FIND_ALL_AUTHORS);
-            processResultSet(ps.executeQuery(), authors);
+            processResultSet(ps.executeQuery(), authors, paging);
 		}
         return authors;
     }
@@ -57,9 +58,9 @@ public class AuthorDataAccess extends RestDataAccess<Author> {
         return author;
     }
     
-    public Authors findAuthorsFiltered(AuthorDataFilter filter) throws SQLException {
+    public Authors findAuthorsFiltered(AuthorDataFilter filter, RestDataPaging paging) throws SQLException {
     	if ((filter == null) || filter.isEmpty()) {
-    		return findAllAuthors();
+    		return findAllAuthors(paging);
     	}
     	Authors authors = new Authors();
     	String namePattern = filter.getName().trim().toUpperCase();
@@ -71,17 +72,17 @@ public class AuthorDataAccess extends RestDataAccess<Author> {
             PreparedStatement ps = c.prepareStatement(_SQL_FIND_AUTHORS_FILTERED);
             ps.setString(1, namePattern);
             ps.setString(2, namePattern);
-            processResultSet(ps.executeQuery(), authors);
+            processResultSet(ps.executeQuery(), authors, paging);
 		}
         return authors;
     }
 
-    public Authors findAuthorsByGameId(String gameId) throws SQLException {
+    public Authors findAuthorsByGameId(String gameId, RestDataPaging paging) throws SQLException {
     	Authors authors = new Authors();
         try (Connection c = ConnectionHelper.getConnection()){
             PreparedStatement ps = c.prepareStatement(_SQL_FIND_AUTHORS_BY_GAME_ID);
             ps.setLong(1, MyStuffUtil.parseLong(gameId));
-            processResultSet(ps.executeQuery(), authors);
+            processResultSet(ps.executeQuery(), authors, paging);
 		}
         return authors;
     }
