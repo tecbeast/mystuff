@@ -55,7 +55,7 @@ public class GameDataAccess extends RestDataAccess<Game> {
 	private static final String _SQL_CREATE_GAME =
 		"INSERT INTO games"
 		+ " (name, edition_year, players_min, players_max, playtime_min,"
-		+ " playtime_max, playtime_per_player, age_min, last_played, rating)"
+		+ " playtime_max, playtime_per_player, age_min, description, rating)"
 		+ " VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
 	private static final String _SQL_CREATE_GAME_AUTHORS =
 		"INSERT INTO game_authors"
@@ -73,7 +73,7 @@ public class GameDataAccess extends RestDataAccess<Game> {
 		"UPDATE games"
 		+ " SET name = ?, edition_year = ?, players_min = ?, players_max = ?,"
 		+ " playtime_min = ?, playtime_max = ?, playtime_per_player = ?,"
-		+ " age_min = ?, last_played = ?, rating = ?"
+		+ " age_min = ?, description = ?, rating = ?"
 		+ " WHERE id = ?";
 	private static final String _SQL_DELETE_GAME =
 		"DELETE FROM games WHERE id = ?";
@@ -204,7 +204,7 @@ public class GameDataAccess extends RestDataAccess<Game> {
 	        ps.setInt(6, game.getPlaytimeMax());
 	        ps.setBoolean(7, game.isPlaytimePerPlayer());
 	        ps.setInt(8, game.getAgeMin());
-	        ps.setDate(9, game.getLastPlayed());
+	        ps.setString(9, game.getDescription());
 	        ps.setInt(10, game.getRating());
 	        ps.executeUpdate();
 	        ResultSet rs = ps.getGeneratedKeys();
@@ -252,7 +252,7 @@ public class GameDataAccess extends RestDataAccess<Game> {
 	        ps.setInt(6, game.getPlaytimeMax());
 	        ps.setBoolean(7, game.isPlaytimePerPlayer());
 	        ps.setInt(8, game.getAgeMin());
-	        ps.setDate(9, game.getLastPlayed());
+	        ps.setString(9, game.getDescription());
 	        ps.setInt(10, game.getRating());
             ps.setLong(11, MyStuffUtil.parseLong(game.getId()));
             updated |= (ps.executeUpdate() == 1);
@@ -299,7 +299,7 @@ public class GameDataAccess extends RestDataAccess<Game> {
     	game.setPlaytimeMax(rs.getInt("playtime_max"));
     	game.setPlaytimePerPlayer(rs.getBoolean("playtime_per_player"));
     	game.setAgeMin(rs.getInt("age_min"));
-    	game.setLastPlayed(rs.getDate("last_played"));
+    	game.setDescription(rs.getString("description"));
     	game.setRating(rs.getInt("rating"));
         return game;
     }

@@ -1,7 +1,5 @@
 package com.balancedbytes.mystuff.games;
 
-import java.sql.Date;
-
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlRootElement;
@@ -20,12 +18,13 @@ public class Game extends RestData {
 	private int playtimeMax;
 	private boolean playtimePerPlayer;
 	private int ageMin;
-	private Date lastPlayed;
+	private String description;
 	private int rating;
 	private Authors authors;
 	private Publishers publishers;
 	private Images images;
 	private Awards awards;
+	private Notes notes;
 
 	public String getName() {
 		return name;
@@ -91,12 +90,12 @@ public class Game extends RestData {
 		this.ageMin = ageMin;
 	}
 	
-	public Date getLastPlayed() {
-		return lastPlayed;
+	public String getDescription() {
+		return description;
 	}
 	
-	public void setLastPlayed(Date lastPlayed) {
-		this.lastPlayed = lastPlayed;
+	public void setDescription(String description) {
+		this.description = description;
 	}
 	
 	public int getRating() {
@@ -137,6 +136,14 @@ public class Game extends RestData {
 	
 	public void setAwards(Awards awards) {
 		this.awards = awards;
+	}
+	
+	public Notes getNotes() {
+		return notes;
+	}
+	
+	public void setNotes(Notes notes) {
+		this.notes = notes;
 	}
 
 }

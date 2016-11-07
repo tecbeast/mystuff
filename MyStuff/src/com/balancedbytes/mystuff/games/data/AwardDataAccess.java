@@ -124,7 +124,10 @@ public class AwardDataAccess extends RestDataAccess<Award> {
     	award.setName(rs.getString("name"));
     	award.setCountry(CountryCache.get(rs.getString("country_code")));
     	if (rs.getMetaData().getColumnCount() > 3) {
-    		award.setYear(rs.getInt("year"));
+    		int year = rs.getInt("year");
+    		if (year > 0) {
+    			award.setYear(year);
+    		}
     	}
         return award;
     }

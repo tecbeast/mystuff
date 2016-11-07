@@ -11,12 +11,14 @@ import com.balancedbytes.mystuff.games.Awards;
 import com.balancedbytes.mystuff.games.Game;
 import com.balancedbytes.mystuff.games.Games;
 import com.balancedbytes.mystuff.games.Images;
+import com.balancedbytes.mystuff.games.Notes;
 import com.balancedbytes.mystuff.games.Publishers;
 import com.balancedbytes.mystuff.games.data.AuthorDataAccess;
 import com.balancedbytes.mystuff.games.data.AwardDataAccess;
 import com.balancedbytes.mystuff.games.data.GameDataAccess;
 import com.balancedbytes.mystuff.games.data.GameDataFilter;
 import com.balancedbytes.mystuff.games.data.ImageDataAccess;
+import com.balancedbytes.mystuff.games.data.NoteDataAccess;
 import com.balancedbytes.mystuff.games.data.PublisherDataAccess;
 
 public class GamesResourceHelper extends ResourceHelper {
@@ -86,6 +88,12 @@ public class GamesResourceHelper extends ResourceHelper {
 		return awards;
 	}
 
+	public Notes findNotesByGameId(String gameId) throws SQLException {
+		Notes notes = new NoteDataAccess().findNotesByGameId(gameId, null);
+		addLinks(notes, null, null, NotesResourceHelper.BASE_PATH);
+		return notes;
+	}
+
 	public Game createGame(Game game) throws SQLException {
 		new GameDataAccess().createGame(game);
 		return addLinks(game);
@@ -123,6 +131,10 @@ public class GamesResourceHelper extends ResourceHelper {
 		Awards awards = findAwardsByGameId(game.getId());
 		if (awards.hasElements()) {
 			game.setAwards(awards);
+		}
+		Notes notes = findNotesByGameId(game.getId());
+		if (notes.hasElements()) {
+			game.setNotes(notes);
 		}
 		addLinks(game, BASE_PATH);
 		return game;

@@ -18,7 +18,7 @@ CREATE TABLE games (
 	playtime_max TINYINT,
 	playtime_per_player BOOLEAN,
 	age_min TINYINT,
-	last_played DATE,
+	description VARCHAR(255),
 	rating TINYINT,
 	PRIMARY KEY(id)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
@@ -93,8 +93,8 @@ CREATE TABLE game_images (
 
 CREATE TABLE notes (
 	id BIGINT NOT NULL AUTO_INCREMENT,
-	added DATETIME,
-	note TEXT,
+	timestamp DATETIME,
+	text VARCHAR(255),
 	PRIMARY KEY(id)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
@@ -362,7 +362,7 @@ INSERT INTO countries VALUES('ZM','Sambia');
 INSERT INTO countries VALUES('ZW','Simbabwe');
 
 /* Table games: id, name, edition_year, players_min, players_max, playtime_min, playtime_max, playtime_per_player, age_min, last_played, rating */
-INSERT INTO games VALUES(1, 'Die Siedler von Catan', 1995, 3, 4, 60, null, false, 10, '2016-04-19', null);
+INSERT INTO games VALUES(1, 'Die Siedler von Catan', 1995, 3, 4, 60, null, false, 10, 'Beschreibung folgt', null);
 INSERT INTO games VALUES(2, '6 nimmt!', 1994, 2, 10, 45, null, false, 10, null, null);
 INSERT INTO games VALUES(3, 'Colt Express', 2014, 2, 6, 30, null, false, 10, null, null);
 
