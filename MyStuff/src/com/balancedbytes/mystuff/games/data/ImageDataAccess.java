@@ -108,8 +108,10 @@ public class ImageDataAccess extends RestDataAccess<Image> {
     	Image image = new Image();
     	image.setId(rs.getString("id"));
     	image.setRole(rs.getString("role"));
-    	image.setWidth(rs.getInt("width"));
-    	image.setHeight(rs.getInt("height"));
+    	int width = rs.getInt("width");
+		image.setWidth((width > 0) ? width : null);
+    	int height = rs.getInt("height");
+		image.setHeight((height > 0) ? height : null);
     	image.setUrl(rs.getString("url"));
     	image.setDescription(rs.getString("description"));
         return image;

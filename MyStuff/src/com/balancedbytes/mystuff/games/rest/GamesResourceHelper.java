@@ -36,7 +36,7 @@ public class GamesResourceHelper extends ResourceHelper {
 	
 	public Games findGamesFiltered(GameDataFilter filter, RestDataPaging paging) throws SQLException {
 		Games games = new GameDataAccess().findGamesFiltered(filter, paging);
-		return expand(games, paging, null);
+		return expand(games, paging, filter);
 	}
 	
 	public Game findGameById(String gameId) throws SQLException {
@@ -141,10 +141,11 @@ public class GamesResourceHelper extends ResourceHelper {
     }
 
     private Games expand(Games games, RestDataPaging paging, GameDataFilter filter) throws SQLException {
-		for (Game game : games.getGames()) {
+		for (Game game : games.getElements()) {
 			expand(game);
 		}
 		addLinks(games, paging, filter, BASE_PATH);
+		addPaging(games, paging);
 		return games;
     }
     

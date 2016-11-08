@@ -15,6 +15,8 @@ import com.balancedbytes.mystuff.games.Award;
 import com.balancedbytes.mystuff.games.Awards;
 import com.balancedbytes.mystuff.games.Game;
 import com.balancedbytes.mystuff.games.Games;
+import com.balancedbytes.mystuff.games.Note;
+import com.balancedbytes.mystuff.games.Notes;
 import com.balancedbytes.mystuff.games.Publisher;
 import com.balancedbytes.mystuff.games.Publishers;
 
@@ -68,6 +70,10 @@ public class GameDataAccess extends RestDataAccess<Game> {
 	private static final String _SQL_CREATE_GAME_AWARDS =
 		"INSERT INTO game_awards"
 		+ " (game_id, award_id, year)"
+		+ " VALUES (?, ?)";
+	private static final String _SQL_CREATE_GAME_NOTES =
+		"INSERT INTO game_notes"
+		+ " (game_id, note_id)"
 		+ " VALUES (?, ?)";
 	private static final String _SQL_UPDATE_GAME =
 		"UPDATE games"
@@ -175,20 +181,26 @@ public class GameDataAccess extends RestDataAccess<Game> {
     	boolean created = false;
     	Authors authors = game.getAuthors();
     	if ((authors != null) && authors.hasElements()) {
-    		for (Author author : authors.getAuthors()) {
+    		for (Author author : authors.getElements()) {
     			created |= createGameAuthor(c, game, author);
     		}
     	}
     	Publishers publishers = game.getPublishers();
     	if ((publishers != null) && publishers.hasElements()) {
-    		for (Publisher publisher : publishers.getPublishers()) {
+    		for (Publisher publisher : publishers.getElements()) {
     			created |= createGamePublisher(c, game, publisher);
     		}
     	}
     	Awards awards = game.getAwards();
     	if ((awards != null) && awards.hasElements()) {
-    		for (Award award : awards.getAwards()) {
+    		for (Award award : awards.getElements()) {
     			created |= createGameAward(c, game, award);
+    		}
+    	}
+    	Notes notes = game.getNotes();
+    	if ((notes != null) && notes.hasElements()) {
+    		for (Note note : notes.getElements()) {
+    			created |= createGameNote(c, game, note);
     		}
     	}
     	return created;
@@ -202,7 +214,7 @@ public class GameDataAccess extends RestDataAccess<Game> {
     		ps.setInt(4, game.getPlayersMax());
 	        ps.setInt(5, game.getPlaytimeMin());
 	        ps.setInt(6, game.getPlaytimeMax());
-	        ps.setBoolean(7, game.isPlaytimePerPlayer());
+	        ps.setBoolean(7, game.getPlaytimePerPlayer());
 	        ps.setInt(8, game.getAgeMin());
 	        ps.setString(9, game.getDescription());
 	        ps.setInt(10, game.getRating());
@@ -238,6 +250,14 @@ public class GameDataAccess extends RestDataAccess<Game> {
     		return (ps.executeUpdate() == 1);
     	}
     }
+    
+    private boolean createGameNote(Connection c, Game game, Note note) throws SQLException {
+    	try (PreparedStatement ps = c.prepareStatement(_SQL_CREATE_GAME_NOTES)) {
+    		ps.setLong(1, MyStuffUtil.parseLong(game.getId()));
+    		ps.setLong(2, MyStuffUtil.parseLong(note.getId()));
+    		return (ps.executeUpdate() == 1);
+    	}
+    }
 
     public boolean updateGame(Game game) throws SQLException {
     	boolean updated = false;
@@ -250,7 +270,7 @@ public class GameDataAccess extends RestDataAccess<Game> {
     		ps.setInt(4, game.getPlayersMax());
 	        ps.setInt(5, game.getPlaytimeMin());
 	        ps.setInt(6, game.getPlaytimeMax());
-	        ps.setBoolean(7, game.isPlaytimePerPlayer());
+	        ps.setBoolean(7, game.getPlaytimePerPlayer());
 	        ps.setInt(8, game.getAgeMin());
 	        ps.setString(9, game.getDescription());
 	        ps.setInt(10, game.getRating());
@@ -292,15 +312,25 @@ public class GameDataAccess extends RestDataAccess<Game> {
     	Game game = new Game();
     	game.setId(rs.getString("id"));
     	game.setName(rs.getString("name"));
-    	game.setEditionYear(rs.getInt("edition_year"));
-    	game.setPlayersMin(rs.getInt("players_min"));
-    	game.setPlayersMax(rs.getInt("players_max"));
-    	game.setPlaytimeMin(rs.getInt("playtime_min"));
-    	game.setPlaytimeMax(rs.getInt("playtime_max"));
-    	game.setPlaytimePerPlayer(rs.getBoolean("playtime_per_player"));
-    	game.setAgeMin(rs.getInt("age_min"));
+    	int editionYear = rs.getInt("edition_year");
+		game.setEditionYear((editionYear > 0) ? editionYear : null);
+    	int playersMin = rs.getInt("players_min");
+   		game.setPlayersMin((playersMin > 0) ? playersMin : null);
+    	int playersMax = rs.getInt("players_max");
+		game.setPlayersMax((playersMax > 0) ? playersMax : null);
+    	int playtimeMin = rs.getInt("playtime_min");
+    	int playtimeMax = rs.getInt("playtime_max");
+    	if ((playtimeMin > 0) || (playtimeMax > 0)) {
+        	game.setPlaytimeMin((playtimeMin > 0) ? playtimeMin : null);
+        	game.setPlaytimeMax((playtimeMax > 0) ? playtimeMax : null);
+        	boolean playtimePerPlayer = rs.getBoolean("playtime_per_player");
+        	game.setPlaytimePerPlayer(playtimePerPlayer);
+    	}
+    	int ageMin = rs.getInt("age_min");
+    	game.setAgeMin((ageMin > 0) ? ageMin : null);
     	game.setDescription(rs.getString("description"));
-    	game.setRating(rs.getInt("rating"));
+    	int rating = rs.getInt("rating");
+    	game.setRating((rating > 0) ? rating : null);
         return game;
     }
     

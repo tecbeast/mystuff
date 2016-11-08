@@ -22,27 +22,27 @@ public class PublishersResourceHelper extends ResourceHelper {
 		
 	public Publishers findAllPublishers(RestDataPaging paging) throws SQLException {
 		Publishers publishers = new PublisherDataAccess().findAllPublishers(paging);
-		return addLinks(publishers, paging, null);
+		return complete(publishers, paging, null);
 	}
 	
 	public Publishers findPublishersFiltered(PublisherDataFilter filter, RestDataPaging paging) throws SQLException {
 		Publishers publishers = new PublisherDataAccess().findPublishersFiltered(filter, paging);
-		return addLinks(publishers, paging, filter);
+		return complete(publishers, paging, filter);
 	}
 	
 	public Publisher findPublisherById(String id) throws SQLException {
 		Publisher publisher = new PublisherDataAccess().findPublisherById(id);
-		return addLinks(publisher);
+		return complete(publisher);
 	}
 	
 	public Publisher createPublisher(Publisher publisher) throws SQLException {
 		new PublisherDataAccess().createPublisher(publisher);
-		return addLinks(publisher);
+		return complete(publisher);
 	}
 
 	public Publisher updatePublisher(Publisher publisher) throws SQLException {
 		new PublisherDataAccess().updatePublisher(publisher);
-		return addLinks(publisher);
+		return complete(publisher);
 	}
 
 	public Response deletePublisher(String id) throws SQLException {
@@ -53,13 +53,14 @@ public class PublishersResourceHelper extends ResourceHelper {
 	    }
 	}
 	
-	private Publisher addLinks(Publisher publisher) {
+	private Publisher complete(Publisher publisher) {
 		addLinks(publisher, BASE_PATH);
 		return publisher;
 	}
 	
-	private Publishers addLinks(Publishers publishers, RestDataPaging paging, RestDataFilter filter) {
+	private Publishers complete(Publishers publishers, RestDataPaging paging, RestDataFilter filter) {
 		addLinks(publishers, paging, filter, BASE_PATH);
+		addPaging(publishers, paging);
 		return publishers;
 	}
 

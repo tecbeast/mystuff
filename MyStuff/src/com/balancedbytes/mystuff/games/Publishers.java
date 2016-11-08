@@ -11,8 +11,9 @@ import com.balancedbytes.mystuff.RestDataCollection;
 public class Publishers extends RestDataCollection<Publisher> {
 	
 	@XmlElement(name="publisher")
-	public List<Publisher> getPublishers() {
-		return getElements();
+	@Override
+	public List<Publisher> getElements() {
+		return super.getElements();
 	}
 
 }

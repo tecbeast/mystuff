@@ -6,7 +6,7 @@ import java.util.TreeMap;
 public class RestDataPaging {
 
 	private int page = 1;       // default
-	private int pageSize = 25;  // default
+	private int pageSize = 10;  // default
 	private int count = 0;
 	
 	public int getPage() {
@@ -51,6 +51,17 @@ public class RestDataPaging {
 	private int upperLimit() {
 		return page * pageSize;
 	}
+	
+	public int pagesTotal() {
+		int pages = 0;
+		if ((pageSize > 0) && (count > 0)) {
+			pages = count / pageSize;
+			if (count % pageSize > 0) {
+				pages++;
+			}
+		}
+		return pages;
+	}
 
 	public void init(String page, String pageSize) {
 		if (MyStuffUtil.isProvided(page)) {
@@ -71,27 +82,77 @@ public class RestDataPaging {
 		}
 		return map;
 	}
-	
-	public RestDataPaging createNext() {
+
+	public RestDataPaging createStartPage() {
+		if ((page == 0) || (pageSize == 0) || (pagesTotal() <= 1)) {
+			return null;
+		}
+		RestDataPaging startPage = new RestDataPaging();
+		startPage.setCount(count);
+		startPage.setPageSize(pageSize);
+		startPage.setPage(1);
+		return startPage;
+	}
+
+	public RestDataPaging createPrevPage() {
+		if ((page < 2) || (pageSize == 0)) {
+			return null;
+		}
+		RestDataPaging prevPage = new RestDataPaging();
+		prevPage.setCount(count);
+		prevPage.setPageSize(pageSize);
+		prevPage.setPage(page - 1);
+		return prevPage;
+	}
+
+	public RestDataPaging createNextPage() {
 		if ((page == 0) || (pageSize == 0) || (count <= upperLimit())) {
 			return null;
 		}
-		RestDataPaging next = new RestDataPaging();
-		next.setCount(count);
-		next.setPageSize(pageSize);
-		next.setPage(page + 1);
-		return next;
+		RestDataPaging nextPage = new RestDataPaging();
+		nextPage.setCount(count);
+		nextPage.setPageSize(pageSize);
+		nextPage.setPage(page + 1);
+		return nextPage;
 	}
 
-	public RestDataPaging createPrev() {
-		if ((page == 0) || (pageSize == 0) || (count > lowerLimit())) {
+	public RestDataPaging createEndPage() {
+		if ((page == 0) || (pageSize == 0) || (pagesTotal() <= 1)) {
 			return null;
 		}
-		RestDataPaging prev = new RestDataPaging();
-		prev.setCount(count);
-		prev.setPageSize(pageSize);
-		prev.setPage(page - 1);
-		return prev;
+		RestDataPaging endPage = new RestDataPaging();
+		endPage.setCount(count);
+		endPage.setPageSize(pageSize);
+		endPage.setPage(pagesTotal());
+		return endPage;
+	}
+
+	@Override
+	public int hashCode() {
+		final int prime = 31;
+		int result = 1;
+		result = prime * result + count;
+		result = prime * result + page;
+		result = prime * result + pageSize;
+		return result;
+	}
+
+	@Override
+	public boolean equals(Object obj) {
+		if (this == obj)
+			return true;
+		if (obj == null)
+			return false;
+		if (getClass() != obj.getClass())
+			return false;
+		RestDataPaging other = (RestDataPaging) obj;
+		if (count != other.count)
+			return false;
+		if (page != other.page)
+			return false;
+		if (pageSize != other.pageSize)
+			return false;
+		return true;
 	}
 
 }

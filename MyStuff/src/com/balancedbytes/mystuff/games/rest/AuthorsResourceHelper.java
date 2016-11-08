@@ -22,27 +22,27 @@ public class AuthorsResourceHelper extends ResourceHelper {
 		
 	public Authors findAllAuthors(RestDataPaging paging) throws SQLException {
 		Authors authors = new AuthorDataAccess().findAllAuthors(paging);
-		return addLinks(authors, paging, null);
+		return complete(authors, paging, null);
 	}
 	
 	public Authors findAuthorsFiltered(AuthorDataFilter filter, RestDataPaging paging) throws SQLException {
 		Authors authors = new AuthorDataAccess().findAuthorsFiltered(filter, paging);
-		return addLinks(authors, paging, filter);
+		return complete(authors, paging, filter);
 	}
 	
 	public Author findAuthorById(String id) throws SQLException {
 		Author author = new AuthorDataAccess().findAuthorById(id); 
-		return addLinks(author);
+		return complete(author);
 	}
 
 	public Author createAuthor(Author author) throws SQLException {
 		new AuthorDataAccess().createAuthor(author);
-		return addLinks(author);
+		return complete(author);
 	}
 
 	public Author updateAuthor(Author author) throws SQLException {
 		new AuthorDataAccess().updateAuthor(author);
-		return addLinks(author);
+		return complete(author);
 	}
 
 	public Response deleteAuthor(String id) throws SQLException {
@@ -53,13 +53,14 @@ public class AuthorsResourceHelper extends ResourceHelper {
 	    }
 	}
 	
-	private Author addLinks(Author author) {
+	private Author complete(Author author) {
 		addLinks(author, BASE_PATH);
 		return author;
 	}
 	
-	private Authors addLinks(Authors authors, RestDataPaging paging, RestDataFilter filter) {
+	private Authors complete(Authors authors, RestDataPaging paging, RestDataFilter filter) {
 		addLinks(authors, paging, filter, BASE_PATH);
+		addPaging(authors, paging);
 		return authors;
 	}
 	

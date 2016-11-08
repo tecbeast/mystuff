@@ -11,8 +11,8 @@ import com.balancedbytes.mystuff.RestDataCollection;
 public class Awards extends RestDataCollection<Award> {
 	
 	@XmlElement(name="award")
-	public List<Award> getAwards() {
-		return getElements();
+	@Override
+	public List<Award> getElements() {
+		return super.getElements();
 	}
-
 }

@@ -11,8 +11,8 @@ import com.balancedbytes.mystuff.RestDataCollection;
 public class Notes extends RestDataCollection<Note> {
 	
 	@XmlElement(name="note")
-	public List<Note> getNotes() {
-		return getElements();
+	public List<Note> getElements() {
+		return super.getElements();
 	}
 
 }

@@ -20,22 +20,22 @@ public class NotesResourceHelper extends ResourceHelper {
 		
 	public Notes findAllNotes(RestDataPaging paging) throws SQLException {
 		Notes notes = new NoteDataAccess().findAllNotes(paging);
-		return addLinks(notes, paging);
+		return complete(notes, paging);
 	}
 	
 	public Note findNoteById(String id) throws SQLException {
 		Note note = new NoteDataAccess().findNoteById(id);
-		return addLinks(note);
+		return complete(note);
 	}
 	
 	public Note createNote(Note note) throws SQLException {
 		new NoteDataAccess().createNote(note);
-		return addLinks(note);
+		return complete(note);
 	}
 
 	public Note updateNote(Note note) throws SQLException {
 		new NoteDataAccess().updateNote(note);
-		return addLinks(note);
+		return complete(note);
 	}
 
 	public Response deleteNote(String id) throws SQLException {
@@ -46,13 +46,14 @@ public class NotesResourceHelper extends ResourceHelper {
 	    }
 	}
 	
-	private Note addLinks(Note note) {
+	private Note complete(Note note) {
 		addLinks(note, BASE_PATH);
 		return note;
 	}
 	
-	private Notes addLinks(Notes notes, RestDataPaging paging) {
+	private Notes complete(Notes notes, RestDataPaging paging) {
 		addLinks(notes, paging, null, BASE_PATH);
+		addPaging(notes, paging);
 		return notes;
 	}
 	

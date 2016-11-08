@@ -15,9 +15,11 @@ import com.balancedbytes.mystuff.RestDataPaging;
 
 public abstract class ResourceHelper {
 	
-	private static final String _REL_SELF = "self";
+	private static final String _REL_START = "start";
 	private static final String _REL_PREV = "prev";
+	private static final String _REL_SELF = "self";
 	private static final String _REL_NEXT = "next";
+	private static final String _REL_END = "end";
 	
 	private UriInfo uriInfo;
 	
@@ -43,24 +45,44 @@ public abstract class ResourceHelper {
 		uriBuilder.replaceQuery(null);
 		URI linkUri = uriBuilder.build();
 		if (paging != null) {
-			RestDataPaging prevPage = paging.createPrev();
-			RestDataPaging nextPage = paging.createNext();
+			RestDataPaging startPage = paging.createStartPage();
+			RestDataPaging prevPage = paging.createPrevPage();
+			RestDataPaging nextPage = paging.createNextPage();
+			RestDataPaging endPage = paging.createEndPage();
+			if (prevPage != null) {
+				if ((startPage != null) && !startPage.equals(prevPage))  {
+					dataCollection.addLink(createLink(linkUri, startPage, filter, _REL_START));
+				}
+				dataCollection.addLink(createLink(linkUri, prevPage, filter, _REL_PREV));
+			}
 			if ((prevPage != null) || (nextPage != null)) {
 				dataCollection.addLink(createLink(linkUri, paging, filter, _REL_SELF));
 			} else {
 				dataCollection.addLink(createLink(linkUri, null, filter, _REL_SELF));
 			}
-			if (prevPage != null) {
-				dataCollection.addLink(createLink(linkUri, prevPage, filter, _REL_PREV));
-			}
 			if (nextPage != null) {
 				dataCollection.addLink(createLink(linkUri, nextPage, filter, _REL_NEXT));
+				if ((endPage != null) && !endPage.equals(nextPage)) {
+					dataCollection.addLink(createLink(linkUri, endPage, filter, _REL_END));
+				}
 			}
 		} else {
 			dataCollection.addLink(createLink(linkUri, paging, filter, _REL_SELF));
 		}
 		for (RestData data : dataCollection.getElements()) {
 			addLinks(data, basePath);
+		}
+	}
+	
+	protected void addPaging(RestDataCollection<?> dataCollection, RestDataPaging paging) {
+		if ((dataCollection != null) && (paging != null) && (paging.getPage() > 0) && (paging.getPageSize() > 0)) {
+			if (paging.getCount() > dataCollection.getEntries()) {
+				dataCollection.setEntriesTotal(paging.getCount());
+				dataCollection.setPage(paging.getPage());
+			}
+			if (paging.pagesTotal() > 1) {
+				dataCollection.setPagesTotal(paging.pagesTotal());
+			}
 		}
 	}
 

@@ -20,22 +20,22 @@ public class ImagesResourceHelper extends ResourceHelper {
 		
 	public Images findAllImages(RestDataPaging paging) throws SQLException {
 		Images images = new ImageDataAccess().findAllImages(paging);
-		return addLinks(images, paging);
+		return complete(images, paging);
 	}
 	
 	public Image findImageById(String id) throws SQLException {
 		Image image = new ImageDataAccess().findImageById(id);
-		return addLinks(image);
+		return complete(image);
 	}
 	
 	public Image createImage(Image image) throws SQLException {
 		new ImageDataAccess().createImage(image);
-		return addLinks(image);
+		return complete(image);
 	}
 
 	public Image updateImage(Image image) throws SQLException {
 		new ImageDataAccess().updateImage(image);
-		return addLinks(image);
+		return complete(image);
 	}
 
 	public Response deleteImage(String id) throws SQLException {
@@ -46,13 +46,14 @@ public class ImagesResourceHelper extends ResourceHelper {
 	    }
 	}
 	
-	private Image addLinks(Image image) {
+	private Image complete(Image image) {
 		addLinks(image, BASE_PATH);
 		return image;
 	}
 	
-	private Images addLinks(Images images, RestDataPaging paging) {
+	private Images complete(Images images, RestDataPaging paging) {
 		addLinks(images, paging, null, BASE_PATH);
+		addPaging(images, paging);
 		return images;
 	}
 	

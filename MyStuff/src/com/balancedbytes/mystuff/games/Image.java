@@ -11,8 +11,8 @@ import com.balancedbytes.mystuff.RestData;
 public class Image extends RestData {
 
 	private String role;
-	private int width;
-	private int height;
+	private Integer width;
+	private Integer height;
 	private String url;
 	private String description;
 	
@@ -24,19 +24,19 @@ public class Image extends RestData {
 		this.role = role;
 	}
 
-	public int getWidth() {
+	public Integer getWidth() {
 		return width;
 	}
 	
-	public void setWidth(int width) {
+	public void setWidth(Integer width) {
 		this.width = width;
 	}
 	
-	public int getHeight() {
+	public Integer getHeight() {
 		return height;
 	}
 	
-	public void setHeight(int height) {
+	public void setHeight(Integer height) {
 		this.height = height;
 	}
 	

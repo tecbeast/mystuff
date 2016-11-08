@@ -22,27 +22,27 @@ public class AwardsResourceHelper extends ResourceHelper {
 		
 	public Awards findAllAwards(RestDataPaging paging) throws SQLException {
 		Awards awards = new AwardDataAccess().findAllAwards(paging);
-		return addLinks(awards, paging, null);
+		return complete(awards, paging, null);
 	}
 	
 	public Awards findAwardsFiltered(AwardDataFilter filter, RestDataPaging paging) throws SQLException {
 		Awards awards = new AwardDataAccess().findAwardsFiltered(filter, paging);
-		return addLinks(awards, paging, filter);
+		return complete(awards, paging, filter);
 	}
 	
 	public Award findAwardById(String id) throws SQLException {
 		Award award = new AwardDataAccess().findAwardById(id);
-		return addLinks(award);
+		return complete(award);
 	}
 
 	public Award createAward(Award award) throws SQLException {
 		new AwardDataAccess().createAward(award);
-		return addLinks(award);
+		return complete(award);
 	}
 	
 	public Award updateAward(Award award) throws SQLException {
 		new AwardDataAccess().updateAward(award);
-		return addLinks(award);
+		return complete(award);
 	}
 
 	public Response deleteAward(String id) throws SQLException {
@@ -53,13 +53,14 @@ public class AwardsResourceHelper extends ResourceHelper {
 	    }
 	}
 	
-	private Award addLinks(Award award) {
+	private Award complete(Award award) {
 		addLinks(award, BASE_PATH);
 		return award;
 	}
 	
-	private Awards addLinks(Awards awards, RestDataPaging paging, RestDataFilter filter) {
+	private Awards complete(Awards awards, RestDataPaging paging, RestDataFilter filter) {
 		addLinks(awards, paging, filter, BASE_PATH);
+		addPaging(awards, paging);
 		return awards;
 	}
 	

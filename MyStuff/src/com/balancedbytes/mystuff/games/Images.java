@@ -11,8 +11,9 @@ import com.balancedbytes.mystuff.RestDataCollection;
 public class Images extends RestDataCollection<Image> {
 	
 	@XmlElement(name="image")
-	public List<Image> getImages() {
-		return getElements();
+	@Override
+	public List<Image> getElements() {
+		return super.getElements();
 	}
 
 }

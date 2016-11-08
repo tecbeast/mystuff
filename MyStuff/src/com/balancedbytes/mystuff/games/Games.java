@@ -11,8 +11,9 @@ import com.balancedbytes.mystuff.RestDataCollection;
 public class Games extends RestDataCollection<Game> {
 	
 	@XmlElement(name="game")
-	public List<Game> getGames() {
-		return getElements();
+	@Override
+	public List<Game> getElements() {
+		return super.getElements();
 	}
 	
 }

@@ -11,15 +11,15 @@ import com.balancedbytes.mystuff.RestData;
 public class Game extends RestData {
 
 	private String name;
-	private int editionYear;
-	private int playersMin;
-	private int playersMax;
-	private int playtimeMin;
-	private int playtimeMax;
-	private boolean playtimePerPlayer;
-	private int ageMin;
+	private Integer editionYear;
+	private Integer playersMin;
+	private Integer playersMax;
+	private Integer playtimeMin;
+	private Integer playtimeMax;
+	private Boolean playtimePerPlayer;
+	private Integer ageMin;
 	private String description;
-	private int rating;
+	private Integer rating;
 	private Authors authors;
 	private Publishers publishers;
 	private Images images;
@@ -34,59 +34,59 @@ public class Game extends RestData {
 		this.name = name;
 	}
 	
-	public int getEditionYear() {
+	public Integer getEditionYear() {
 		return editionYear;
 	}
 	
-	public void setEditionYear(int editionYear) {
+	public void setEditionYear(Integer editionYear) {
 		this.editionYear = editionYear;
 	}
 	
-	public int getPlayersMin() {
+	public Integer getPlayersMin() {
 		return playersMin;
 	}
 	
-	public void setPlayersMin(int playersMin) {
+	public void setPlayersMin(Integer playersMin) {
 		this.playersMin = playersMin;
 	}
 	
-	public int getPlayersMax() {
+	public Integer getPlayersMax() {
 		return playersMax;
 	}
 	
-	public void setPlayersMax(int playersMax) {
+	public void setPlayersMax(Integer playersMax) {
 		this.playersMax = playersMax;
 	}
 	
-	public int getPlaytimeMin() {
+	public Integer getPlaytimeMin() {
 		return playtimeMin;
 	}
 	
-	public void setPlaytimeMin(int playtimeMin) {
+	public void setPlaytimeMin(Integer playtimeMin) {
 		this.playtimeMin = playtimeMin;
 	}
 	
-	public int getPlaytimeMax() {
+	public Integer getPlaytimeMax() {
 		return playtimeMax;
 	}
 	
-	public void setPlaytimeMax(int playtimeMax) {
+	public void setPlaytimeMax(Integer playtimeMax) {
 		this.playtimeMax = playtimeMax;
 	}
 	
-	public boolean isPlaytimePerPlayer() {
+	public Boolean getPlaytimePerPlayer() {
 		return playtimePerPlayer;
 	}
 	
-	public void setPlaytimePerPlayer(boolean playtimePerPlayer) {
+	public void setPlaytimePerPlayer(Boolean playtimePerPlayer) {
 		this.playtimePerPlayer = playtimePerPlayer;
 	}
 	
-	public int getAgeMin() {
+	public Integer getAgeMin() {
 		return ageMin;
 	}
 	
-	public void setAgeMin(int ageMin) {
+	public void setAgeMin(Integer ageMin) {
 		this.ageMin = ageMin;
 	}
 	
@@ -98,11 +98,11 @@ public class Game extends RestData {
 		this.description = description;
 	}
 	
-	public int getRating() {
+	public Integer getRating() {
 		return rating;
 	}
 	
-	public void setRating(int rating) {
+	public void setRating(Integer rating) {
 		this.rating = rating;
 	}
 
