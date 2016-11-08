@@ -4,10 +4,22 @@ import java.util.SortedMap;
 import java.util.TreeMap;
 
 public class RestDataPaging {
+	
+	private static int defaultPageSize = 10;
+	
+	public static void setDefaultPageSize(int defaultPageSize) {
+		RestDataPaging.defaultPageSize = defaultPageSize;
+	}
 
-	private int page = 1;       // default
-	private int pageSize = 10;  // default
-	private int count = 0;
+	private int page;
+	private int pageSize;
+	private int count;
+	
+	public RestDataPaging() {
+		this.page = 1;
+		this.count = 0;
+		this.pageSize = defaultPageSize;
+	}
 	
 	public int getPage() {
 		return page;
