@@ -56,7 +56,7 @@ public class GameDataAccess extends RestDataAccess<Game> {
 		+ " ORDER BY games.name";
 	private static final String _SQL_CREATE_GAME =
 		"INSERT INTO games"
-		+ " (name, edition_year, players_min, players_max, playtime_min,"
+		+ " (name, published_year, players_min, players_max, playtime_min,"
 		+ " playtime_max, playtime_per_player, age_min, description, rating)"
 		+ " VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
 	private static final String _SQL_CREATE_GAME_AUTHORS =
@@ -77,7 +77,7 @@ public class GameDataAccess extends RestDataAccess<Game> {
 		+ " VALUES (?, ?)";
 	private static final String _SQL_UPDATE_GAME =
 		"UPDATE games"
-		+ " SET name = ?, edition_year = ?, players_min = ?, players_max = ?,"
+		+ " SET name = ?, published_year = ?, players_min = ?, players_max = ?,"
 		+ " playtime_min = ?, playtime_max = ?, playtime_per_player = ?,"
 		+ " age_min = ?, description = ?, rating = ?"
 		+ " WHERE id = ?";
@@ -209,7 +209,7 @@ public class GameDataAccess extends RestDataAccess<Game> {
     private void createGame(Connection c, Game game) throws SQLException {
     	try (PreparedStatement ps = c.prepareStatement(_SQL_CREATE_GAME, new String[] { "id" })) {
     		ps.setString(1, game.getName());
-    		ps.setInt(2, game.getEditionYear());
+    		ps.setInt(2, game.getPublishedYear());
     		ps.setInt(3, game.getPlayersMin());
     		ps.setInt(4, game.getPlayersMax());
 	        ps.setInt(5, game.getPlaytimeMin());
@@ -265,7 +265,7 @@ public class GameDataAccess extends RestDataAccess<Game> {
         try (Connection c = ConnectionHelper.getConnection()) {
             PreparedStatement ps = c.prepareStatement(_SQL_UPDATE_GAME);
     		ps.setString(1, game.getName());
-    		ps.setInt(2, game.getEditionYear());
+    		ps.setInt(2, game.getPublishedYear());
     		ps.setInt(3, game.getPlayersMin());
     		ps.setInt(4, game.getPlayersMax());
 	        ps.setInt(5, game.getPlaytimeMin());
@@ -312,8 +312,8 @@ public class GameDataAccess extends RestDataAccess<Game> {
     	Game game = new Game();
     	game.setId(rs.getString("id"));
     	game.setName(rs.getString("name"));
-    	int editionYear = rs.getInt("edition_year");
-		game.setEditionYear((editionYear > 0) ? editionYear : null);
+    	int publishedYear = rs.getInt("published_year");
+		game.setPublishedYear((publishedYear > 0) ? publishedYear : null);
     	int playersMin = rs.getInt("players_min");
    		game.setPlayersMin((playersMin > 0) ? playersMin : null);
     	int playersMax = rs.getInt("players_max");

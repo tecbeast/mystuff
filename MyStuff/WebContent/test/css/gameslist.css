@@ -1,0 +1,170 @@
+.game-overview {
+	background: rgba(255, 255, 255, 0.5);
+	zzzborder: 2px solid #c0c0c0;
+	border-radius: 3px;
+	box-shadow: 0 1px 5px rgba(0, 0, 0, 0.4);
+	font-family: Helvetica Neue, Helvetica, Arial, sans-serif;
+	position: relative;
+	width: 800px;
+	height: 220px;
+	margin-bottom: 10px;
+}
+.game-overview > .cover {
+	position: absolute;
+	top: 10px;
+	left: 10px;
+	width: 200px;
+	height: 200px;
+}
+.game-overview > .zoom {
+	position: absolute;
+	bottom: 10px;
+	right: 10px;
+	width: 25px;
+	height: 25px;
+	cursor: pointer;
+	filter: opacity(80%);
+	background: url(../icons/zoom.png) no-repeat center;
+}
+.game-overview > .edit {
+	position: absolute;
+	top: 10px;
+	right: 10px;
+	width: 24px;
+	height: 21px;
+	cursor: pointer;
+	filter: opacity(80%);
+	background: url(../icons/edit.png) no-repeat center;
+}
+.game-data {
+	position: absolute;
+	top: 10px;
+	left: 220px;
+	right: 10px;
+	bottom: 10px;
+	font-size: 14px;
+}
+.game-data > .title {
+	font-size: 22px;
+	font-weight: bold;
+	position: relative;
+	width: 100%;
+	margin-bottom: 5px;
+}
+.game-data > .subtitle {
+	font-size: 16px;
+	font-weight: bold;
+	position: relative;
+	width: 100%;
+	margin-bottom: 5px;
+}
+.game-data > .basics {
+	position: relative;
+	height: 30px;
+	width: 100%;
+	font-size: 16px;
+	margin-bottom: 10px;
+}
+.basics .value {
+	position: absolute;
+	bottom: 5px;
+	left: 45px;
+}
+.basics .icon {
+	position: absolute;
+	width: 35px;
+	height: 30px;
+	filter: opacity(60%);
+}
+.basics > .players,
+.basics > .playtime,
+.basics > .age {
+	position: absolute;
+	width: 150px;
+	height: 30px;
+}
+.players > .icon {
+	background: url(../icons/players.png) no-repeat center;
+}
+.basics > .playtime {
+	left: 150px;
+}
+.basics > .playtime > .icon {
+	background: url(../icons/playtime.png) no-repeat center;
+}
+.basics > .age {
+	left: 300px;
+}
+.basics > .age > .icon {
+	background: url(../icons/age.png) no-repeat center;
+}
+.game-data > .publishers,
+.game-data > .authors ,
+.game-data > .awards,
+.game-data > .rating {
+	position: relative;
+	width: 100%;
+	height: 18px;
+	margin-bottom: 5px;
+}
+.publishers > .label,
+.authors > .label,
+.awards > .label ,
+.rating > .label {
+	position: absolute;
+	font-weight: bold;
+}
+.publishers > .value ,
+.authors > .value,
+.awards > .value {
+	position: absolute;
+	left: 70px;
+}
+.rating > .rating00,
+.rating > .rating05,
+.rating > .rating10,
+.rating > .rating15,
+.rating > .rating20,
+.rating > .rating25,
+.rating > .rating30,
+.rating > .rating35,
+.rating > .rating40,
+.rating > .rating45,
+.rating > .rating50 {
+	position: absolute;
+	left: 70px;
+	text-indent: 100px
+}
+.rating > .rating00 {
+	background: url(../icons/rating00.png) no-repeat left;
+}
+.rating > .rating05 {
+	background: url(../icons/rating05.png) no-repeat left;
+}
+.rating > .rating10 {
+	background: url(../icons/rating10.png) no-repeat left;
+}
+.rating > .rating15 {
+	background: url(../icons/rating15.png) no-repeat left;
+}
+.rating > .rating20 {
+	background: url(../icons/rating20.png) no-repeat left;
+}
+.rating > .rating25 {
+	background: url(../icons/rating25.png) no-repeat left;
+}
+.rating > .rating30 {
+	background: url(../icons/rating30.png) no-repeat left;
+}
+.rating > .rating35 {
+	background: url(../icons/rating35.png) no-repeat left;
+}
+.rating > .rating40 {
+	background: url(../icons/rating40.png) no-repeat left;
+}
+.rating > .rating45 {
+	background: url(../icons/rating45.png) no-repeat left;
+}
+.rating > .rating50 {
+	background: url(../icons/rating50.png) no-repeat left;
+}

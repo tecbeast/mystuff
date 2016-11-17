@@ -11,7 +11,7 @@ CREATE TABLE countries (
 CREATE TABLE games (
 	id BIGINT NOT NULL AUTO_INCREMENT,
 	name VARCHAR(80) NOT NULL,
-	edition_year INTEGER,
+	published_year INTEGER,
 	players_min TINYINT,
 	players_max TINYINT,
 	playtime_min TINYINT,

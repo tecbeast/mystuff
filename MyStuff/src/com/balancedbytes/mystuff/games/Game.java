@@ -11,7 +11,7 @@ import com.balancedbytes.mystuff.RestData;
 public class Game extends RestData {
 
 	private String name;
-	private Integer editionYear;
+	private Integer publishedYear;
 	private Integer playersMin;
 	private Integer playersMax;
 	private Integer playtimeMin;
@@ -34,12 +34,12 @@ public class Game extends RestData {
 		this.name = name;
 	}
 	
-	public Integer getEditionYear() {
-		return editionYear;
+	public Integer getPublishedYear() {
+		return publishedYear;
 	}
 	
-	public void setEditionYear(Integer editionYear) {
-		this.editionYear = editionYear;
+	public void setPublishedYear(Integer editionYear) {
+		this.publishedYear = editionYear;
 	}
 	
 	public Integer getPlayersMin() {
