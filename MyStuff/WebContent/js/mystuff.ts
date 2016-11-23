@@ -1,12 +1,12 @@
 /// <reference path="./lib/jquery.d.ts" />
 
-import { Author, Authors } from './Authors';
+import { Author, Authors } from './authors';
 
 export function start(): void {
-	Authors.findAll(callback);
+	new Authors().findAll(onSuccess);
 }
 
-function callback(authors: Authors): void {
+function onSuccess(authors: Authors): void {
 	for (let author of authors.authors) {
 		$('#authors').append(
 			$('<li>').append(
