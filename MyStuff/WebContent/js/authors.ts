@@ -50,7 +50,7 @@ export class Authors {
             dataType: "json",
             success: function (data) {
                 callback(this.init(data));
-            }
+            }.bind(this)
         });
     }
 

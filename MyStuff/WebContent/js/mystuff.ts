@@ -7,7 +7,7 @@ export function start(): void {
 }
 
 function onSuccess(authors: Authors): void {
-	for (let author of authors.authors) {
+	for (var author of authors.authors) {
 		$('#authors').append(
 			$('<li>').append(
 				author.lastName + ", " + author.firstName

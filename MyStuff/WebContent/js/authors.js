@@ -37,7 +37,7 @@ define(["require", "exports", './config', './countries'], function (require, exp
                 dataType: "json",
                 success: function (data) {
                     callback(this.init(data));
-                }
+                }.bind(this)
             });
         };
         return Authors;
