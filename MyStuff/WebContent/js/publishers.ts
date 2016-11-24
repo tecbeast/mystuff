@@ -1,51 +1,49 @@
 import * as Rest from './rest';
 import { Country } from './countries';
 
-const PATH = 'authors/';
+const PATH = 'publishers/';
 
-export class Author implements Rest.RestData {
+export class Publisher implements Rest.RestData {
 
     id: string;
     href: string;
-    firstName: string;
-    lastName: string;
+    name: string;
     country: Country;
 
     constructor(data?: any) {
         this.init(data);
     }
 
-    init(data?: any): Author {
+    init(data?: any): Publisher {
         this.id = (data && data.id) ? data.id : null;
         this.href = (data && data.link && data.link.href) ? data.link.href : null;
-        this.firstName = (data && data.firstName) ? data.firstName : null;
-        this.lastName = (data && data.lastName) ? data.lastName : null;
+        this.name = (data && data.name) ? data.name : null;
         this.country = (data && data.country) ? new Country(data.country) : null;
         return this;
     }
 
 }
 
-export class Authors implements Rest.RestData {
+export class Publishers implements Rest.RestData {
 
-    authors: Author[];
+    publishers: Publisher[];
 
     constructor(data?: any) {
         this.init(data);
     }
 
-    init(data?: any): Authors {
-        this.authors = [];
-        if (data && data.authors) {
-            for (var authorData of data.authors) {
-                this.authors.push(new Author(authorData));
+    init(data?: any): Publishers {
+        this.publishers = [];
+        if (data && data.publishers) {
+            for (var publisherData of data.publishers) {
+                this.publishers.push(new Publisher(publisherData));
             }
         }
         return this;
     }
 
     findAll(onSuccess: Rest.OnSuccess): void {
-        console.log('findAllAuthors()');
+        console.log('findAllPublishers()');
         Rest.get(PATH, this, onSuccess);
     }
 

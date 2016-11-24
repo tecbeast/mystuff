@@ -1,16 +1,18 @@
 /// <reference path="./lib/jquery.d.ts" />
 
-import { Author, Authors } from './authors';
+import { Game, Games } from './games';
 
 export function start(): void {
-	new Authors().findAll(onSuccess);
+	new Games().findAll(onSuccess);
 }
 
-function onSuccess(authors: Authors): void {
-	for (var author of authors.authors) {
-		$('#authors').append(
+function onSuccess(games: Games): void {
+	for (var game of games.games) {		
+		var author = game.authors.authors[0];
+		$('#games').append(
 			$('<li>').append(
-				author.lastName + ", " + author.firstName
+				game.name + ': '
+				+ author.lastName + ", " + author.firstName
 			)
 		);
 	}

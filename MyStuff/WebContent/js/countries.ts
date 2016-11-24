@@ -4,10 +4,13 @@ export class Country {
     name: string;
 
     constructor(data?: any) {
-        if (data) {
-            this.code = data.code;
-            this.name = data.name;
-        }
+        this.init(data);
+    }
+
+    init(data?: any) : Country {
+        this.code = (data && data.code) ? data.code : null;
+        this.name = (data && data.name) ? data.name : null;
+        return this;
     }
 
 }

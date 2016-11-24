@@ -1,12 +1,13 @@
-define(["require", "exports", './config', './countries'], function (require, exports, Config, countries_1) {
+define(["require", "exports", './rest', './countries'], function (require, exports, Rest, countries_1) {
     "use strict";
+    var PATH = 'authors/';
     var Author = (function () {
         function Author(data) {
             this.init(data);
         }
         Author.prototype.init = function (data) {
             this.id = (data && data.id) ? data.id : null;
-            this.url = (data && data.utl) ? data.url : null;
+            this.href = (data && data.link && data.link.href) ? data.link.href : null;
             this.firstName = (data && data.firstName) ? data.firstName : null;
             this.lastName = (data && data.lastName) ? data.lastName : null;
             this.country = (data && data.country) ? new countries_1.Country(data.country) : null;
@@ -29,16 +30,9 @@ define(["require", "exports", './config', './countries'], function (require, exp
             }
             return this;
         };
-        Authors.prototype.findAll = function (callback) {
-            console.log('findAll');
-            $.ajax({
-                type: 'GET',
-                url: Config.BASE_URL + 'authors/',
-                dataType: "json",
-                success: function (data) {
-                    callback(this.init(data));
-                }.bind(this)
-            });
+        Authors.prototype.findAll = function (onSuccess) {
+            console.log('findAllAuthors()');
+            Rest.get(PATH, this, onSuccess);
         };
         return Authors;
     }());
