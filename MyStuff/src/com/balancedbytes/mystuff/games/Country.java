@@ -1,20 +1,16 @@
 package com.balancedbytes.mystuff.games;
 
-import javax.xml.bind.annotation.XmlAccessType;
-import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlValue;
 
 @XmlRootElement
-@XmlAccessorType(XmlAccessType.FIELD)
 public class Country {
 	
-	@XmlAttribute
 	private String code;  // primary key
-	@XmlValue
 	private String name;
 	
+	@XmlAttribute
 	public String getCode() {
 		return code;
 	}
@@ -23,6 +19,7 @@ public class Country {
 		this.code = code;
 	}
 	
+	@XmlValue
 	public String getName() {
 		return name;
 	}
