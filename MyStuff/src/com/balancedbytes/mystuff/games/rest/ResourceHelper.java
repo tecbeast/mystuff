@@ -33,9 +33,8 @@ public abstract class ResourceHelper {
 
 	protected void addLinks(RestData data, String basePath) {
 		if (data != null) {
-			data.clearLinks();
 			UriBuilder uriBuilder = uriInfo.getBaseUriBuilder().path(basePath).path(data.getId());
-			data.addLink(Link.fromUriBuilder(uriBuilder).rel("self").build());
+			data.setLink(Link.fromUriBuilder(uriBuilder).rel("self").build());
 		}
 	}
 

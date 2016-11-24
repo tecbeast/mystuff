@@ -1,13 +1,10 @@
 package com.balancedbytes.mystuff.games;
 
-import javax.xml.bind.annotation.XmlAccessType;
-import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlRootElement;
 
 import com.balancedbytes.mystuff.RestData;
 
 @XmlRootElement
-@XmlAccessorType(XmlAccessType.FIELD)
 public class Author extends RestData {
 	
 	private String firstName;
