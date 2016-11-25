@@ -26,6 +26,52 @@ define(["require", "exports", './rest', './authors', './publishers', './images',
             this.notes = (data && data.notes) ? new notes_1.Notes(data.notes) : new notes_1.Notes();
             return this;
         };
+        Object.defineProperty(Game.prototype, "playerStat", {
+            get: function () {
+                return this.playersMin + ' - ' + this.playersMax + ' Spieler';
+            },
+            enumerable: true,
+            configurable: true
+        });
+        Object.defineProperty(Game.prototype, "playtimeStat", {
+            get: function () {
+                if (this.playtimeMax) {
+                    return this.playtimeMin + ' - ' + this.playtimeMax + ' Min';
+                }
+                else {
+                    return this.playtimeMin + '+ Min';
+                }
+            },
+            enumerable: true,
+            configurable: true
+        });
+        Object.defineProperty(Game.prototype, "ageStat", {
+            get: function () {
+                return this.ageMin + '+ Jahre';
+            },
+            enumerable: true,
+            configurable: true
+        });
+        Object.defineProperty(Game.prototype, "ratingStat", {
+            get: function () {
+                if (this.rating && (this.rating > 0) && (this.rating <= 10)) {
+                    return '' + (this.rating / 2);
+                }
+                return '';
+            },
+            enumerable: true,
+            configurable: true
+        });
+        Object.defineProperty(Game.prototype, "ratingClass", {
+            get: function () {
+                if (this.rating && (this.rating > 0) && (this.rating <= 10)) {
+                    return 'rating' + (this.rating > 1) ? (this.rating * 5) : '05';
+                }
+                return '';
+            },
+            enumerable: true,
+            configurable: true
+        });
         return Game;
     }());
     exports.Game = Game;

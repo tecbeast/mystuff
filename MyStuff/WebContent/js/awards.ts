@@ -52,6 +52,14 @@ export class Awards implements Rest.RestData {
         return this;
     }
 
+    get fullNames(): string[] {
+        var fullNames = [];
+        for (var award of this.awards) {
+            fullNames.push(award.fullName);            
+        }
+        return fullNames;
+    }
+
     findAll(onSuccess: Rest.OnSuccess): void {
         console.log('findAllAwards()');
         Rest.get(PATH, this, onSuccess);

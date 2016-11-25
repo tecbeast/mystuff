@@ -35,6 +35,19 @@ define(["require", "exports", './rest'], function (require, exports, Rest) {
             }
             return this;
         };
+        Object.defineProperty(Images.prototype, "coverUrl", {
+            get: function () {
+                for (var _i = 0, _a = this.images; _i < _a.length; _i++) {
+                    var image = _a[_i];
+                    if (image.role === 'overview') {
+                        return image.url;
+                    }
+                }
+                return location.protocol + '//' + location.host + '/' + location.pathname + '/icons/empty_cover.png';
+            },
+            enumerable: true,
+            configurable: true
+        });
         Images.prototype.findAll = function (onSuccess) {
             console.log('findAllImages()');
             Rest.get(PATH, this, onSuccess);

@@ -54,6 +54,36 @@ export class Game implements Rest.RestData {
         return this;
     }
 
+    get playerStat() {
+        return this.playersMin + ' - ' + this.playersMax + ' Spieler';
+    }
+
+    get playtimeStat() {
+        if (this.playtimeMax) {
+            return this.playtimeMin + ' - ' + this.playtimeMax + ' Min';
+        } else {
+            return this.playtimeMin + '+ Min'
+        }
+    }
+
+    get ageStat() {
+        return this.ageMin + '+ Jahre';
+    }
+
+    get ratingStat() {
+        if (this.rating && (this.rating > 0) && (this.rating <= 10)) {
+            return '' + (this.rating / 2);
+        }
+        return '';
+    }
+
+    get ratingClass() {
+        if (this.rating && (this.rating > 0) && (this.rating <= 10)) {
+            return 'rating' + (this.rating > 1) ? (this.rating * 5) : '05';
+        }
+        return '';
+    }
+
 }
 
 export class Games implements Rest.RestData {

@@ -48,6 +48,14 @@ export class Authors implements Rest.RestData {
         return this;
     }
 
+    get fullNames(): string[] {
+        var fullNames = [];
+        for (var author of this.authors) {
+            fullNames.push(author.fullName);            
+        }
+        return fullNames;
+    }
+
     findAll(onSuccess: Rest.OnSuccess): void {
         console.log('findAllAuthors()');
         Rest.get(PATH, this, onSuccess);

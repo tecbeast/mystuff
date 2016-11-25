@@ -42,6 +42,18 @@ define(["require", "exports", './rest', './countries'], function (require, expor
             }
             return this;
         };
+        Object.defineProperty(Awards.prototype, "fullNames", {
+            get: function () {
+                var fullNames = [];
+                for (var _i = 0, _a = this.awards; _i < _a.length; _i++) {
+                    var award = _a[_i];
+                    fullNames.push(award.fullName);
+                }
+                return fullNames;
+            },
+            enumerable: true,
+            configurable: true
+        });
         Awards.prototype.findAll = function (onSuccess) {
             console.log('findAllAwards()');
             Rest.get(PATH, this, onSuccess);

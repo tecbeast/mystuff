@@ -50,6 +50,15 @@ export class Images implements Rest.RestData {
         return this;
     }
 
+    get coverUrl() {
+        for (var image of this.images) {
+            if (image.role === 'overview') {
+                return image.url;
+            }
+        }
+        return location.protocol + '//' + location.host + '/' + location.pathname + '/icons/empty_cover.png';
+    }
+
     findAll(onSuccess: Rest.OnSuccess): void {
         console.log('findAllImages()');
         Rest.get(PATH, this, onSuccess);

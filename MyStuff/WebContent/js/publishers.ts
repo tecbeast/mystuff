@@ -42,6 +42,14 @@ export class Publishers implements Rest.RestData {
         return this;
     }
 
+    get names(): string[] {
+        var names = [];
+        for (var publisher of this.publishers) {
+            names.push(publisher.name);            
+        }
+        return names;
+    }
+
     findAll(onSuccess: Rest.OnSuccess): void {
         console.log('findAllPublishers()');
         Rest.get(PATH, this, onSuccess);

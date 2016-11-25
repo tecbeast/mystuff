@@ -1,6 +1,5 @@
 .game-overview {
 	background: rgba(255, 255, 255, 0.5);
-	zzzborder: 2px solid #c0c0c0;
 	border-radius: 3px;
 	box-shadow: 0 1px 5px rgba(0, 0, 0, 0.4);
 	font-family: Helvetica Neue, Helvetica, Arial, sans-serif;
@@ -8,6 +7,7 @@
 	width: 700px;
 	height: 220px;
 	margin-bottom: 10px;
+	cursor: pointer;
 }
 .game-overview > .cover {
 	position: absolute;
@@ -19,17 +19,24 @@
 .game-data {
 	position: absolute;
 	top: 10px;
-	left: 220px;
+	left: 225px;
 	right: 10px;
 	bottom: 10px;
 	font-size: 14px;
 }
 .game-data > .title {
+	height: 28px;
 	font-size: 22px;
 	font-weight: bold;
 	position: relative;
 	width: 100%;
 	margin-bottom: 5px;
+	background: linear-gradient(#c0c0c0, #f0f0f0);
+	zzzbackground-color: #e0e0e0;
+	border-radius: 3px;
+	padding-left: 5px;
+	padding-top: 3px;
+	margin-left: -5px;
 }
 .game-data > .subtitle {
 	font-size: 16px;

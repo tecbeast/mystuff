@@ -37,6 +37,18 @@ define(["require", "exports", './rest', './countries'], function (require, expor
             }
             return this;
         };
+        Object.defineProperty(Authors.prototype, "fullNames", {
+            get: function () {
+                var fullNames = [];
+                for (var _i = 0, _a = this.authors; _i < _a.length; _i++) {
+                    var author = _a[_i];
+                    fullNames.push(author.fullName);
+                }
+                return fullNames;
+            },
+            enumerable: true,
+            configurable: true
+        });
         Authors.prototype.findAll = function (onSuccess) {
             console.log('findAllAuthors()');
             Rest.get(PATH, this, onSuccess);

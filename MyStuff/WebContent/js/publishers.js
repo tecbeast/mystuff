@@ -29,6 +29,18 @@ define(["require", "exports", './rest', './countries'], function (require, expor
             }
             return this;
         };
+        Object.defineProperty(Publishers.prototype, "names", {
+            get: function () {
+                var names = [];
+                for (var _i = 0, _a = this.publishers; _i < _a.length; _i++) {
+                    var publisher = _a[_i];
+                    names.push(publisher.name);
+                }
+                return names;
+            },
+            enumerable: true,
+            configurable: true
+        });
         Publishers.prototype.findAll = function (onSuccess) {
             console.log('findAllPublishers()');
             Rest.get(PATH, this, onSuccess);

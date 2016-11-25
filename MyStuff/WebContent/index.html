@@ -28,7 +28,9 @@ require(["jquery", "mystuff"],
 </script>
 <script id="overview-template" type="text/x-handlebars-template">
 	<div class="game-overview">
+		{{#with images}}
 		<img class="cover" src="{{coverUrl}}">
+		{{/with}}
 		<div class="game-data">
 			<div class="title">{{title}}</div>
 			{{#if subtitle}}
@@ -37,35 +39,41 @@ require(["jquery", "mystuff"],
 			<div class="basics">
 				<div class="players">
 					<div class="icon">&nbsp;</div>
-					<div class="value">{{players}}</div>
+					<div class="value">{{playerStat}}</div>
 				</div>
 				<div class="playtime">
 					<div class="icon">&nbsp;</div>
-					<div class="value">{{playtime}}</div>
+					<div class="value">{{playtimeStat}}</div>
 				</div>
 				<div class="age">
 					<div class="icon">&nbsp;</div>
-					<div class="value">{{age}}</div>				
+					<div class="value">{{ageStat}}</div>				
 				</div>
 			</div>
 			<div class="publishers">
 				<div class="label">Verlage:</div>
-				<div class="value">{{publishers}}</div>
+				{{#with publishers}}
+				<div class="value">{{#each names}}{{#unless @first}}, {{/unless}}{{this}}{{/each}}</div>
+				{{/with}}
 			</div>
 			<div class="authors">
 				<div class="label">Autoren:</div>
-				<div class="value">{{authors}}</div>
+				{{#with authors}}
+				<div class="value">{{#each fullNames}}{{#unless @first}}, {{/unless}}{{this}}{{/each}}</div>
+				{{/with}}
 			</div>
 			{{#if awards}}
 			<div class="awards">
 				<div class="label">Preise:</div>
-				<div class="value">{{awards}}</div>
+				{{#with awards}}
+				<div class="value">{{#each fullNames}}{{#unless @first}}, {{/unless}}{{this}}{{/each}}</div>
+				{{/with}}
 			</div>
 			{{/if}}
 			{{#if rating}}
 			<div class="rating">
 				<div class="label">Wertung:</div>
-				<div class="{{ratingClass}}">{{rating}}</div>
+				<div class="{{ratingClass}}">{{ratingStat}}</div>
 			</div>
 			{{/if}}
 		</div>
