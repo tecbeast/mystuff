@@ -8,24 +8,68 @@
   	<title>MyStuff Games</title>
 </head>
 <body>
-	<div id="content">
-		<ul id="games"></ul>
-	</div>
+<div id="games"></div>
 <script src="js/lib/require-2.3.2.js"></script>
 <script>
 require.config({
 	baseUrl: "js",
 	paths: {
-		"jQuery": "lib/jquery-3.1.1"
+		"jquery": "lib/jquery-3.1.1",
+		"handlebars": "lib/handlebars-4.0.5"
 	}
 });
-require(["jQuery", "mystuff"],
+require(["jquery", "mystuff"],
 	function(jQuery, MyStuff) {
 		$(document).ready(function() {
 			MyStuff.start();
     	});
 	}
 );
+</script>
+<script id="overview-template" type="text/x-handlebars-template">
+	<div class="game-overview">
+		<img class="cover" src="{{coverUrl}}">
+		<div class="game-data">
+			<div class="title">{{title}}</div>
+			{{#if subtitle}}
+			<div class="subtitle">{{subtitle}}</div>
+			{{/if}}
+			<div class="basics">
+				<div class="players">
+					<div class="icon">&nbsp;</div>
+					<div class="value">{{players}}</div>
+				</div>
+				<div class="playtime">
+					<div class="icon">&nbsp;</div>
+					<div class="value">{{playtime}}</div>
+				</div>
+				<div class="age">
+					<div class="icon">&nbsp;</div>
+					<div class="value">{{age}}</div>				
+				</div>
+			</div>
+			<div class="publishers">
+				<div class="label">Verlage:</div>
+				<div class="value">{{publishers}}</div>
+			</div>
+			<div class="authors">
+				<div class="label">Autoren:</div>
+				<div class="value">{{authors}}</div>
+			</div>
+			{{#if awards}}
+			<div class="awards">
+				<div class="label">Preise:</div>
+				<div class="value">{{awards}}</div>
+			</div>
+			{{/if}}
+			{{#if rating}}
+			<div class="rating">
+				<div class="label">Wertung:</div>
+				<div class="{{ratingClass}}">{{rating}}</div>
+			</div>
+			{{/if}}
+		</div>
+	</div>
 </script>
 </body>
 </html>

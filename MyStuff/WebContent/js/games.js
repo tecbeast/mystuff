@@ -8,7 +8,8 @@ define(["require", "exports", './rest', './authors', './publishers', './images',
         Game.prototype.init = function (data) {
             this.id = (data && data.id) ? data.id : null;
             this.href = (data && data.link && data.link.href) ? data.link.href : null;
-            this.name = (data && data.name) ? data.name : null;
+            this.title = (data && data.title) ? data.title : null;
+            this.subtitle = (data && data.subtitle) ? data.subtitle : null;
             this.publishedYear = (data && data.publishedYear) ? data.publishedYear : null;
             this.playersMin = (data && data.playersMin) ? data.playersMin : 0;
             this.playersMax = (data && data.playersMax) ? data.playersMax : 0;

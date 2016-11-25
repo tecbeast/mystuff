@@ -23,6 +23,9 @@ export class Image implements Rest.RestData {
         this.width = (data && data.width) ? data.width : 0;
         this.height = (data && data.height) ? data.height : 0;
         this.url = (data && data.url) ? data.url : null;
+        if ((this.url) && (this.url.charAt(0) === '/')) {
+            this.url = location.protocol + '//' + location.host + '/' + location.pathname + this.url;
+        }
         this.description = (data && data.description) ? data.description : null;
         return this;
     }

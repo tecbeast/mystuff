@@ -10,7 +10,8 @@ CREATE TABLE countries (
 
 CREATE TABLE games (
 	id BIGINT NOT NULL AUTO_INCREMENT,
-	name VARCHAR(80) NOT NULL,
+	title VARCHAR(80) NOT NULL,
+	subtitle VARCHAR(80),
 	published_year INTEGER,
 	players_min TINYINT,
 	players_max TINYINT,
@@ -361,10 +362,10 @@ INSERT INTO countries VALUES('ZA','Südafrika');
 INSERT INTO countries VALUES('ZM','Sambia');
 INSERT INTO countries VALUES('ZW','Simbabwe');
 
-/* Table games: id, name, edition_year, players_min, players_max, playtime_min, playtime_max, playtime_per_player, age_min, last_played, rating */
-INSERT INTO games VALUES(1, 'Die Siedler von Catan', 1995, 3, 4, 60, null, false, 10, 'Beschreibung folgt', null);
-INSERT INTO games VALUES(2, '6 nimmt!', 1994, 2, 10, 45, null, false, 10, null, null);
-INSERT INTO games VALUES(3, 'Colt Express', 2014, 2, 6, 30, null, false, 10, null, null);
+/* Table games: id, title, subtitle, edition_year, players_min, players_max, playtime_min, playtime_max, playtime_per_player, age_min, last_played, rating */
+INSERT INTO games VALUES(1, 'Die Siedler von Catan', 'Grundspiel', 1995, 3, 4, 60, null, false, 10, 'Beschreibung folgt', null);
+INSERT INTO games VALUES(2, '6 nimmt!', null, 1994, 2, 10, 45, null, false, 10, null, null);
+INSERT INTO games VALUES(3, 'Colt Express', 'Grundspiel', 2014, 2, 6, 30, null, false, 10, null, null);
 
 /* Table authors: id, last_name, first_name, country_code */
 INSERT INTO authors VALUES(1, 'Teuber', 'Klaus', 'DE');
@@ -397,11 +398,15 @@ INSERT INTO game_awards VALUES(1, 2, 1995);
 INSERT INTO game_awards VALUES(2, 3, 1994);
 INSERT INTO game_awards VALUES(3, 1, 2015);
 
-/* Table images: id, description, role, width, height, url */
-INSERT INTO images VALUES(1, "box", 1067, 1500, "https://images-na.ssl-images-amazon.com/images/I/91ReTacJ0WL._SL1500_.jpg", "Box von 6 Nimmt (Amazon)");
+/* Table images: id, role, width, height, url, description */
+INSERT INTO images VALUES(1, 'overview', 200, 200, '/images/catan_small.jpg', 'Siedler von Catan');
+INSERT INTO images VALUES(2, 'overview', 200, 200, '/images/6nimmt_small.jpg', '6 nimmt!');
+INSERT INTO images VALUES(3, 'overview', 200, 200, '/images/colt_express_small.jpg', 'Colt Express');
 
 /* Table game_images: game_id, image_id */
-INSERT INTO game_images VALUES(2, 1);
+INSERT INTO game_images VALUES(1, 1);
+INSERT INTO game_images VALUES(2, 2);
+INSERT INTO game_images VALUES(3, 3);
 
 /* Table notes: id, added, note */
 INSERT INTO notes VALUES(1, '2016-10-24 23:04:00', 'Ein erster Kommentar');

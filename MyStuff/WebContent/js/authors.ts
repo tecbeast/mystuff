@@ -24,6 +24,10 @@ export class Author implements Rest.RestData {
         return this;
     }
 
+    get fullName() {
+        return this.firstName + ' ' + this.lastName;
+    }
+
 }
 
 export class Authors implements Rest.RestData {

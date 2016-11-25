@@ -7,7 +7,8 @@ import com.balancedbytes.mystuff.RestData;
 @XmlRootElement
 public class Game extends RestData {
 
-	private String name;
+	private String title;
+	private String subtitle;
 	private Integer publishedYear;
 	private Integer playersMin;
 	private Integer playersMax;
@@ -23,12 +24,20 @@ public class Game extends RestData {
 	private Awards awards;
 	private Notes notes;
 
-	public String getName() {
-		return name;
+	public String getTitle() {
+		return title;
 	}
 	
-	public void setName(String name) {
-		this.name = name;
+	public void setTitle(String name) {
+		this.title = name;
+	}
+	
+	public String getSubtitle() {
+		return subtitle;
+	}
+	
+	public void setSubtitle(String subtitle) {
+		this.subtitle = subtitle;
 	}
 	
 	public Integer getPublishedYear() {

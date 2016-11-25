@@ -13,6 +13,18 @@ define(["require", "exports", './rest', './countries'], function (require, expor
             this.country = (data && data.country) ? new countries_1.Country(data.country) : null;
             return this;
         };
+        Object.defineProperty(Award.prototype, "fullName", {
+            get: function () {
+                if (this.year) {
+                    return this.name + ' ' + this.year;
+                }
+                else {
+                    return this.name;
+                }
+            },
+            enumerable: true,
+            configurable: true
+        });
         return Award;
     }());
     exports.Award = Award;

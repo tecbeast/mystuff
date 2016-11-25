@@ -23,42 +23,42 @@ import com.balancedbytes.mystuff.games.Publishers;
 public class GameDataAccess extends RestDataAccess<Game> {
 	
 	private static final String _SQL_FIND_ALL_GAMES = 
-		"SELECT * FROM games ORDER BY name";
+		"SELECT * FROM games ORDER BY title";
 	private static final String _SQL_FIND_GAME_BY_ID =
 		"SELECT * FROM games WHERE id = ?";
 	private static final String _SQL_FIND_GAMES_FILTERED =
 		"SELECT * FROM games"
-		+ " WHERE UPPER(name) LIKE ? AND players_min >= ? AND players_max <= ?"
-		+ " ORDER BY name";
+		+ " WHERE UPPER(title) LIKE ? AND players_min >= ? AND players_max <= ?"
+		+ " ORDER BY title";
 	private static final String _SQL_FIND_GAMES_BY_AUTHOR_ID =
 		"SELECT game_authors.author_id, games.*"
 		+ " FROM game_authors LEFT JOIN games"
 		+ " ON game_authors.game_id = games.id"
 		+ " WHERE game_authors.author_id = ?"
-		+ " ORDER BY games.name";
+		+ " ORDER BY games.title";
 	private static final String _SQL_FIND_GAMES_BY_PUBLISHER_ID =
 		"SELECT game_publishers.publisher_id, games.*"
 		+ " FROM game_publishers LEFT JOIN games"
 		+ " ON game_publishers.game_id = games.id"
 		+ " WHERE game_publishers.publisher_id = ?"
-		+ " ORDER BY games.name";
+		+ " ORDER BY games.title";
 	private static final String _SQL_FIND_GAMES_BY_AWARD_ID =
 		"SELECT game_awards.award_id, games.*"
 		+ " FROM game_awards LEFT JOIN games"
 		+ " ON game_awards.game_id = games.id"
 		+ " WHERE game_awards.award_id = ?"
-		+ " ORDER BY games.name";
+		+ " ORDER BY games.title";
 	private static final String _SQL_FIND_GAMES_BY_AWARD_ID_FILTERED =
 		"SELECT game_awards.award_id, games.*, game_awards.year"
 		+ " FROM game_awards LEFT JOIN games"
 		+ " ON game_awards.game_id = games.id"
 		+ " WHERE game_awards.award_id = ? AND game_awards.year = ?"
-		+ " ORDER BY games.name";
+		+ " ORDER BY games.title";
 	private static final String _SQL_CREATE_GAME =
 		"INSERT INTO games"
-		+ " (name, published_year, players_min, players_max, playtime_min,"
+		+ " (title, subtitle, published_year, players_min, players_max, playtime_min,"
 		+ " playtime_max, playtime_per_player, age_min, description, rating)"
-		+ " VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
+		+ " VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
 	private static final String _SQL_CREATE_GAME_AUTHORS =
 		"INSERT INTO game_authors"
 		+ " (game_id, author_id)"
@@ -77,8 +77,8 @@ public class GameDataAccess extends RestDataAccess<Game> {
 		+ " VALUES (?, ?)";
 	private static final String _SQL_UPDATE_GAME =
 		"UPDATE games"
-		+ " SET name = ?, published_year = ?, players_min = ?, players_max = ?,"
-		+ " playtime_min = ?, playtime_max = ?, playtime_per_player = ?,"
+		+ " SET title = ?, subtitle = ?, published_year = ?, players_min = ?,"
+		+ " players_max = ?, playtime_min = ?, playtime_max = ?, playtime_per_player = ?,"
 		+ " age_min = ?, description = ?, rating = ?"
 		+ " WHERE id = ?";
 	private static final String _SQL_DELETE_GAME =
@@ -208,16 +208,17 @@ public class GameDataAccess extends RestDataAccess<Game> {
 
     private void createGame(Connection c, Game game) throws SQLException {
     	try (PreparedStatement ps = c.prepareStatement(_SQL_CREATE_GAME, new String[] { "id" })) {
-    		ps.setString(1, game.getName());
-    		ps.setInt(2, game.getPublishedYear());
-    		ps.setInt(3, game.getPlayersMin());
-    		ps.setInt(4, game.getPlayersMax());
-	        ps.setInt(5, game.getPlaytimeMin());
-	        ps.setInt(6, game.getPlaytimeMax());
-	        ps.setBoolean(7, game.getPlaytimePerPlayer());
-	        ps.setInt(8, game.getAgeMin());
-	        ps.setString(9, game.getDescription());
-	        ps.setInt(10, game.getRating());
+    		ps.setString(1, game.getTitle());
+    		ps.setString(2, game.getSubtitle());
+    		ps.setInt(3, game.getPublishedYear());
+    		ps.setInt(4, game.getPlayersMin());
+    		ps.setInt(5, game.getPlayersMax());
+	        ps.setInt(6, game.getPlaytimeMin());
+	        ps.setInt(7, game.getPlaytimeMax());
+	        ps.setBoolean(8, game.getPlaytimePerPlayer());
+	        ps.setInt(9, game.getAgeMin());
+	        ps.setString(10, game.getDescription());
+	        ps.setInt(11, game.getRating());
 	        ps.executeUpdate();
 	        ResultSet rs = ps.getGeneratedKeys();
 	        while (rs.next()) {
@@ -264,17 +265,18 @@ public class GameDataAccess extends RestDataAccess<Game> {
     	long gameId = MyStuffUtil.parseLong(game.getId());
         try (Connection c = ConnectionHelper.getConnection()) {
             PreparedStatement ps = c.prepareStatement(_SQL_UPDATE_GAME);
-    		ps.setString(1, game.getName());
-    		ps.setInt(2, game.getPublishedYear());
-    		ps.setInt(3, game.getPlayersMin());
-    		ps.setInt(4, game.getPlayersMax());
-	        ps.setInt(5, game.getPlaytimeMin());
-	        ps.setInt(6, game.getPlaytimeMax());
-	        ps.setBoolean(7, game.getPlaytimePerPlayer());
-	        ps.setInt(8, game.getAgeMin());
-	        ps.setString(9, game.getDescription());
-	        ps.setInt(10, game.getRating());
-            ps.setLong(11, MyStuffUtil.parseLong(game.getId()));
+    		ps.setString(1, game.getTitle());
+    		ps.setString(2, game.getSubtitle());
+    		ps.setInt(3, game.getPublishedYear());
+    		ps.setInt(4, game.getPlayersMin());
+    		ps.setInt(5, game.getPlayersMax());
+	        ps.setInt(6, game.getPlaytimeMin());
+	        ps.setInt(7, game.getPlaytimeMax());
+	        ps.setBoolean(8, game.getPlaytimePerPlayer());
+	        ps.setInt(9, game.getAgeMin());
+	        ps.setString(10, game.getDescription());
+	        ps.setInt(11, game.getRating());
+            ps.setLong(12, MyStuffUtil.parseLong(game.getId()));
             updated |= (ps.executeUpdate() == 1);
             updated |= deleteGameDependencies(c, gameId);
             updated |= createGameDependencies(c, game);
@@ -311,7 +313,8 @@ public class GameDataAccess extends RestDataAccess<Game> {
     protected Game processRow(ResultSet rs) throws SQLException {
     	Game game = new Game();
     	game.setId(rs.getString("id"));
-    	game.setName(rs.getString("name"));
+    	game.setTitle(rs.getString("title"));
+    	game.setSubtitle(rs.getString("subtitle"));
     	int publishedYear = rs.getInt("published_year");
 		game.setPublishedYear((publishedYear > 0) ? publishedYear : null);
     	int playersMin = rs.getInt("players_min");

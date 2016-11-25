@@ -13,6 +13,13 @@ define(["require", "exports", './rest', './countries'], function (require, expor
             this.country = (data && data.country) ? new countries_1.Country(data.country) : null;
             return this;
         };
+        Object.defineProperty(Author.prototype, "fullName", {
+            get: function () {
+                return this.firstName + ' ' + this.lastName;
+            },
+            enumerable: true,
+            configurable: true
+        });
         return Author;
     }());
     exports.Author = Author;

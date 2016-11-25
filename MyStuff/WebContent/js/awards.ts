@@ -24,6 +24,14 @@ export class Award implements Rest.RestData {
     	return this;
     }
 
+    get fullName() {
+        if (this.year) {
+            return this.name + ' ' + this.year;
+        } else {
+            return this.name;
+        }
+    }
+
 }
 
 export class Awards implements Rest.RestData {
