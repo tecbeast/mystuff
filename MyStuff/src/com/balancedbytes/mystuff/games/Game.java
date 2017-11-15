@@ -31,11 +31,11 @@ public class Game extends RestData {
 	public void setTitle(String title) {
 		this.title = title;
 	}
-
+	
 	public String getSubtitle() {
 		return this.subtitle;
 	}
-
+	
 	public void setSubtitle(String subtitle) {
 		this.subtitle = subtitle;
 	}
