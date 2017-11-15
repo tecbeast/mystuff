@@ -9,41 +9,26 @@ import com.balancedbytes.mystuff.games.Country;
 
 public class CountryCache {
 
-	private static final CountryCache _INSTANCE = new CountryCache();
+	private static Map<String, Country> countryByCode = new HashMap<>();
+	private static CountryDataAccess countryDataAccess = new CountryDataAccess();
 	
-	private Map<String, Country> countryByCode;
-	private CountryDataAccess countryDataAccess;
-	
-	private CountryCache() {
-		countryByCode = new HashMap<>();
-		countryDataAccess = new CountryDataAccess();
-	}
-	
-	private void initInternal() throws SQLException {
-		countryByCode.clear();
-		List<Country> countries = countryDataAccess.findAllCountries();
-		for (Country country : countries) {
-			addInternal(country);
-		}
-	}
-	
-	private void addInternal(Country country) {
+	private static void add(Country country) {
 		if ((country == null) || (country.getCode() == null)) {
 			return;
 		}
 		countryByCode.put(country.getCode(), country);
 	}
 	
-	private Country getInternal(String countryCode) {
-		return countryByCode.get(countryCode);
-	}
-	
 	public static void init() throws SQLException {
-		_INSTANCE.initInternal();
+		countryByCode.clear();
+		List<Country> countries = countryDataAccess.findAllCountries();
+		for (Country country : countries) {
+			add(country);
+		}
 	}
 	
 	public static Country get(String countryCode) {
-		return _INSTANCE.getInternal(countryCode);
+		return countryByCode.get(countryCode);
 	}
 
 }

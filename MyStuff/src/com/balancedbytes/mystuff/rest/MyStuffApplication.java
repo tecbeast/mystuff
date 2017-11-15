@@ -6,12 +6,12 @@ import java.util.Set;
 import javax.ws.rs.ApplicationPath;
 import javax.ws.rs.core.Application;
 
-import com.balancedbytes.mystuff.games.rest.AuthorsResource;
-import com.balancedbytes.mystuff.games.rest.AwardsResource;
-import com.balancedbytes.mystuff.games.rest.GamesResource;
-import com.balancedbytes.mystuff.games.rest.ImagesResource;
-import com.balancedbytes.mystuff.games.rest.NotesResource;
-import com.balancedbytes.mystuff.games.rest.PublishersResource;
+import com.balancedbytes.mystuff.games.rest.api.AuthorsResource;
+import com.balancedbytes.mystuff.games.rest.api.AwardsResource;
+import com.balancedbytes.mystuff.games.rest.api.GamesResource;
+import com.balancedbytes.mystuff.games.rest.api.ImagesResource;
+import com.balancedbytes.mystuff.games.rest.api.NotesResource;
+import com.balancedbytes.mystuff.games.rest.api.PublishersResource;
 import com.balancedbytes.mystuff.rest.compress.GZIPWriterInterceptor;
 import com.balancedbytes.mystuff.rest.json.ObjectMapperContextResolver;
 import com.fasterxml.jackson.jaxrs.json.JacksonJaxbJsonProvider;

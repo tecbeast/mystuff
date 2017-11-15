@@ -10,29 +10,21 @@ import javax.sql.DataSource;
 
 public class ConnectionHelper {
 	
-	private static final ConnectionHelper _INSTANCE = new ConnectionHelper();
-	
-	private DataSource dataSource = null;
-
-	private ConnectionHelper() {
-		try {
-			Context initCtx = new InitialContext();
-			Context envCtx = (Context) initCtx.lookup("java:comp/env");
-			dataSource = (DataSource) envCtx.lookup("jdbc/mystuff");
-		} catch (NamingException e) {
-			throw new MyStuffException(e);
-		}
-	}
-	
-	private Connection getConnectionInternal() throws SQLException {
-		if (dataSource == null) {
-			return null;
-		}
-		return dataSource.getConnection();
-	}
+	private static DataSource dataSource = null;
 
 	public static Connection getConnection() throws SQLException {
-		return _INSTANCE.getConnectionInternal();
+		if (dataSource == null) {
+			try {
+				Context initCtx = new InitialContext();
+				Context envCtx = (Context) initCtx.lookup("java:comp/env");
+				if (envCtx != null) {
+					dataSource = (DataSource) envCtx.lookup("jdbc/mystuff");
+				}
+			} catch (NamingException e) {
+				throw new SQLException("Unable to find named resource", e);
+			}
+		}
+		return (dataSource != null) ? dataSource.getConnection() : null;
 	}
 
 }

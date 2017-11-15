@@ -17,8 +17,8 @@
 	</resource-ref>
 
 	<context-param> 
-    	<param-name>mystuff.defaultPageSize</param-name> 
-    	<param-value>10</param-value> 
+    	<param-name>mystuff.pageSize</param-name> 
+    	<param-value>2</param-value> 
 	</context-param>
 
 </web-app>

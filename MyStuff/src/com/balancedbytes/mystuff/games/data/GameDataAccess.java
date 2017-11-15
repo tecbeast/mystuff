@@ -7,8 +7,6 @@ import java.sql.SQLException;
 
 import com.balancedbytes.mystuff.ConnectionHelper;
 import com.balancedbytes.mystuff.MyStuffUtil;
-import com.balancedbytes.mystuff.RestDataAccess;
-import com.balancedbytes.mystuff.RestDataPaging;
 import com.balancedbytes.mystuff.games.Author;
 import com.balancedbytes.mystuff.games.Authors;
 import com.balancedbytes.mystuff.games.Award;
@@ -19,81 +17,84 @@ import com.balancedbytes.mystuff.games.Note;
 import com.balancedbytes.mystuff.games.Notes;
 import com.balancedbytes.mystuff.games.Publisher;
 import com.balancedbytes.mystuff.games.Publishers;
+import com.balancedbytes.mystuff.games.data.filter.GameDataFilter;
+import com.balancedbytes.mystuff.games.rest.RestDataAccess;
+import com.balancedbytes.mystuff.games.rest.RestDataPaging;
 
 public class GameDataAccess extends RestDataAccess<Game> {
 	
-	private static final String _SQL_FIND_ALL_GAMES = 
-		"SELECT * FROM games ORDER BY name";
-	private static final String _SQL_FIND_GAME_BY_ID =
+	private static final String SQL_FIND_ALL_GAMES = 
+		"SELECT * FROM games ORDER BY title";
+	private static final String SQL_FIND_GAME_BY_ID =
 		"SELECT * FROM games WHERE id = ?";
-	private static final String _SQL_FIND_GAMES_FILTERED =
+	private static final String SQL_FIND_GAMES_FILTERED =
 		"SELECT * FROM games"
-		+ " WHERE UPPER(name) LIKE ? AND players_min >= ? AND players_max <= ?"
-		+ " ORDER BY name";
-	private static final String _SQL_FIND_GAMES_BY_AUTHOR_ID =
+		+ " WHERE UPPER(title) LIKE ? AND players_min >= ? AND players_max <= ?"
+		+ " ORDER BY title";
+	private static final String SQL_FIND_GAMES_BY_AUTHOR_ID =
 		"SELECT game_authors.author_id, games.*"
 		+ " FROM game_authors LEFT JOIN games"
 		+ " ON game_authors.game_id = games.id"
 		+ " WHERE game_authors.author_id = ?"
-		+ " ORDER BY games.name";
-	private static final String _SQL_FIND_GAMES_BY_PUBLISHER_ID =
+		+ " ORDER BY games.title";
+	private static final String SQL_FIND_GAMES_BY_PUBLISHER_ID =
 		"SELECT game_publishers.publisher_id, games.*"
 		+ " FROM game_publishers LEFT JOIN games"
 		+ " ON game_publishers.game_id = games.id"
 		+ " WHERE game_publishers.publisher_id = ?"
-		+ " ORDER BY games.name";
-	private static final String _SQL_FIND_GAMES_BY_AWARD_ID =
+		+ " ORDER BY games.title";
+	private static final String SQL_FIND_GAMES_BY_AWARD_ID =
 		"SELECT game_awards.award_id, games.*"
 		+ " FROM game_awards LEFT JOIN games"
 		+ " ON game_awards.game_id = games.id"
 		+ " WHERE game_awards.award_id = ?"
-		+ " ORDER BY games.name";
-	private static final String _SQL_FIND_GAMES_BY_AWARD_ID_FILTERED =
+		+ " ORDER BY games.title";
+	private static final String SQL_FIND_GAMES_BY_AWARD_ID_FILTERED =
 		"SELECT game_awards.award_id, games.*, game_awards.year"
 		+ " FROM game_awards LEFT JOIN games"
 		+ " ON game_awards.game_id = games.id"
 		+ " WHERE game_awards.award_id = ? AND game_awards.year = ?"
-		+ " ORDER BY games.name";
-	private static final String _SQL_CREATE_GAME =
+		+ " ORDER BY games.title";
+	private static final String SQL_CREATE_GAME =
 		"INSERT INTO games"
-		+ " (name, published_year, players_min, players_max, playtime_min,"
+		+ " (title, subtitle, published_year, players_min, players_max, playtime_min,"
 		+ " playtime_max, playtime_per_player, age_min, description, rating)"
-		+ " VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
-	private static final String _SQL_CREATE_GAME_AUTHORS =
+		+ " VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
+	private static final String SQL_CREATE_GAME_AUTHORS =
 		"INSERT INTO game_authors"
 		+ " (game_id, author_id)"
 		+ " VALUES (?, ?)";
-	private static final String _SQL_CREATE_GAME_PUBLISHERS =
+	private static final String SQL_CREATE_GAME_PUBLISHERS =
 		"INSERT INTO game_publishers"
 		+ " (game_id, publisher_id)"
 		+ " VALUES (?, ?)";
-	private static final String _SQL_CREATE_GAME_AWARDS =
+	private static final String SQL_CREATE_GAME_AWARDS =
 		"INSERT INTO game_awards"
 		+ " (game_id, award_id, year)"
 		+ " VALUES (?, ?)";
-	private static final String _SQL_CREATE_GAME_NOTES =
+	private static final String SQL_CREATE_GAME_NOTES =
 		"INSERT INTO game_notes"
 		+ " (game_id, note_id)"
 		+ " VALUES (?, ?)";
-	private static final String _SQL_UPDATE_GAME =
+	private static final String SQL_UPDATE_GAME =
 		"UPDATE games"
-		+ " SET name = ?, published_year = ?, players_min = ?, players_max = ?,"
+		+ " SET name = ?, subtitle = ?, published_year = ?, players_min = ?, players_max = ?,"
 		+ " playtime_min = ?, playtime_max = ?, playtime_per_player = ?,"
 		+ " age_min = ?, description = ?, rating = ?"
 		+ " WHERE id = ?";
-	private static final String _SQL_DELETE_GAME =
+	private static final String SQL_DELETE_GAME =
 		"DELETE FROM games WHERE id = ?";
-	private static final String _SQL_DELETE_GAME_AUTHORS =
+	private static final String SQL_DELETE_GAME_AUTHORS =
 		"DELETE FROM game_authors WHERE game_id = ?";
-	private static final String _SQL_DELETE_GAME_PUBLISHERS =
+	private static final String SQL_DELETE_GAME_PUBLISHERS =
 		"DELETE FROM game_publishers WHERE game_id = ?";
-	private static final String _SQL_DELETE_GAME_AWARDS =
+	private static final String SQL_DELETE_GAME_AWARDS =
 		"DELETE FROM game_awards WHERE game_id = ?";
 
     public Games findAllGames(RestDataPaging paging) throws SQLException {
     	Games games = new Games();
         try (Connection c = ConnectionHelper.getConnection()){
-            PreparedStatement ps = c.prepareStatement(_SQL_FIND_ALL_GAMES);
+            PreparedStatement ps = c.prepareStatement(SQL_FIND_ALL_GAMES);
             processResultSet(ps.executeQuery(), games, paging);
 		}
         return games;
@@ -102,7 +103,7 @@ public class GameDataAccess extends RestDataAccess<Game> {
     public Game findGameById(String id) throws SQLException {
     	Game game = null;
         try (Connection c = ConnectionHelper.getConnection()){
-            PreparedStatement ps = c.prepareStatement(_SQL_FIND_GAME_BY_ID);
+            PreparedStatement ps = c.prepareStatement(SQL_FIND_GAME_BY_ID);
             ps.setLong(1, MyStuffUtil.parseLong(id));
             game = processResultSet(ps.executeQuery());
 		}
@@ -114,10 +115,10 @@ public class GameDataAccess extends RestDataAccess<Game> {
     		return findAllGames(paging);
     	}
     	Games games = new Games();
-    	String namePattern = "%";
-    	String trimmedUpperCaseName = MyStuffUtil.isProvided(filter.getName()) ? filter.getName().trim().toUpperCase() : null;
-    	if (MyStuffUtil.isProvided(trimmedUpperCaseName)) {
-        	namePattern = new StringBuilder().append("%").append(trimmedUpperCaseName).append("%").toString();
+    	String titlePattern = "%";
+    	String trimmedUpperCaseTitle = MyStuffUtil.isProvided(filter.getTitle()) ? filter.getTitle().trim().toUpperCase() : null;
+    	if (MyStuffUtil.isProvided(trimmedUpperCaseTitle)) {
+        	titlePattern = new StringBuilder().append("%").append(trimmedUpperCaseTitle).append("%").toString();
     	}
     	int playersMin = filter.getMinPlayers();
     	int playersMax = filter.getMaxPlayers();
@@ -125,8 +126,8 @@ public class GameDataAccess extends RestDataAccess<Game> {
     		playersMax = Byte.MAX_VALUE;
     	}
         try (Connection c = ConnectionHelper.getConnection()){
-            PreparedStatement ps = c.prepareStatement(_SQL_FIND_GAMES_FILTERED);
-            ps.setString(1, namePattern);
+            PreparedStatement ps = c.prepareStatement(SQL_FIND_GAMES_FILTERED);
+            ps.setString(1, titlePattern);
             ps.setInt(2, playersMin);
             ps.setInt(3, playersMax);
             processResultSet(ps.executeQuery(), games, paging);
@@ -135,15 +136,15 @@ public class GameDataAccess extends RestDataAccess<Game> {
     }
     
     public Games findGamesByAuthorId(String authorId, RestDataPaging paging) throws SQLException {
-    	return findGamesBySomeId(_SQL_FIND_GAMES_BY_AUTHOR_ID, authorId, paging);
+    	return findGamesBySomeId(SQL_FIND_GAMES_BY_AUTHOR_ID, authorId, paging);
     }
 
     public Games findGamesByPublisherId(String publisherId, RestDataPaging paging) throws SQLException {
-    	return findGamesBySomeId(_SQL_FIND_GAMES_BY_PUBLISHER_ID, publisherId, paging);
+    	return findGamesBySomeId(SQL_FIND_GAMES_BY_PUBLISHER_ID, publisherId, paging);
     }
 
     public Games findGamesByAwardId(String awardId, RestDataPaging paging) throws SQLException {
-    	return findGamesBySomeId(_SQL_FIND_GAMES_BY_AWARD_ID, awardId, paging);
+    	return findGamesBySomeId(SQL_FIND_GAMES_BY_AWARD_ID, awardId, paging);
     }
 
     private Games findGamesBySomeId(String sql, String id, RestDataPaging paging) throws SQLException {
@@ -162,7 +163,7 @@ public class GameDataAccess extends RestDataAccess<Game> {
     	}
     	Games games = new Games();
         try (Connection c = ConnectionHelper.getConnection()) {
-            PreparedStatement ps = c.prepareStatement(_SQL_FIND_GAMES_BY_AWARD_ID_FILTERED);
+            PreparedStatement ps = c.prepareStatement(SQL_FIND_GAMES_BY_AWARD_ID_FILTERED);
             ps.setLong(1, MyStuffUtil.parseLong(awardId));
             ps.setInt(2, filter.getYear());
             processResultSet(ps.executeQuery(), games, paging);
@@ -207,17 +208,18 @@ public class GameDataAccess extends RestDataAccess<Game> {
     }
 
     private void createGame(Connection c, Game game) throws SQLException {
-    	try (PreparedStatement ps = c.prepareStatement(_SQL_CREATE_GAME, new String[] { "id" })) {
-    		ps.setString(1, game.getName());
-    		ps.setInt(2, game.getPublishedYear());
-    		ps.setInt(3, game.getPlayersMin());
-    		ps.setInt(4, game.getPlayersMax());
-	        ps.setInt(5, game.getPlaytimeMin());
-	        ps.setInt(6, game.getPlaytimeMax());
-	        ps.setBoolean(7, game.getPlaytimePerPlayer());
-	        ps.setInt(8, game.getAgeMin());
-	        ps.setString(9, game.getDescription());
-	        ps.setInt(10, game.getRating());
+    	try (PreparedStatement ps = c.prepareStatement(SQL_CREATE_GAME, new String[] { "id" })) {
+    		ps.setString(1, game.getTitle());
+    		ps.setString(2, game.getSubtitle());
+    		ps.setInt(3, game.getPublishedYear());
+    		ps.setInt(4, game.getPlayersMin());
+    		ps.setInt(5, game.getPlayersMax());
+	        ps.setInt(6, game.getPlaytimeMin());
+	        ps.setInt(7, game.getPlaytimeMax());
+	        ps.setBoolean(8, game.getPlaytimePerPlayer());
+	        ps.setInt(9, game.getAgeMin());
+	        ps.setString(10, game.getDescription());
+	        ps.setInt(11, game.getRating());
 	        ps.executeUpdate();
 	        ResultSet rs = ps.getGeneratedKeys();
 	        while (rs.next()) {
@@ -227,7 +229,7 @@ public class GameDataAccess extends RestDataAccess<Game> {
     }
 
     private boolean createGameAuthor(Connection c, Game game, Author author) throws SQLException {
-    	try (PreparedStatement ps = c.prepareStatement(_SQL_CREATE_GAME_AUTHORS)) {
+    	try (PreparedStatement ps = c.prepareStatement(SQL_CREATE_GAME_AUTHORS)) {
     		ps.setLong(1, MyStuffUtil.parseLong(game.getId()));
     		ps.setLong(2, MyStuffUtil.parseLong(author.getId()));
     		return (ps.executeUpdate() == 1);
@@ -235,7 +237,7 @@ public class GameDataAccess extends RestDataAccess<Game> {
     }
 
     private boolean createGamePublisher(Connection c, Game game, Publisher publisher) throws SQLException {
-    	try (PreparedStatement ps = c.prepareStatement(_SQL_CREATE_GAME_PUBLISHERS)) {
+    	try (PreparedStatement ps = c.prepareStatement(SQL_CREATE_GAME_PUBLISHERS)) {
     		ps.setLong(1, MyStuffUtil.parseLong(game.getId()));
     		ps.setLong(2, MyStuffUtil.parseLong(publisher.getId()));
     		return (ps.executeUpdate() == 1);
@@ -243,7 +245,7 @@ public class GameDataAccess extends RestDataAccess<Game> {
     }
 
     private boolean createGameAward(Connection c, Game game, Award award) throws SQLException {
-    	try (PreparedStatement ps = c.prepareStatement(_SQL_CREATE_GAME_AWARDS)) {
+    	try (PreparedStatement ps = c.prepareStatement(SQL_CREATE_GAME_AWARDS)) {
     		ps.setLong(1, MyStuffUtil.parseLong(game.getId()));
     		ps.setLong(2, MyStuffUtil.parseLong(award.getId()));
     		ps.setInt(3, award.getYear());
@@ -252,7 +254,7 @@ public class GameDataAccess extends RestDataAccess<Game> {
     }
     
     private boolean createGameNote(Connection c, Game game, Note note) throws SQLException {
-    	try (PreparedStatement ps = c.prepareStatement(_SQL_CREATE_GAME_NOTES)) {
+    	try (PreparedStatement ps = c.prepareStatement(SQL_CREATE_GAME_NOTES)) {
     		ps.setLong(1, MyStuffUtil.parseLong(game.getId()));
     		ps.setLong(2, MyStuffUtil.parseLong(note.getId()));
     		return (ps.executeUpdate() == 1);
@@ -263,18 +265,19 @@ public class GameDataAccess extends RestDataAccess<Game> {
     	boolean updated = false;
     	long gameId = MyStuffUtil.parseLong(game.getId());
         try (Connection c = ConnectionHelper.getConnection()) {
-            PreparedStatement ps = c.prepareStatement(_SQL_UPDATE_GAME);
-    		ps.setString(1, game.getName());
-    		ps.setInt(2, game.getPublishedYear());
-    		ps.setInt(3, game.getPlayersMin());
-    		ps.setInt(4, game.getPlayersMax());
-	        ps.setInt(5, game.getPlaytimeMin());
-	        ps.setInt(6, game.getPlaytimeMax());
-	        ps.setBoolean(7, game.getPlaytimePerPlayer());
-	        ps.setInt(8, game.getAgeMin());
-	        ps.setString(9, game.getDescription());
-	        ps.setInt(10, game.getRating());
-            ps.setLong(11, MyStuffUtil.parseLong(game.getId()));
+            PreparedStatement ps = c.prepareStatement(SQL_UPDATE_GAME);
+    		ps.setString(1, game.getTitle());
+    		ps.setString(2, game.getSubtitle());
+    		ps.setInt(3, game.getPublishedYear());
+    		ps.setInt(4, game.getPlayersMin());
+    		ps.setInt(5, game.getPlayersMax());
+	        ps.setInt(6, game.getPlaytimeMin());
+	        ps.setInt(7, game.getPlaytimeMax());
+	        ps.setBoolean(8, game.getPlaytimePerPlayer());
+	        ps.setInt(9, game.getAgeMin());
+	        ps.setString(10, game.getDescription());
+	        ps.setInt(11, game.getRating());
+            ps.setLong(12, MyStuffUtil.parseLong(game.getId()));
             updated |= (ps.executeUpdate() == 1);
             updated |= deleteGameDependencies(c, gameId);
             updated |= createGameDependencies(c, game);
@@ -286,7 +289,7 @@ public class GameDataAccess extends RestDataAccess<Game> {
     	boolean deleted = false;
     	long gameId = MyStuffUtil.parseLong(id);
         try (Connection c = ConnectionHelper.getConnection()) {
-        	deleted |= executeDeleteSql(c, _SQL_DELETE_GAME, gameId);
+        	deleted |= executeDeleteSql(c, SQL_DELETE_GAME, gameId);
         	deleted |= deleteGameDependencies(c, gameId);
         }
         return deleted;
@@ -294,9 +297,9 @@ public class GameDataAccess extends RestDataAccess<Game> {
 
     private boolean deleteGameDependencies(Connection c, long gameId) throws SQLException {
     	boolean deleted = false;
-    	deleted |= executeDeleteSql(c, _SQL_DELETE_GAME_AUTHORS, gameId);
-    	deleted |= executeDeleteSql(c, _SQL_DELETE_GAME_PUBLISHERS, gameId);
-    	deleted |= executeDeleteSql(c, _SQL_DELETE_GAME_AWARDS, gameId);
+    	deleted |= executeDeleteSql(c, SQL_DELETE_GAME_AUTHORS, gameId);
+    	deleted |= executeDeleteSql(c, SQL_DELETE_GAME_PUBLISHERS, gameId);
+    	deleted |= executeDeleteSql(c, SQL_DELETE_GAME_AWARDS, gameId);
     	return deleted;
     }
     
@@ -311,7 +314,8 @@ public class GameDataAccess extends RestDataAccess<Game> {
     protected Game processRow(ResultSet rs) throws SQLException {
     	Game game = new Game();
     	game.setId(rs.getString("id"));
-    	game.setName(rs.getString("name"));
+    	game.setTitle(rs.getString("title"));
+    	game.setSubtitle(rs.getString("subtitle"));
     	int publishedYear = rs.getInt("published_year");
 		game.setPublishedYear((publishedYear > 0) ? publishedYear : null);
     	int playersMin = rs.getInt("players_min");

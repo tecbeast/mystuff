@@ -2,12 +2,13 @@ package com.balancedbytes.mystuff.games;
 
 import javax.xml.bind.annotation.XmlRootElement;
 
-import com.balancedbytes.mystuff.RestData;
+import com.balancedbytes.mystuff.games.rest.RestData;
 
 @XmlRootElement
 public class Game extends RestData {
 
-	private String name;
+	private String title;
+	private String subtitle;
 	private Integer publishedYear;
 	private Integer playersMin;
 	private Integer playersMax;
@@ -23,16 +24,24 @@ public class Game extends RestData {
 	private Awards awards;
 	private Notes notes;
 
-	public String getName() {
-		return name;
+	public String getTitle() {
+		return this.title;
 	}
-	
-	public void setName(String name) {
-		this.name = name;
+
+	public void setTitle(String title) {
+		this.title = title;
 	}
-	
+
+	public String getSubtitle() {
+		return this.subtitle;
+	}
+
+	public void setSubtitle(String subtitle) {
+		this.subtitle = subtitle;
+	}
+
 	public Integer getPublishedYear() {
-		return publishedYear;
+		return this.publishedYear;
 	}
 	
 	public void setPublishedYear(Integer editionYear) {
@@ -40,7 +49,7 @@ public class Game extends RestData {
 	}
 	
 	public Integer getPlayersMin() {
-		return playersMin;
+		return this.playersMin;
 	}
 	
 	public void setPlayersMin(Integer playersMin) {
@@ -48,7 +57,7 @@ public class Game extends RestData {
 	}
 	
 	public Integer getPlayersMax() {
-		return playersMax;
+		return this.playersMax;
 	}
 	
 	public void setPlayersMax(Integer playersMax) {
@@ -56,7 +65,7 @@ public class Game extends RestData {
 	}
 	
 	public Integer getPlaytimeMin() {
-		return playtimeMin;
+		return this.playtimeMin;
 	}
 	
 	public void setPlaytimeMin(Integer playtimeMin) {
@@ -64,7 +73,7 @@ public class Game extends RestData {
 	}
 	
 	public Integer getPlaytimeMax() {
-		return playtimeMax;
+		return this.playtimeMax;
 	}
 	
 	public void setPlaytimeMax(Integer playtimeMax) {
@@ -72,7 +81,7 @@ public class Game extends RestData {
 	}
 	
 	public Boolean getPlaytimePerPlayer() {
-		return playtimePerPlayer;
+		return this.playtimePerPlayer;
 	}
 	
 	public void setPlaytimePerPlayer(Boolean playtimePerPlayer) {
@@ -80,7 +89,7 @@ public class Game extends RestData {
 	}
 	
 	public Integer getAgeMin() {
-		return ageMin;
+		return this.ageMin;
 	}
 	
 	public void setAgeMin(Integer ageMin) {
@@ -88,7 +97,7 @@ public class Game extends RestData {
 	}
 	
 	public String getDescription() {
-		return description;
+		return this.description;
 	}
 	
 	public void setDescription(String description) {
@@ -96,7 +105,7 @@ public class Game extends RestData {
 	}
 	
 	public Integer getRating() {
-		return rating;
+		return this.rating;
 	}
 	
 	public void setRating(Integer rating) {
@@ -104,7 +113,7 @@ public class Game extends RestData {
 	}
 
 	public Authors getAuthors() {
-		return authors;
+		return this.authors;
 	}
 	
 	public void setAuthors(Authors authors) {
@@ -112,7 +121,7 @@ public class Game extends RestData {
 	}
 	
 	public Publishers getPublishers() {
-		return publishers;
+		return this.publishers;
 	}
 	
 	public void setPublishers(Publishers publishers) {
@@ -120,7 +129,7 @@ public class Game extends RestData {
 	}
 	
 	public Images getImages() {
-		return images;
+		return this.images;
 	}
 	
 	public void setImages(Images images) {
@@ -128,7 +137,7 @@ public class Game extends RestData {
 	}
 	
 	public Awards getAwards() {
-		return awards;
+		return this.awards;
 	}
 	
 	public void setAwards(Awards awards) {
@@ -136,7 +145,7 @@ public class Game extends RestData {
 	}
 	
 	public Notes getNotes() {
-		return notes;
+		return this.notes;
 	}
 	
 	public void setNotes(Notes notes) {

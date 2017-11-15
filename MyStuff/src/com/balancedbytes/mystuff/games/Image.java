@@ -2,7 +2,7 @@ package com.balancedbytes.mystuff.games;
 
 import javax.xml.bind.annotation.XmlRootElement;
 
-import com.balancedbytes.mystuff.RestData;
+import com.balancedbytes.mystuff.games.rest.RestData;
 
 @XmlRootElement
 public class Image extends RestData {

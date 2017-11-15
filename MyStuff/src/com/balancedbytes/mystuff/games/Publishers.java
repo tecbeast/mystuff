@@ -5,7 +5,7 @@ import java.util.List;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 
-import com.balancedbytes.mystuff.RestDataCollection;
+import com.balancedbytes.mystuff.games.rest.RestDataCollection;
 
 @XmlRootElement
 public class Publishers extends RestDataCollection<Publisher> {

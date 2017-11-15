@@ -29,12 +29,19 @@
     -->
 
 	<Resource name="jdbc/mystuff"
+	    factory="org.apache.tomcat.jdbc.pool.DataSourceFactory"
     	auth="Container"
         type="javax.sql.DataSource"
-        username="mystuff"
-        password="mystuff"
-        driverClassName="com.mysql.jdbc.Driver"
-        url="jdbc:mysql://localhost/mystuff"
+        username="SA"
+        password=""
+        driverClassName="org.hsqldb.jdbc.JDBCDriver"
+	    description="Connection pool for HSQLDB mystuff"
+        url="jdbc:hsqldb:file:/temp/mystuff"
+        maxTotal="10"
+        maxIdle="10"
+        maxWaitMillis="10000"
+        removeAbandonedTimeout="300"           
+        defaultAutoCommit="true"
 	/>
 
 </Context>
