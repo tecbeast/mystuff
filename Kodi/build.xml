@@ -1,0 +1,55 @@
+<?xml version="1.0"?>
+
+<project name="RenameKodiEpisodes" default="jar" basedir=".">
+
+    <property name="src.dir" value="src" />
+    <property name="bin.dir" value="bin" />
+    <property name="lib.dir" value="lib" />
+    <property name="build.dir" value="build" />
+    <property name="rsc.dir" value="rsc" />
+
+	<path id="libraries">
+		<fileset dir="${lib.dir}" includes="*.jar" />
+	</path>
+
+	<target name="clean">
+		<delete dir="${bin.dir}" />
+		<delete dir="${build.dir}" />
+	</target>
+
+	<target name="prepare" depends="clean">
+		<mkdir dir="${bin.dir}" />
+		<mkdir dir="${build.dir}" />
+	</target>
+
+	<target name="compile" depends="prepare">
+		<path id="classpath">
+			<path refid="libraries" />
+			<!-- <pathelement location="../FantasyFootballCommon/bin" /> -->
+		</path>
+		<property name="myClasspath" refid="classpath" />
+		<echo message="Classpath = ${myClasspath}" />
+		<javac srcdir="${src.dir}" destdir="${bin.dir}" target="1.8" source="1.8" includeantruntime="false" debug="on">
+			<classpath refid="classpath" />
+		</javac>
+	</target>
+
+    <target name="jar" depends="compile">
+    	<!-- add compress="false" attribute to jar tag for no compression -->
+        <jar destfile="${build.dir}/RenameKodiEpisodes.jar">
+            <manifest>
+              <attribute name="Built-By" value="${user.name}" />
+              <attribute name="Main-Class" value="com.balancedbytes.tool.kodi.RenameKodiEpisodes" />
+              <attribute name="Application-Name" value="RenameKodiEpisodes" />
+              <attribute name="Class-Path" value="." />
+            </manifest>
+            <zipfileset dir="${bin.dir}" includes="**/*.class" />
+            <zipfileset dir="${rsc.dir}" includes="**/*.gif" />
+        	<zipgroupfileset dir="${lib.dir}" includes="*.jar" />
+        </jar>
+    	<copy todir="${build.dir}" >  
+    	  <fileset dir="${rsc.dir}" includes="*.properties"/>
+    	</copy>
+    </target>
+
+</project>
