@@ -1,0 +1,42 @@
+<html>
+<head>
+<!-- link rel="stylesheet" type="text/css" href="styles/main.css" -->
+<title>RoboRally Test</title>
+</head>
+<body>
+
+<div id="tiles">
+<img id="img_c1" src="icons/tiles/75px/c1.png">
+<img id="img_c2" src="icons/tiles/75px/c2.png">
+<img id="img_f1" src="icons/tiles/75px/f1.png">
+<img id="img_f2" src="icons/tiles/75px/f2.png">
+<img id="img_f3" src="icons/tiles/75px/f3.png">
+<img id="img_gl" src="icons/tiles/75px/gl.png">
+<img id="img_gr" src="icons/tiles/75px/gr.png">
+<img id="img_p" src="icons/tiles/75px/p.png">
+<img id="img_r1" src="icons/tiles/75px/r1.png">
+<img id="img_r2" src="icons/tiles/75px/r2.png">
+<img id="img_w1" src="icons/tiles/75px/w1.png">
+<img id="img_w2" src="icons/tiles/75px/w2.png">
+</div>
+<canvas id="canvas" width="301" height="301">Sorry, no canvas available</canvas>
+<script src="scripts/lib/require-2.3.5.min.js"></script>
+<script>
+    require.config({
+        baseUrl: 'scripts',
+       	paths: {
+       		"domReady": "lib/domReady-2.0.1.min",
+       		"jQuery"  : "lib/jquery-3.3.1.min",
+       		"Stapes"  : "lib/stapes-1.0.0.min"
+       	}
+    });
+    require(["domReady", "Client"],
+   		function(domReady, Client) {
+	    	domReady(function () {
+	    		new Client().init();			
+	    	});
+    	}
+   	);
+</script>
+</body>
+</html>

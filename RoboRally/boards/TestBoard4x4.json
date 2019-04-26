@@ -1,0 +1,12 @@
+{	
+	"name": "TestBoard",
+	"author": "TecBeast",
+	"description": "a simple board for testing",
+	"size": 4,
+	"tiles": [
+		[ [ "F1-N" ], [ "C1-N" ], [ "P"    ], [ "F2-N" ] ],
+		[ [ "W1-W" ], [ "F2-W" ], [ "C1-W" ], [ "F3-N" ] ],
+		[ [ "F2-W" ], [ "L1-N" ], [ "F2-S" ], [ "F1-E" ] ],
+		[ [ "F1-S" ], [ "F2-E" ], [ "P"    ], [ "C2-E" ] ]
+	]
+}

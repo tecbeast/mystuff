@@ -1,0 +1,56 @@
+<html>
+<head>
+	
+	<meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
+	<title>Test SHA256</title>
+	
+	<style type="text/css">
+		table.zebra { border: 1px solid black; margin: 0px 0px 0px 0px; padding: 0px 0px 0px 0px; font-family: monospace; font-size: 16px; }
+		table.zebra td { margin: 0px 0px 0px 0px; padding: 5px 5px 5px 5px; font-size: 16px; }
+		table.zebra tr:nth-child(odd) { background-color:#c0c0c0; }
+		table.zebra tr:nth-child(even) { background-color:#ffffff; }
+	</style>
+	
+</head>
+<body>
+	
+	<table class='zebra'>
+		<tr><td align='right'><b>Password</b></td><td id='password'></td></tr>
+		<tr><td align='right'><b>Salt</b></td><td id='salt'></td></tr>
+		<tr><td align='right'><b>Hash</b></td><td id='hash'></td></tr>
+		<tr><td align='right'><b>Key</b></td><td id='key'></td></tr>
+		<tr><td align='right'><b>Hmac</b></td><td id='hmac'></td></tr>
+	</table>
+	
+	<script src='scripts/lib/require-2.3.5.min.js'></script>
+	<script>
+	    require.config({
+	        baseUrl: 'scripts',
+	       	paths: {
+	       		'domReady': 'lib/domReady-2.0.1.min',
+	       		'sha256'  : 'lib/sha256'
+	       	}
+	    });
+	    require(['domReady', 'sha256'],
+	   		function(domReady, Sha256) {
+		    	domReady(function () {
+		    		
+		    		var password ='MyPassword';
+		    		var salt = '6a5a7593ab6b7095bd0d0bd7e802b7dc7993af7300d3f7f852f6462f38407e4b';
+		    		var hash = Sha256.hex_sha256(salt + password);
+		    		var key = 'ServerTimestamp';
+		    		var hmac = Sha256.hex_hmac_sha256(key, hash);
+		    		
+		    		document.getElementById('password').appendChild(document.createTextNode(password));
+		    		document.getElementById('salt').appendChild(document.createTextNode(salt));
+		    		document.getElementById('hash').appendChild(document.createTextNode(hash));
+		    		document.getElementById('key').appendChild(document.createTextNode(key));
+		    		document.getElementById('hmac').appendChild(document.createTextNode(hmac));
+	
+		    	});
+	    	}
+	   	);
+	</script>
+		
+</body>
+</html>
