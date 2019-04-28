@@ -1,0 +1,366 @@
+
+TIPS FÜR EROBERER UND VERTEIDIGER
+von Holger Rinke
+
+Tips für den kleinen Angreifer
+
+Phase 1
+
+  Die Feinde meines Feindes sind meine Freunde. Also setze man sich mit ihnen
+in Verbindung und zeige ihnen alle Vorteile, die sie davon hätten, wenn sie
+den Gegner mit angreifen (und Dir die Planeten überlassen). Sollte das nicht
+funktionieren, rafft man sich zu einem "brüderlichen" Teilen auf (und merkt
+sich den Knaben als nächstes potentielles Opfer).
+  Wenn selbst das noch fehlschlägt, sollte man ihn wenigstens zur Weitergabe
+von Spähberichten überreden. Dazu bekommt man normalerweise selbst die
+aufopfernsten Pazifisten.
+
+Phase 2
+
+  Jetzt überlegt man sich, wo man am besten angreift, Frontgebiet oder
+Hinterland, das ist hier die Frage ! Sie hängt auch von der Stärke der zu
+erobernden Planeten ab, denn größere Planeten werden im allgemeinen besser
+verteidigt, sowie ihrer strategischen Position, je mehr Planeten die Flotte
+bedroht, desto besser.
+  Ausflüge ins Hinterland (2 Turns und mehr) haben, wenn sie nicht verraten
+werden, recht große Erfolgsaußsichten. Aber den Nachteil, daß der Gegner durch
+die übliche Plappermäuler gewarnt werden kann und seine Flotten
+dementsprechend aufstellt. Greift man über Turn eins an, so ist es nützlich,
+vorher eine Flotte knapp unter Meldepflicht (Pakt-Manöver-Beobachtung) zum
+Zielplaneten zu schicken. Das hat den Vorteil, daß man noch eine unsichtbare
+Reserve hat, welche die Schlacht entscheiden kann (Blücher II).
+  Gleichzeitig zieht man die größere Flotte in Turn 1 zum ausgewählten
+Planeten zusammen, um den Gegner zu beeindrucken. (Was natürlich nicht wirkt,
+wenn seine Flotte auf dem Zielplaneten doppelt so groß ist).
+  Hat man die Möglichkeit, die Flotte auf mehrere Planeten zu verteilen, so
+daß sie trotz ihrer Größe unentdeckt bleibt, ist diese Methode natürlich
+vorzuziehen. Man sollte sich, bevor man angreift, durch Spähfighter
+Informationen über den Zielplaneten besorgen und dabei, wenn möglich, noch das
+direkte Umfeld abdecken. Wieviel PDU kann der Planet maximal haben ?
+(PDU + A/15) Wieviele FI kann der Verteidiger maximal aufbringen ? usw.
+  Wichtig ist auch die Planetenmoral, die man erfahren kann, indem man einfach
+die Anzahl der Turns seit der Eroberung +50% rechnet.
+
+Phase 3
+
+  Der Angriff. An FI sollte man immer mitschleppen, was mitzuschleppen geht,
+denn je höher die Überlegenheit, desto geringer die Verluste (eigene,
+selbstverständlich!). An TR dagegen nur das mindest Nötige, denn es lohnt sich
+nicht, TR zu verlieren, die nicht nötig gewesen wären. Das geht auf die
+TR-Moral und auf die Anzahl der TR, die vielleicht später noch gebraucht werden.
+  Kritisch wird die Sache allerdings, wenn der Verteidiger im Turn vor dem
+Angriff auf dem Planeten mehr TR als PDU stehen hatte, dann könnte er eine
+TR-Falle aufbauen. In einem solchen Falle sollte man sich auf sein Gefühl
+verlassen und versuchen, den Gegner richtig einzuschätzen. (Ohne
+Regelkenntnisse oder strategisches Genie ?) Wenn beide Flotten ungefähr gleich
+groß sind, aber die FI% des Verteidigers niedriger, wird er wohl bei fehlender
+PL-Moral, zur TR-Falle greifen, wenn ihm diese Möglichkeit gegeben ist.
+
+Phase 4
+
+  Gehen wir einmal davon aus, daß nach sorgfältiger Vorbereitung alles
+funktioniert hat und einem der Planet gehört. Jetzt erhebt sich die Frage:
+Kann man den Planeten halten oder ist es gesünder einen Strategischen Rückzug
+anzutreten ? Wenn der angreifende Verteidiger den Planeten kampflos aufgibt
+und nur max. PDU baut (oder gar nichts mehr!), kann man davon ausgehen, daß er
+eine zweite Frontlinie aufbaut oder einen Gegenangriff startet !
+  Am günstigsten wäre es jetzt, den Planeten mit der Hauptflotte zu halten und
+mit einer zweiten Flotte an anderer Stelle vorzurücken, was allerdings meist
+bedeutet, Hinterland ungesichert zu lassen. Es hängt von der Situation ab. Hat
+der Gegner mehr FI aufzubieten, aber weniger TR als man selbst in der Nähe, so
+sollte man eine TR-Falle aufbauen, um Nachschub heranzuholen.
+  Ist das Verhältnis umgedreht baut man natürlich PDU und FI. Wichtig ist vor
+allem daß der Eroberer im ersten Turn nach der Eroberung max. an A für die
+Verteidigung aufbietet. (Wirtschaft ist zwar schön und gut, aber man muß ja
+nicht unbedingt für den Feind produzieren.)
+  Als letzte Möglichkeit bliebe noch die Räumung. Was nicht mir gehört, das
+soll auch keinem anderen gehören ! Will man den Planeten wertlos machen,
+transportiert man alle A ab; will man den Gegner aufhalten, demontiert man
+eine Ressource (alle TY oder alle Plants einer Sorte) vollständig. Auch die
+Rohstoffvorräte sollte man nicht verachten.
+
+Phase 5
+
+  Wenn man sich stark genug fühlt (z.B. wenn die gegnerische Hauptflotte
+vernichtet oder festgesetzt wurde), sollte man selbstverständlich vorrücken,
+wobei alles wieder so abläuft, wie bereits oben beschrieben. Natürlich je nach
+der Situation (Innen- wie Außenpolitisch) mit leichten Varianten, aber hinter
+die kommt man schon von selbst
+
+Tips für den kleinen Eroberer
+  
+  Versuche, den Gegner zu verwirren ! Wenn Du nur zu dem Planeten einen
+Spähfighter sendest, den Du angreifen willst, ist es klar, wo der Verteidiger
+nächste Runde steht. Besser man schickt FI zu mehreren potentiellen
+Kandidaten, das zwingt den Gegner dazu, seine Kräfte zu verteilen. (Die FI
+aber rechtzeitig wieder abzuziehen, ansonsten kann es Moralverlust geben !)
+  Es ist von Vorteil, PDU auf CS direkt mit in die Schlacht zu nehmen, denn
+dann hat man sofort PDU auf dem Planeten. Das hat den Vorteil, daß man die A
+für Anderes verwenden kann. TR in der vordersten Linie zu besitzen und ein paar
+mehr PDU, als der Gegner vermutet, kann einem durchaus den Planeten retten.
+Diese Taktik aber nur verwenden, wenn Du den Planeten mit absoluter Sicherheit
+bekommst, ansonsten freut sich Dein Gegner.
+  Den Gegner einschüchtern. Wenn Du genau weißt, der Angegriffene kann deinen
+Zielplaneten nicht halten, macht es unheimlich was her, wenn du ihm vorher
+sagst, wo Deine Flotte ankommt. Sowas kann einiges ausmachen, wenn Du bei
+einem Angriff, der scheitern könnte, das gleiche machst.
+  Das Knacken von PDU-Bunkern. Es gibt Planeten, die bestehen anscheinend nur
+aus PDU. Es würde zu viele TR kosten, diese in einem Angriff zu nehmen, wenn
+die Flotte des Gegners noch über dem Planeten steht. Also muß das Zeug weg.
+(Denn das Überlegenheitsverhältnis zählt beim Landeversuch ja mit.) Zuerst
+greift man also ohne TR an und zwingt die verteidigende Flotte zum Rückzug.
+Erst in der nächsten Runde kommen dann die TR und greifen mit dem
+(hoffentlich) besseren Überlegenheitsverhältnis an. Das kostet zwar eine
+Runde, erspart aber die sinnlose Verluste. (Ist natürlich sinnlos, wenn man
+die eine Flotte rausschmeißt und eine gleich Große in der zweiten Linie steht
+und die nächste Runde den Planeten verteidigt.) n Informationen,
+  Informationen, je mehr desto besser. Das wichtigste sind die PDU und wo sie
+stehen, die Flotten und der HP, die FI.Moral kann man sich selber ausrechnen.
+Am günstigsten wäre es natürlich, wenn ein Intressenpartner, mit PV 2 zu
+Deinem Gegner, Späh-Fighter auf die Planeten setzt. Für eine gute
+Zusammenarbeit ist es dann allerdings unabkömmlich, ihm vorher Bescheid zu
+geben wo Du angreifst, damit er seinen FI abziehen kann, ansonsten könnte
+jemand sauer sein. (Alte Hasen kommen zwar auch ohne Infos von anderen aus,
+aber sind die Tips schließlich für diejenigen gedacht, die erst am Anfang
+ihrer Besetzerkarriere stehen.)
+  Sorge dafür, daß der Verteidiger möglichst wenig über dich erfährt. Dies kann
+im Extremfall bedeuten, allen Spielern PV 1 zu geben und so den Spähfightern
+den Ausgang zu zeigen.
+  Deck Dein Hinterland ab. Zumindest die vorderste Planetenlinie sollte durch
+TR-Fallen, PDU oder FI gedeckt sein. Wie das genau aussieht hängt von der
+jeweiligen Situation ab. (Wie stehen die feindlichen Flotten ? Wo liegen die
+Schwerpunkte ? Wo könnte er trotz aller Sicherheitsmaßnahmen durchbrechen,
+wenn er alles riskiert ?) Auf Planeten der Position 3 sind PDU oder TR-Fallen
+am günstigsten, da sie die geringsten eigenen Verluste fordern. Spätestens ab
+der 2. Kriegsrunde sollten auch die Planeten abgedeckt sein, die in der 2.
+Linie liegen. Hier reicht es allerdings schon, die Menge aufzubringen, die der
+Gegner in der ersten Schlachtreihe aufgebaut hatte. Hat er sie bei einer
+Schlacht verloren, reichen natürlich auch wesentlich kleinere Verbände. (Die
+im Notfall eine Flotte von einem FI unter Meldepflicht abfängt oder aufhält
+(PDU gegen TR)
+  Vorsicht, der Gegner könnte einen großen Bruder haben, der seine Planeten
+verteidigt.
+  Sollte die eigene Flotte kleiner sein als die des Gegners, so ist von einem
+Flächenangriff abzuraten. Lieber die FI massiert einsetzen. Die ist
+erfolgversprechender und schont die FI-Moral.
+  Ist Deine Flotte größer,so kannst Du auch gelegentlich mal was riskieren und
+einen gefährdeten Angriff starten. Allerdings mußt Du dann immer noch zur
+Verteidigung genügend Kräfte zur Verfügung haben.
+  Falls du Verbündete hast, die an das Gebiet deines Gegners grenzen, kannst du
+auch über ihre Planeten Angriffe starten, was Dir eventuell erspart, über
+mehrere Runden zu fliegen. (Denn solange ist die Flotte ja nicht mehr
+abrufbereit.) Unangenehm wird es natürlich, wenn der Verbündete gar nicht der
+Verbündete ist und in der Runde des Angriffs PV 1 setzt.
+  Wenn du jemanden angreifst, nimm ihn ganz auseinander. Egal was für
+Friedensverträge ausgehandelt werden. Du hast immer jemanden im Nacken hängen,
+der nur auf die richtige Gelegenheit wartet, dir eins überzubraten.
+  Sollte ein Krieg zu deinen Ungunsten verlaufen, versuche den Gegner zu einem
+Friedensgespräch zu überreden, um Zeit zu gewinnen und deine Flotten wieder
+aufzubauen. (Natürlich sollte es so aussehen, als ließest du Dich dazu herab
+ihm ein Angebot zu machen.) Aber halte wenn dir was an deinem guten Ruf liegt:
+Halte dich an Abmachungen !
+
+  Soweit so gut, was den Angreifer betrifft. Aber wollen wir den Verteidiger
+schließlich nicht im Regen (dem Partikelregen seiner eigenen Fighter) stehen
+lassen. Deshalb hier noch mal das Gleiche für die andere Seite, wobei sich die
+Sache allerdings etwas komplizierter angeht, da man als Verteidiger im
+allgemeinen reagiert, zumindest solange, bis man auf den Planeten des
+Angreifers verteidigt.
+
+Tips für den kleinen Verteidiger
+
+Phase 1
+
+  Im Normalfall beginnt ein Krieg mit einer negativen PV-Setzung durch den
+Angreifer. (In ganz seltenen Fällen zettelt der Verteidiger einen Krieg an,
+aber das sind die Feinheiten von Ashes.) Spätestens zu diesem Zeitpunkt sollte
+man damit beginnen, seine Verteidigung vorzubereiten. Diese besteht in der
+ersten Phase aus verschiedenen Aktivitäten:
+  Es ist wichtig, die direkten Nachbarn des Angreifers anzusprechen, da bei
+diesen die höchste Chance besteht, daß sie Späh-Fighter über dessen Planeten
+stehen haben. So kann man Informationen über diese Planeten erhalten. Auch ist
+es wichtig zu wissen, wer mit wem und warum verbündet ist, denn im Falle einer
+Verteidigung können auch Flotten von Verbündeten des Gegners helfen, aber dazu
+später mehr.
+  Dann heißt es, im Vorfeld des Krieges Sisyphusarbeit in Sachen Diplomatie zu
+leisten - wenn man von mehreren Leuten angegriffen wird oder unterlegen ist.
+Sobald die eigene Flotte größer ist, sieht alles nur noch halb so schlimm aus.
+  Man muß versuchen, die anderen Spieler zur aktiven Mitarbeit zu überreden,
+wobei zu beachten ist, daß die Angebote, die man macht, am Anfang der
+Verhandlung möglichst klein sein sollten. Manche Leute sind mit einem feuchten
+Handschlag zufrieden, warum also mehr geben ? Später kann man ja immer noch
+höher gehen. Aber auch hier muß man aufpassen, um nicht den Teufel mit dem
+Belzebub auszutreiben. Man hat nichts davon, wenn man einen Angreifer
+raußschmeißt, um dann einen doppelt so großen Gegner vor der Nase zu haben,
+nachdem man die getroffene Abmachung erfüllt hat. Sollte der Angesprochene zu
+dreiste Forderungen stellen, wirft man diskret ein, daß er wahrscheinlich das
+nächste Opfer ist, nachdem man selber niedergeworfen wurde. Das zieht fast
+immer.
+  Da bei der Verteidigung von Planeten das PV zum Planetenbesitzer zählt, kann
+man sogar Verbündete des Angreifers dazu bringen, Planeten mit zu verteidigen.
+(Natürlich nur, solange die PV=2 zu einem haben) Schließlich sind diese auch
+daran intereßsiert, daß ihr Partner nicht zu groß wird. Und bei (fast) jeder
+Absprache finden sich Lücken, man muß sie halt nur wörtlich genug nehmen.
+  Sobald die politischen Verhältnisse wenigstens halbwegs klar sind, kann man
+daran gehen, seine militärische Verteidigung vorzubereiten. Das kann man
+natürlich auch schon vorher, aber es ist einfacher, die eventuell zusätzlichen
+Flotten mit einzuplanen. Wenn möglich, sollte man sich allerdings nicht zu
+sehr darauf zu verlassen. Was man selbst macht, ist erledigt, andere machen
+NMR, "vergessen" die Absprachen oder schreiben ihre Orders zu undeutlich, daß
+der Spielleiter die FI in den hinterletzten Winkel der Galaxie schickt.
+
+Phase 2
+
+  Die Verteidigung: Unablässig für die Verteidigung ist, die ungefähre
+Flottenstärke des Gegners und wieviel er davon für die erste Angriffswelle
+will zu wissen. Sobald man diese in Erfahrung gebracht hat (im Notfall anhand
+der GNP-Liste abschätzen), muß man für Schwerpunkte in der Verteidigung
+sorgen, zumindest solange man der Unterlegene ist. Wo diese Schwerpunkte
+liegen, hängt natürlich stark von der Situation ab, so daß ich hier nur einige
+Beispiele aufzählen möchte.
+  Strategisch wichtige Planeten: Das sind für Euch Planeten, die Eurem Gegner,
+die Tür zu Eurem Gebiet aufstoßen, wenn er sie erobert. So ein Planet wäre
+z.B. in einem Crab-Nameless-Konflikt,bei dem Crab der Angreifer ist und
+Eastside neutral mit PV=2 zu beiden steht, der Planet 33, denn von hier aus
+hat Crab die Möglichkeit, nach (30), (35), (12) und (4) - alles Nameless -
+Stammgebiet innerhalb einer Runde vorzurücken, wodurch man gezwungen wäre,
+seine Truppen weiter zu verteilen oder Planeten ungedeckt zu laßsen. Im
+umgekehrten Fall heißt der Planet z.B. (21). Denn hier ist der Weg nach (2),
+(10) und (24) offen.
+  Wirtschaftlich starke Planeten: Planeten mit vielen Arbeitskräften sind
+überlebenswichtig, da sie schließlich für den Nachschub sorgen. Hinzu kommt,
+daß ein Verlust solcher Planeten in der GNP-Liste ziemlich weh tut. Ob
+wirtschaftlich starke Planeten an der Front wichtiger sind als im Hinterland,
+daran scheiden sich immer noch die Ashonauten-Geister. Klar, mit starken
+Planeten an der Front hat man den Nachschub in der ersten Reihe, leider ist
+der Gegner auch schneller da ...
+  Flottenkonzentrationen: Planeten, in deren Orbit sich ein Großteil Eurer FI
+befinden. Diese lassen sich schnell zusammenziehen und sind wirkungsvoller als
+mehrere kleine, über viele Planeten verteilte Flotten.
+  Das gleiche gilt für TR-Konzentrationen, die möglichst noch nicht gesichtet
+wurden, denn sie können im Rahmen einer TR-Falle dem Gegner einige böse
+Überraschungen bereiten. Auch sollte man sich die letzterreichbaren
+Spähberichte ansehen. Irgendwann hatte man ja mal PV=2 zum Gegner. Es ist
+logisch, daß jene Planeten besonders gefährdet sind, die in Reichweite der
+Flottenkonzentrationen des Gegners liegen.
+  Sobald man Schwerpunkte entdeckt und ausgewählt hat, sollte man sich
+überlegen, wie man die Planeten am besten verteidigt. Auch hierfür gibt es
+wieder verschiedene Möglichkeiten, von denen ich einige aufzählen möchte:
+  Die konservative Methode über die Fighter. Ist man sich absolut sicher,
+Planeten gegen die gegnerische Flotte im Luftkampf zu halten, so fängt man den
+Gegner natürlich schon am besten über dem Planeten hat. Auch hier gilt die
+Devise zumindest solange man es hat): Klotzen, nicht Kleckern. Auf jeden Fall
+sollte man hier die PL% mitberechnen. Einige besondere Verteidigungsmethoden
+über Fighter werden nachher in den Tips erklärt.
+  Der PDU-Fanghandschuh. Kann man einen Planeten nicht flottenmäßig halten,
+sollte man versuchen, soviel PDU aufzubringen, wie nötig sind, um den
+TR-Schwall des Gegners aufzufangen. Das gelbe von Ei ist das nicht, denn
+erstens hat man, selbst im Falle des Erfolgs, die Flotte des Gegners über
+dem eigenen Planeten - was die Verteidigung auch nicht gerade einfach macht.
+Hinzu kommt, daß man in einem solchen Fall die TR% des Angreifers nach oben
+korrigiert. Andererseits hat es den Vorteil, daß der Gegner wahrscheinlich
+den größten Teil seiner Angriffstransporter verliert, was einem ein bißchen
+Zeit verschafft.
+  Wenn gar nichts mehr geht: Die TR-Falle. Sollte man genügend TR auf dem
+wahrscheinlichen Angriffsplaneten haben und wenig PDU (maximal PDU=TR), sowie
+keine Flotte zur Verteidigung, kann man sich entscheiden.
+  In einem solchen Fall empfiehlt sich die TR-Falle, da sie die geringsten
+eigenen Verluste kostet. Dafür transportiert man einfach alle PDU ab und baut
+max. TR (keine PDU). Mit ein bißchen Glück, schickt der Gegner wenig,
+vielleicht sogar zu wenig TR ...
+  Selbst wenn Ihr den Planeten verlieren solltet, habt ihr dabei wenigstens
+keine eigenen Verluste, da Eure TR ja nicht abgeschossen werden können und
+obendrein habt Ihr die PDU gerettet.
+  Das sind die drei grundlegenden Verteidigungsmethoden. Weitere Varianten
+kommen nachher noch in den Tips. Nehmen wir einmal an, ihr habt die
+Hauptangriffswelle abgefangen, dann solltet Ihr daran gehen, den Gegenangriff
+einzuleiten. Dieser hängt von einigen wichtigen Faktoren ab:
+  Wo ist die Flotte des Gegners ? Wurde sie zerschlagen, geschlagen oder nur
+festgenagelt ? Sollte sie zerschlagen sein - sprich, Ihr habt den größten Teil
+seiner Flotte zu Kleinholz verarbeitet -, braucht Ihr auf nicht mehr besonders
+viel zu achten, der Knabe kann seine Planeten eh nicht mehr decken. Massiert
+Eure Flotte und schlagt zu. Wurde die gegnerische Flotte nur geschlagen, also
+ein Großteil wurde zur Flucht gezwungen, dann sollte Euer Gegenschlag
+möglichst schnell erfolgen, denn Ihr habt nur eine Runde Vorsprung. Wurde die
+Flotte aber nur festgehalten, müßt Ihr auf jeden Fall dafür sorgen, daß sie
+entweder flüchtet oder weiter festgenagelt bleibt. Es könnte eine Katastrophe
+werden, sollten solche Flottenteile wieder beweglich werden.
+  In jedem Fall ist aber zu beachten: Solltet Ihr nur einen kleinen Teil
+seiner Flotte abgefangen haben oder Euch - noch - nicht stark genug für einen
+Gegenangriff fühlen, so laßt es lieber bleiben. Was Ihr habt, das habt Ihr,
+setzt es nicht leichtfertig aufs Spiel. (Was nicht bedeuten soll, nichts mehr
+zu riskieren.) Sollte die Hauptflotte so weit entfernt sein, daß Ihr gefahrlos
+einen Planeten angreifen könnt, haltet Euch nicht zurück !
+  Womit wir auch schon beim Angriff wären. Vorrangige Ziele für den
+angreifenden Verteidiger sind:
+  Der HP des Angreifers, denn hier kommen bereits geschlagene Flotten des
+Gegners kleckerweise an und können abgefangen werden;
+  Die Planeten des Angreifers, die tief auf Euer Gebiet reichen. Man könnte
+das auch Grenzbegradigung nennen. Solche Planeten wären z.B. (29) in einem
+Crab-Nameless-Konflikt oder auch (28), also Planeten, die es dem Gegner
+ermöglichen, mehrerer Eurer Planeten zu bedrohen.
+  Produktionsplaneten, also Planeten mit einer hohen A-Anzahl, sind vorrangige
+Ziele. Wenn sie fallen, muß der Gegner seinen Nachschub aus dem Hinterland
+holen, was sich beim Gegenangriff als hinderlich erweisen dürfte. Beim Wie des
+Angriffs bitte unter der Sparte "Angreifer" nachlesen.
+  Dies alles müßte, zusammen mit den folgenden Tips ausreichen, um sich mit
+Händen und Füßen auch gegen einen Profi durchzusetzen. Also zeigt was Ihr
+könnt !
+
+Tips für den kleinen Vaterlandsverteidiger
+
+  Sicherheit ist alles bei der Verteidigung, wenn Du nicht sicher bist, einen
+Planeten zu halten, verzichte lieber ganz darauf und riskiere, ihn zu
+verlieren, das schont Deine Kräfte und vermeidet sinnlose Verluste. Und es
+verwirrt den Angreifer, schließlich scheinst Du den Planeten ja nicht nötig zu
+haben.
+  Verlustgefechte I Wenn Du Deine Planeten verteidigst, zählt beim Gefecht ja
+die PL% mit, solange sie über 100 ist, wird aber bei der Verlustberechnung
+weggelassen. Das kann dazu führen, daß Du höhere Verluste als Dein Gegner
+hast, aber den Planeten hältst, da DS größer als AS ist. Im Normalfall sollte
+man so etwas vermeiden, da es nur FI % kostet. Und darauf baut diese
+Verteidigungsmethode auf, da der Angreifer damit nicht rechnet. Wenn man genau
+weiß, der Angreifer muß, um einen Planten zu erobern, den größten Teil seiner
+Flotte mitschleppen, oder er greift einen Planeten an, der den Zusammenbruch
+der Verteidigung bedeuten würde (zentrale Planeten oder ähnliches), sollte man
+es mal riskieren, ein Verlustgefecht zu führen, das einen zwar Moral kostet,
+aber den Planeten rettet. Obendrein - und das vergessen viele - ist die Flotte
+des Angreifers auf der Flucht, was Du dazu nutzten könntest, seinen Planeten
+einen Besuch abzustatten.
+  Verlustgefechte II Eine äußerst unangenehme Art, seine Planeten zu
+verteidigen. Sollte es möglich sein, einen Planeten über PDU halten zu können,
+sobald wenigstens ein Teil des Überlegenheitsverhältnisses des Angreifers
+wegfällt, gibt es auch noch die Möglichkeit, einen Teil seiner Flotte über dem
+Planeten abzustellen und maximal PDU zu bauen. Zwar ist AS > DS, und es wird
+auch die Flotte geschlagen, aber da das Überlegenheitsverhältnis abbröckelt,
+kann der Angreifer nicht mehr alle PDU zerstören und hängt über dem Planeten.
+Diese Version aber nur anwenden, wenn es gar nicht mehr anders geht, denn das
+grenzt schon fast an ein Selbstmordunternehmen. (Das gleiche gilt übrigens in
+abgeschwächter Form auch für die vorherige Version. Wirklich nur im Notfall
+einsetzen und auch nur, wenn es sich wirklich lohnt. Siehe wie folgt: )
+  Aufpassen, daß Deine Moral nicht unter 100 rutscht ! Sobald deine FI
+qualitativ weniger wert sind als quantitativ, wird die Verteidigung sehr
+schwierig. Was auch zeigt, daß man die Verlustgefechtee nicht besonders oft
+einsetzen sollte.
+  Schmeiß alle Späh-Fighter auf Deinem Gebiet raus. Außer du bist sicher, daß
+der Besitzer wirklich Dein Verbündeter ist.
+  Verteidige Dich mit Händen und Füßen, gib keinen Fußbreit Boden ab, solange
+Du ihn verteidigen kannst. Lieber tot als Knecht oder so ähnlich. Solltest Du
+es doch mal machen müssen, dann sorge dafür, daß er möglichst schnell wieder
+an Dich zurückfällt.
+  Wenn alles schiefgehen sollte und Du Dich nicht mehr verteidigen kannst
+(aber nur, wenn es wirklich keine Hoffnung mehr gibt), pack Deine Restflotte
+zusammen, gib allen PV=1 und fliege ins hinterste Hinterland des Verteidigers.
+Damit rechnen die wenigsten, und vielleicht gelingt es Dir ja, im Exil wieder
+was aufzubauen. Es liegt natürlich nahe, daß Dein Zielplanet jemandem gehört,
+der Dir nicht helfen wollte.
+  Wenn Du einen guten Verbündeten hast, stelle einen Teil deiner TR auf einem
+sicheren Planeten von ihm ab. Da man ja rausfliegt, sobald man alle Planeten
+und TR verloren hat, kann einem diese stille Reserve zu einer Rückkehr im
+Spiel verhelfen.
+  Bei deiner Verteidigung mußt Du Dich viel auf Deine Intuition verlassen. Ich
+konnte hier nur Anregungen geben; wie was wann richtig anzuwenden ist, wirst
+Du schon noch selbst herrausfinden.
+  Soweit also die Software, die man Euch mitgeben kann auf dem rauhen Weg zum
+Ruhm, denken müßt Ihr jetzt schon selber.
+  Euer Lone Wulf, Diplomat at Arms, alias Holger Rinke

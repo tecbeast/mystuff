@@ -1,0 +1,370 @@
+
+ES IST SCHWER, EIN HERRSCHER ZU SEIN !
+von Holger Rinke
+
+  Die großen Portaltüren, die den hochtechnisierten Thronsaal vom Rest des
+Regierungsgebäudes trennen, schwingen auf. Hindurch schreitet mit schnellem
+Schritt Solsgnunha , neuer Diktator über Crab und Outpost, der dazugehörigen
+Stammkolonie. Er durchschreitet den langgezogenen Saal [Anm.: muß ein sehr
+langer Saal sein!] und erreicht nach wenigen Minuten den Thronsessel, auf dem
+er sich schwerfällig niederläßt. Sofort ist er von einem Schwarm Berater
+umgeben.
+  "Nun Eure galaktische Großkaiserlichkeit, wie ist die Konferenz auf Landfall
+verlaufen? Ich hoffe, zu Euerer Zufriedenheit ?!", der Sprecher beugte sich
+vor dem Thron des feisten Herrschers.
+  "Überhaupt nicht, es gab nichts zu Essen, nur geredet haben wir, und sonst
+nichts, ein kümmerliches Frühstück war alles, ich hätte gar nicht hinfliegen
+sollen.", er ließ eine Traube genüßlich in seinem Mund verschwinden. "
+  "Ähm, hm, oh Herrlichkeit, ich dachte eigentlich eher an die, äh...,
+politischen Veränderungen, die sich vielleicht ergeben haben. Habt ihr noch
+im Hohlrau..., ich meine Kopf, was besprochen wurde."
+  "Ach was, absolut nichts Wichtiges, die unbedeutenden freien Kolonien haben
+sich zum NEUTRAL (NATIONALGALAKTISCHEM ERSTMALIG UNABHÄNGIGEN TREUEBÜNDNIS
+der REGIERUNGEN ALLER LEGATSWELTEN) zusammengeschlossen, und bauen wieder
+Flotten. Aber ich habe es geschafft, die Kaviarlieferungen von New Mecca zu
+sichern. Natürlich haben wir legitimen Herrscher gegen den Bruch des alten
+Landfall- Vertrages protestiert. Die NEUTRALen Planeten antworteten umgehend
+mit einer Kriegserklärung. Alles in allem also kein Grund, sich Sorgen zu
+machen, wie gesagt, es ist nichts passiert!"
+  Der Berater, sichtlich blasser um die Nase, schluckte schwer, besann sich
+dann aber wieder auf seine Aufgabe. Irgendwie mußte er Solsgnunha dazu
+bringen, den Regierungsgeschäften nachzugehen, selbst wenn er noch nicht
+einmal einen Monat lang Regent war. Er griff in seine Tasche, zog ein
+mehrfach gefaltetes Stück Papier heraus, und reichte es seinem Herrscher.
+  "Wenn ihr nun noch einen Blick auf den Monatsbericht werfen wollt, damit ihr
+Eure Befehle erteilen könnt, auf daß die Staatsgeschäfte weiterlaufen ?"
+Mit vom Hühnerbein fettigen Fingern greift Solsgnunha nach dem Stück Papier,
+wirft einen Blick darauf. Seine Augen werden dabei immer größer.
+  "Arbeiten ? Ich soll Arbeiten du Wicht ? Was erlaubst...", langsam läuft er
+rot an.
+  "Oh Herrlichkeit, natürlich sollt ihr nicht arbeiten, aber die Richtlinien
+müssen doch festgelegt werden, nach denen Euer Volk dann handeln kann.", der
+Berater wird immer kleiner.
+  "Ich, wieso ich, wozu habe ich Berater wie Dich, arbeite für Dein Geld, ich
+bin der Präsident, ich brauche keine Ahnung zu haben! Wie Du siehst habe ich
+zu tuen, Du darfst jetzt gehen, und die Richtlinien meiner Politik
+ausarbeiten!", mit diesen Worten lehnte er sich in seinem Thron zurück, und
+genoß den ihm gereichten süßen Wein.
+
+  Tja Freunde, und so bin ich an diesen Job gekommen. Irgendwie war der
+Vorgänger Solsgnunha's aktiver. Aber was solls, also ran an die Arbeit, hier
+das ist der Monatsbericht der einzelnen Abteilungen:
+
+PV-Übersicht und Planetenberichte für player b game 227 turn 0
+
+PV	1 2 3 4 5 6 7 8                                   (4.3)
+	  1 1 1 1 1 1 1 1
+
+Planet 2 crab Besitzer player b GIP:26 PM% 150        (4.4)
+A: 240 PR: .666 HD: 6 Fuel: 30 Ore: 30 Rare: 30
+PDU 6  FP 3  OP 3  RP 3  FY 6  TY 3  FI 15  TR 3
+
+Planet 10 outpost Besitzer player b GIP:23 PM% 100
+A: 110 PR: 1.083 HD: 3 Fuel: 30 Ore: 30 Rare: 30
+PDU 10  FP 3  OP 3  RP 3  FY 6  TY 3  FI 10  TR 6
+
+Flottenübersicht von Player b game 227 turn 0
+Heimatplanet = 2 (i)= im Orbit (D+x)= erreicht in x Runden den Orbit
+
+ 2 (I) 15 F 3 T                                       (4.6)
+10 (I) 10 F 6 T
+
+A=350 PL=2 FP=6 OP=6 RP=6 FY=12 TY=6 PD=16            (4.7)
+SP=180 FI=25 FM% 100 TR=6 TM% 100 GI=49 PP=0
+
+  Er zeigt mir, daß das PV zu allen anderen Herrschern auf 1 ist, das
+bedeutet, man hilft sich nicht, aber man greift sich auch nicht an.
+  Desweiteren befinden sich 2 Planeten im Besitz meines Herrschers und 25 FI
+/ 9TR stehen für Flugbewegungen bereit. Nun denn, was gilt es jetzt zu tun ?
+  Zunächst einmal werde ich versuchen, das PV zu allen anderen Herrschern auf
+PV2 zu bringen (s. 6.31), und damit die Schlappe ausbügeln, die mein Regent
+auf der Konferrenz hingenommen hat. PV2 bedeutet, daß man verbündet ist, man
+erhält, nach § 7 des Landfallvertrages bei Verbündeten die Übersicht über
+ihre Politischen Verhältnisse, also wie sie zu anderen Spielern stehen, sowie
+eine Übersicht über ihre Flottenbewegungen, wenn die Größe der Flotten
+10+2*Turn erreicht. Also werden z.B. in Runde 5 alle Flotten angezeigt, die
+aus mind. 20 FI bestehen. Dabei zählen TR nicht mit, da sie nicht bewaffnet
+sind. Allerdings ist darauf zu achten, daß sämtliche Flotten eines Planeten
+zusammengezählt werden, also werden in Runde 5 auch Flotten angezeigt, wenn
+z.B. 5 FI im Orbit stehen, und 15 Fi sich im Anflug befinden. Eine nicht zu
+unterschätzende Angelegenheit. Desweiteren besteht die Möglichkeit, von den
+Planeten Verbündeter gezielt zu anderen Planeten zu fliegen. Sollte das
+Verhältnis PV1 oder gar PV0 (Kriegszustand) sein, ist nur eine "Fluchtorder"
+möglich, d.h., die Flotte flüchtet zum eigenen HP, braucht dafür aber, weil
+sie sich erst orientieren muß, eine Runde länger als normal. Aber zurück zum
+Thema. Das PV kann nach oben (also von 0 auf 1 und von 1 auf 2) nur geändert
+werden, wenn beide Herrscher den Befehl abgeben. Nach unten reicht die
+Erklärung eines Herrschers. Da ich nun versuche, das PV zu allen Herrschern
+zu verbessern, streiche ich auf dem Befehlsbogen deutlich unter PV die
+entsprechenden Spielernummern durch und schreibe jeweils eine 2 darunter.
+Damit wäre das erledigt. Wenden wir uns nun der Wirtschaft zu, denn nur eine
+ausgeglichene Wirtschaft kann ein Sternenimperium an die Spitze bringen.
+Betrachten wir dazu noch einmal die Planetenzeile:
+
+Planet 2 crab Besitzer player b GIP:26 PM% 150
+A: 240 PR: .666 HD: 6 Fuel: 30 Ore: 30 Rare: 30
+PDU 6  FP 3  OP 3  RP 3  FY 6  TY 3  FI 15  TR 3
+
+  Was bedeuten die einzelnen Werte, und wie wichtig sind sie ? Ich nehme an,
+daß ihr nicht so wie mein Regent herrschen wollt, also beginnen wir in der
+ersten Zeile. Hier finden wir die Planetennummer (1-40) den Planetennamen,
+Besitzer und GIP. GIP stellt die Summe aus allen Plants, multipliziert mit
+den Arbeitern (A), geteilt durch 20 dar. Hinzu kommen noch alle Vorräte/10.
+Somit steht GIP für die Gesamtwirtschaft. Man kann diesen Wert eigentlich
+vernachlässigen. Er dient zur Steigerung der A und der PR. Für jeweils 40 GIP
+steigt die Anzahl der A um 1 jede Runde. Für jeweils 200 GIP steigt die PR um
+0.016. Seht mich nicht so an, ich weiß auch nicht, warum der Wert so krumm
+ist. [Anm.: die Produktion ist auf 60 normiert; demzufolge entspricht
+0.016... 1/60]. Da sich aber beides früher oder später von selbst einstellt,
+braucht ihr hier nur auf eines zu achten: Da der GIP-Wert nach dem
+Wirtschaftsaufbau berechnet wird, kann es passieren, daß der Wert um ein
+Vielfaches von 40 steigt, und so die A um weitere Punkte angehoben wird.
+Damit sind wir auch gleich beim nächsten wichtigen Punkt für die Wirtschaft:
+Die Arbeitskräfte (A) stellen das wichtigste Gut des Planeten dar, denn ohne
+sie läuft gar nichts. Zunächst einmal ist daran zu denken, daß die A die HD
+mitbestimmen. Werft die Formel weg, als Faustregel kann man sagen, je
+angefangene 40 A +1 auf HD. Desweiteren verwendet man die A um die Dinge in
+der 3. Zeile des Planetenstatusberichtes zu bauen. Bauen ist ein gutes
+Stichwort, Die 3 Plants-Arten (FP,OP,RP) produzieren jede Runde den
+entsprechenden Rohstoff, ohne daß dafür nochmals A aufgeboten werden müssen.
+Man multipliziert einfach die Fabrikanzahl mit der PR (Produktionsrate),
+rundet das Ganze auf und schon hat man die Rohstoffproduktion für diese
+Runde. [Eigentlich müßte man ja abrunden, aber da diese reellen Zahlen nur
+mit drei Nachkommastellen dargestellt sind, während das Programm mit der
+richtigen Zahl rechnet, kommt man in den meisten Fällen mit dem Aufrunden
+klar (Ausnahmen: 1.000 oder 0.500)] Crab(2) hat eine PR von .666 (was so
+ziemlich am untersten Durchschnitt liegt), die PR von Outpost(10) liegt da
+mit 1.083 wesentlich höher. In der gleichen Zeile folgen noch die Mengen der
+momentan vorhandenen Rohstoffe (Fuel, Ore und Rare). Mir stehen nur diese
+Mengen zur Verfügung. Mehr kann ich nicht verbauen, denn die Bau-Phase findet
+vor der Produktionsphase statt. Es bleibt noch die HD (Homedefense), welche
+das Unabhängigkeitsbestreben meiner Bevölkerung darstellt. Um den Planeten
+sicher unter Kontrolle zu halten, muß meine PDU-Anzahl mindestens genausohoch
+liegen, wie die HD des Planeten, darauf ist auch vor allem nach einem Angriff
+zu achten. Steigt die HD über die PDU-Anzahl, so kommt es zu einer Revolte,
+in der 0 bis HD an PDUs zerstört werden. Die Zerstörung einer PDU, womit wir
+auch schon bei der nächsten Statuszeile sind, hat, egal durch was sie
+eingetreten ist, mehrere Auswirkungen. Zum einen sinkt die PM%
+(Planetenmoral) um 1, dies führt zu veränderten Bedingungen, sollte ein
+Angriff erfolgen: Sollten mehr PDUs zerstört werden als vorhanden sind, wird
+die Welt neutral oder fällt an den Besitzer der größten feindlichen TR-Flotte
+im Orbit. Es hat also seine Vorteile, auch einmal ein paar mehr PDUs zu
+bauen. Zumal diese ja auch noch in einem Kampf wichtig sind, denn hier...
+  Aber das erkläre ich wohl besser später. Es folgen die einzelnen Plants (FP,
+OP, RP) und ihre jeweilige Anzahl. Diese Plants produzieren die Rohstoffe,
+die für den FI- und TR-Bau nötig sind. Allerdings haben sie eine beschränkte
+Lagerkapazität. Man kann maximal 10 Rohstoffeinheiten einer Art je Fabrik
+dieser Art einlagern. Der Überschuß wird an die Armen verschenkt. (Was weiß
+ich, was ein Armer mit ein paar IC-Bausteinen soll). Hierauf folgen FY
+(Fighteryard) und TY (Transporteryards), die allerdings nicht, wie die Plants
+ohne Einsatz von A produzieren. Sie geben vielmehr an, wieviele FI (in
+Abhängigkeit von FY) oder TR (in Abhängigkeit von TY) ich maximal in dieser
+Runde bauen kann. Dazu müssen unterschiedliche Mengen Rohstoffe und A
+ausgenutzt werden. Rohstoffe verbrauchen sich bei der Benutzung; A sind nur
+für die entsprechende Runde nicht mehr verfügbar. Es fehlen nur noch FI
+(Fighter) und TR (Transporter); die jeweiligen Zahlen dahinter geben die
+Menge an, die sich zur Zeit im Orbit befindet, also die Menge, die ich zu
+anderen Planeten schicken kann. Überhaupt gilt bei der Produktion allgemein
+der Grundsatz "Nur was da ist, kann verwendet werden." [Lady Preyer's (Di-)
+Lemma] Es geht also z.B. nicht, daß ich in der gleichen Runde zu meinen
+bereits vorhandenen 6 FYs 2 hinzubaue und dann 8 FI bauen will. Hier sind in
+dieser Runde auch nur 6 FI-Bauten möglich; in der Folgerunde kann ich dann 8
+FI bauen, insofern meine Rohstoffe noch reichen. Ein anderes Beispiel: im
+Orbit stehen 15 FI, ich baue 6 hinzu, und will 21 FI entsenden, von denen
+allerdings nur 15 starten werden, da die 6 anderen ja noch tanken müssen.
+Allerdings verteidigen die 6 neugebauten FI den Planeten ebenso wie die
+neugebauten PDUs und unbewaffneten TR.[es ist sogar schon vorgekommen, daß
+0FI/6TR eine angreifende Flotte von 3FI/17TR allein durch ihre Anwesenheit,
+unter Zurücklassung der 17 Transporter, in die Flucht geschlagen haben]
+  Warum das so ist ? Weiß ich nicht, es ist Tradition, und Ashes ist eben ein
+Traditionsspiel !
+  Aber es wird Zeit, daß ich meine Befehle für die Wirtschaft abgebe. Ich
+trage also jeweils die entsprechende Zahl, die ich bauen möchte, hinter die
+dazugehörige Abkürzung auf dem Befehlsbogen. Dabei muß ich darauf achten, daß
+ich nicht die mir gesetzten Grenzen überschreite, also z.B.: zuviele A
+verwende oder aber zuviele Rohstoffe. Natürlich sollte ich die Befehle beim
+richtigen Planeten geben. - So, das wäre auch erledigt.
+  Ich habe mich auf Crab für den Bau von: (6.ff)
+
+1 PDU (15 A) ; 7 FP (35 A) ; 5 OP (20 A) ; 5 RP (50 A) ; 6 FI (60 A+6 F+6 O
++18 R+6 FY) sowie 3 TR (60 A+6 F+9 O+3 R+3 TY) (=240 A)
+
+entschlossen.
+
+  Ich fülle noch meine Order für Planet Outpost(10) aus, und wende mich dann
+der Flottenübersicht zu. Dort wird eigentlich nur noch einmal wiederholt und
+zusammengefaßt, was in den Planetenstatusberichten gut verteilt steht. Es
+kommen nur einige Dinge hinzu.
+  Zum einen der HP. Dies ist der Planet, zu dem meine geschlagenen Flotten
+flüchten. Bei der Wahl muß er sich im eigenen Besitz befinden. Sollte er
+einmal verloren gehen, bleibt er allerdings solange HP, bis ein neuer gewählt
+wird. Dann kommt das Wichtigste der ganzen Übersicht, nämlich die Übersicht
+über die komplette eigene Flotte. (s. 6.32)
+  Dabei bedeutet ein 2 (I) 15 F 3 T, daß sich 15 FI, 3 TR meiner Flotte auf
+Crab befinden, so daß ich neue Ziele für sie bestimmen kann. (Anm.: stände
+dort z.B. 2 (I) 15 F 3 T (D+0) 3 FI (D+1) 4 FI würde dies bedeuten, daß ich
+neue Flugbefehle für 15 FI, 3 TR geben kann. Die restlichen 7 FI kann ich
+nicht beeinflussen, hier muß ich warten, bis sie (I)m Orbit des
+entsprechenden Planeten stehen. Dabei bedeutet das (D+0), daß die FI nächste
+Runde da sind, also z.B. angreifen oder verteidigen. Bei einem (D+1) erfolgt
+die Ankunft übernächste Runde usw.. Wenn ich also jetzt z.B. die 15 FI zu
+einem Planeten entsende, der im Regelheft unter (D) von Crab(2) steht, und
+dort bereits 3 FI mit einem (D+0) im Anflug sind, befinden sich in der
+nächsten Runde dort 18FI von mir. Um Flotten also gleichzeitig ankommen zu
+lassen, muß man sie so losschicken, daß sie nachher im Ausdruck alle mit dem
+gleichen (D+x) stehen. Befinden sich also FI in (D+2) zu einem Planeten, so
+kommen alle FI gleichzeitig mit diesen an, die von Planeten gestartet wurden,
+die mir oder meinem Verbündeten gehören, und die zum Zielplaneten eine (D+2)-
+Entfernung haben, was aus der Planetenentfernungstabelle ersichtlich ist).
+  Ich habe mich dazu entschlossen, zuerst Beyond (21) anzugreifen. Um zu sehen,
+wie lange ich unterwegs bin, sehe ich in der Entfernungstabelle unter (21)
+nach und sehe dort (D) 2, 10, 18, 24, 29, (40). Das bedeutet, von diesen
+Planeten aus kommen die FI und TR noch in der Runde an, zu der ich die
+Befehle abgegeben habe. Steht dort ein (D+1) kommen die FI und TR eine Runde
+nach der Runde an, für die ich die Befehle abgegeben habe. Ich entsende also
+von Crab(2) 15 FI/1 TR nach (21) und 1 TR nach (39).Da (39) in (D+2) zu (2)
+steht, kommt dieser TR erst zwei Runden nach der Runde, für die diese Befehle
+gelten, an. Wenn eine Flotte einmal über längere Distanz unterwegs ist (alles
+größer (D)) habe ich während der Flugzeit keinerlei Einfluß mehr auf sie. Das
+muß man auf alle Fälle bei seinen Planungen bedenken. Von (10) entsende ich
+10 FI und verwende die 6 TR, genauso wie den einen TR von (2), als CS und
+entsende sie ebenfalls nach (21).
+  CS(Cargoships, s. 6.35) gibt es für A, PDU, alle Plants, Yards und Rohstoffe.
+Die Mengen, die sie mitnehmen können sind festgelegt, mehr geht nicht,
+weniger auch nicht. Um ein CS zu beladen, muß man mind. einen FI im Orbit
+haben. Dieser muß bereits dort stehen, und darf nicht erst in der Runde des
+Beladens dort hingezogen werden. CS werden dann genauso verschickt, wie TR
+oder FI. Ein Befehl 1C1 nach (21) führt dazu, daß ein TR zu einem C1 wird,
+sofern die Ware vorhanden ist, und nach (21) losfliegt. CS gehören niemandem,
+dies liegt daran, daß die Händlergilde auf ihre Neutralität bedacht ist, und
+nicht bereit ist, unter der Flagge eines Herrschers zu fliegen. (Und
+wahrscheinlich traditionsbedingt am Programm...) Also greifen CS auch nicht
+an, oder können abgeschossen werden, man kann mit ihnen auch keine Planeten
+erobern. CS gehören bei Ankunft dem Planetenbesitzer, wenn er mind. 1 FI im
+Orbit hat.(Allerdings erst nach einer eventuellen Schlacht, da sich die
+Händlergilde ja als vollkommen neutral betrachtet - und es wäre doch auch
+schade um die schönen Rohstoffe, die der neue Besitzer der Welt doch auch
+gebrauchen könnte!) Sollte der Planetenbesitzer keinen FI im Orbit haben
+(z.B. wenn er die Lufthoheit verloren hat) bleiben die CS als CS im Orbit, da
+sie nicht ausgeladen werden können. Wenn sie ausgeladen werden, wandeln sich
+die CS wieder zu TR, die dann der Flotte des Planetenbesitzers zugeschlagen
+werden.
+  Bei einem solchen Transport ist darauf zu achten, daß, selbst wenn nur über
+(D)-Entfernung geflogen wird, die zu transportierenden Güter, so es sich um
+Plants handelt, 1 Runde nicht bauen, da CS vor der Produktionsrunde beladen
+und nach der Produktionsrunde entladen werden. (Es ist aber möglich, CS vom
+Startplaneten zu sich selbst zu schicken, z.B. PDUs, etc.). Diese Methode hat
+aber auch seine Vorteile, denn transportierte PDUs werden nach gewonnener
+Schlacht abgeladen, so daß man sich um den PDU-Bau nicht mehr zu kümmern
+braucht. So, damit habe ich eigentlich alles Notwendige getan, was ich in
+dieser Runde machen konnte.
+  Die FM% (Fightermoral), TM% (Transportermoral), PM% (Planetenmoral) und PP
+(Politische Punkte) lassen sich wohl besser anhand der nächsten Runde
+erklären, aber das dauert jetzt noch zwei bis drei Wochen, dann sehen wir uns
+hier wieder. Halt, Stop, beinahe hätte ich es vergessen. Da Player b doch
+irgendwie recht unpersönlich klingt gebe ich hier formlos auf dem
+Befehlsbogen den Namen meines Regenten an und schreibe "Neuer Name" davor.
+Als letztes wähle ich dann noch die letzte Runde mit, indem ich eine Zahl
+zwischen 10 und 30 wähle. Aus allen eingegangenen Endrundenwünschen wertet
+der GM dann den Durchschnitt aus, und legt so die letzte Runde fest (s.
+6.33).
+
+  So, da bin ich wieder, na, wie waren die letzten Wochen? Was! Du hast direkt
+weitergelesen? Hast Du ein Glück, daß die Ashes-Uhren anders laufen, denn die
+Auswertung habe ich bereits wieder hier. Viel ist ja nicht mehr zu erklären,
+aber das Wenige ist wichtig! Ich kann Dir übrigens verraten, daß alles, was
+ich letzte Runde getan habe, funktioniert hat. Mein Ausdruck sieht fast
+genauso aus, wie der letzte Bericht, allerdings ist jetzt noch ein Planet
+hinzugekommen.
+  Die wichtigste Veränderung hat sich jetzt wohl bei den Politischen Punkten
+(s. 6.34) ergeben. Meine Anzahl an PP ist von 0 auf 7 gestiegen. Für jedes
+PV2 erhält man einen PP, für jedes PV0 bekommt man 1 PP abgezogen. Die
+elementarste Auswirkung haben die PP eigentlich auf die Innenpolitik, denn
+sollte einmal die PP-Anzahl unter 0 sinken, so revoltieren alle eigenen
+Planeten. Die Auswirkungen habe ich ja vorhin beschrieben. Man kann PP aber
+auch investieren. Zum einen in Forschung, also um die PR zu steigern, zum
+anderen in Manöver, also um die FM% oder TM% zu steigern. Eine weitere
+Möglichkeit bietet sich mit dem Ausspionieren von Welten an. Alle
+Möglichkeiten werden einfach formlos auf dem Befehlsbogen abgegeben. Man
+sollte allerdings immer darauf achten, noch eine gewisse Reserve zu haben. Es
+hat schon Regenten gegeben, die durch allgemeines PV0-geben aller anderen
+Herrscher zu sehr mit der eigenen Bevölkerung beschäftigt waren, um sich auch
+noch gegen Angreifer zu wehren.
+  Wenden wir uns nun den Gefechtsberichten zu. (s. 6.2)
+
+21 beyond (neutral) 2 PDU 24 AS 24 AF 5.5 DS 5 DF
+Landeversuch 2.5 AS 2.2 DS
+neutral verteidigt 6 FI 1 TR(-4FI) (-1TR) 2 FI zum HP
+Solsgnunha greift an 25 FI 1 TR(-1FI) (-1TR/-2PDU)
+beyond fällt an Solsgnunha
+
+  Zuerst sollte ich wohl die einzelnen Dinge erklären. Der Planet hat 2 PDUs.
+Die Angriffsstärke (AS) beträgt 24 und errechnet sich aus der Anzahl der
+angreifenden Fighter mal Fightermoral, normiert auf 100 (in Zahlen:
+FI*FM%/100), des jeweiligen Besitzers (es können ja auch mehrere Regenten
+angreifen). Also hier 24 FI (1FI muß den TR eskortieren und greift nicht mit
+an) *100%/100=24! AF stellt die Anzahl aller angreifenden FI dar. DS ist der
+errechnete Wert aus der DF (verteidigende Fighter) und der FM% des jeweiligen
+Besitzers. Bei den Fightern des Planetenbesitzers wird noch die PM%
+hinzugezählt.
+  Hier also 5 * 100 * 110 / 100 * 100 = 5.5 da die Moral des Neutralen immer
+100 beträgt. Der Planet hat in der Vorrunde eine PM% von 100, also zum
+Zeitpunkt des Angriffes von 110%. Diese  Berechnungsgrundlagen gelten denn
+auch für den Landeversuch, wobei hier allerdings beim Angreifer die TR und TM%
+zählt und beim Verteidiger die PDUs und die PM%. Die Lufthoheit erringt man,
+wenn die eigene Kampfkraft (AS oder DS) größer ist als die des Gegners. Die
+Lufthoheit des Angreifers ist die  Grundvorraussetzung für einen Landeversuch.
+Auch bei den Landeversuchen gilt, daß er gelingt, wenn die AS des
+Landeversuches größer ist als die DS des Verteidigers. Da bei obigem Angriff
+sowohl die AS des Luftkampfes als auch die AS des Landeversuches größer als
+die jeweilige DS war, fiel der Planet an meinen Regenten. Wäre im Luftkampf
+die AS größer als die DS gewesen, aber der Landeversuch gescheitert, so wäre
+die Flotte nicht geflüchtet, sondern im  Orbit stehen geblieben und hätte auf
+weitere Orders gewartet. Wäre die AS des Landeversuches kleiner als die DS,
+aber die Flotte hätte trotzdem alle PDUs  zerstört, so hätte der Planet
+revoltiert und wäre (wieder) neutral geworden.
+  Ansonsten gibt der Kampfbericht noch die Verluste wieder, die jeder der
+Beteiligten hatte. Die Werte hinter den Namen geben die kompletten vorhanden
+Flotten an (ob sie nun mitkämpfen oder nicht), so wie sie zur Schlacht
+antraten. Die Werte in den Klammern geben dann die Verluste an, wobei ein (-1
+TR / -2 PDU) bedeutet, daß man bei Verlust von einem TR zwei PDUs zerstört
+hat. (die PDUs warten ja nicht unbedingt bis die Raumlandetruppen gemütlich
+ausgestiegen sind, sondern schießen auch schon mal vorher auf die
+Transporter).
+  Die TR flüchten übrigens auch nicht nach einer verlorenen Schlacht, sondern
+werden alle vernichtet! Wie diese Verluste genau entstehen ist recht
+umständlich zu errechnen, am Besten, Du läßt in den ersten Runden die Finger
+davon, und gehst nach der Maxime vor - "Soviel FI wie möglich - sowenig TR
+wie nötig" [Astrachan's Axiom], zumal Du ja nichts mehr errechnen brauchst,
+wenn die Schlacht vorbei ist, und zur Vorausberechnung brauchst Du eine
+gewisse Erfahrung, um die Stärke des Gegners abschätzen zu können. Vielleicht
+sollte noch erwähnt werden, wieviele PDUs Du mit einem TR schaffst. Die
+Anzahl der TR wird zuerst mit ihrer Transportermoral (TM%) multipliziert und
+durch hundert geteilt, d.h. ein TR mit einer Moral von 120, hat eine
+Angriffsstärke von 1.20; danach wird noch mit dem Überlegenheitsverhältnis AD
+des Angreifers aus dem Raumgefecht multipliziert, das die Kampfstärke um bis
+2.5 aufwerten kann. (Anm.: bei AD kleiner oder gleich 1 hätte der Angreifer
+ja das Raumgefecht verloren...
+  Der Planet wechselte den Besitzer, dadurch wird die PM% auf 50 gesetzt. Wäre
+die Eroberung nicht gelungen, wäre die PM% nur um einen Punkt je zerstörter
+PDU gefallen. Die neue FM% der jeweiligen Seite läßt sich errechnen, indem
+man von den eigenen Verlusten die Verluste des Gegners an FI und TR abzieht,
+die man selbst verursacht hat (Sollten mehrere Regenten angegriffen haben,
+werden die Verluste ja auch einzeln angegeben). Positive Differenzen addiert
+man zu seiner aktuellen FM%, negative zieht man ab. Hinzu kommt noch ein
+Punkt, den man addiert oder subtrahiert, je nachdem, ob man das Gefecht
+gewonnen oder verloren hat. Die neue TM% errechnet man, indem man von den
+eigenen Verlusten die Anzahl der zerstörten PDUs abzieht. Allerdings erhöht
+sich die PM% nicht für jeden abgeschossenen TR! Durch diese Berechnung kommt
+mein Herrscher nun auf eine FM% von 104 und eine TM% von 101.
+  Nachdem ich nun den Kampfbericht wohlwollend zur Kenntnis genommen habe,
+werfe ich noch einen kurzen Blick auf die Geheimbotschaften (s. 4.9). Hier
+werden die Politischen Verhältnisse aller Imperien aufgeführt, mit denen mein
+Herrscher verbündet ist, sowie deren Flotten, so sie denn die Meldepflicht
+überschreiten, alles, wie es auch bei meiner Flottenübersicht aussieht.
+Was gilt es noch zu erwähnen? Richtig, das PV wird zuerst verändert und hat
+Auswirkungen auf Flugbewegungen, Angriffe und ähnliches - und das PV kann ja
+nicht nur von Dir verändert werden...
+  So, ich glaube, jetzt könnt ihr euren Regenten genügend unter die Arme(e)
+greifen, auf daß er der größte Herrscher wird, den die Galaxie je gesehen
+hat - oder ihr sterbt ...

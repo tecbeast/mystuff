@@ -1,0 +1,26 @@
+
+#
+# ein erster kleiner Test des neuen Parsers für Ashes
+#
+begin
+
+  game 1 turn 2
+
+  user testuser password test  # erstmal identifizieren
+
+  on 1 do          # befehle in einem block ...
+    build 3 PDU
+    build 1 FI
+    build 2 TR
+  done
+
+  build 5 TR on 7  # ... oder auch einzeln
+  spy on 5         # das kostet politische Punkte !
+
+  # diese Nachricht erhaelt er in der nächsten Runde ...
+  message to 1 "dies ist ein kleiner test"
+  message to 1 "ueber mehrere Zeilen hinweg"
+
+  playername "Kalimar"  # mir ist nach einem neuen image :-)
+
+end

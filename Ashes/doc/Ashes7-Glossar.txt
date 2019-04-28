@@ -1,0 +1,170 @@
+DAS KLEINE ASHES-WÖRTERBUCH
+
+A                      Arbeitskraft
+AD                     Überlegenheitsverhältnis
+AF                     Angreifende Fighter (gesamt)
+Aitchison              Planet 26, benannt nach einer Kleinstadt in Kansas, USA
+Allianz                Bündnis zwischen zwei oder mehr Spielern
+AoE                    gängige Abkürzung für (The) Ashes of Empire
+AS                     Angriffsstärke (gesamt)
+AT                     Angreifende Transporter (gesamt)
+Atlas                  Planet 28, benannt nach einer griechischen Sagengestalt
+Auswertungsreihenfolge s. 7.ff
+
+Barnard's Arrow        Planet 9, benannt nach einem der erdnächsten Systeme
+Befehlsblatt,-karte    s. 6.ff
+Beyond                 Planet 21, jenseits von gut und böse...
+Bündnis                Allianz zwischen zwei oder mehr Spielern
+
+C                      Frachtschiff (Cargo-Ship), s. 6.35
+C0                     Frachtschiff, beladen mit 8 A
+C1                     Frachtschiff, beladen mit 1 PDU
+C2                     Frachtschiff, beladen mit 4 FP
+C3                     Frachtschiff, beladen mit 5 OP
+C4                     Frachtschiff, beladen mit 2 RP
+C5                     Frachtschiff, beladen mit 40 Fuel
+C6                     Frachtschiff, beladen mit 50 Ore
+C7                     Frachtschiff, beladen mit 20 Rare
+C8                     Frachtschiff, beladen mit 1 FY
+C9                     Frachtschiff, beladen mit 1 TY
+Crab                   Planet 2, Stern im Crab-Nebel
+Crossland              Planet 20, zentraler Warenumschlagplatz
+CS                     Cargo-Ship (Frachtschiff), s. 6.35
+
+D+0                    Flotte in Abstand D zum Planeten
+                         / Länge bzw. Zeiteinheit bei AoE
+D+1                    Flotte in Abstand D+1 zum Planeten
+D+2                    Flotte in Abstand D+2 zum Planeten
+D+3                    Flotte in Abstand D+3 zum Planeten;
+Desert Rock            Planet 11, Ödplanet
+DF                     Verteidigende Fighter (gesamt)
+Diplomatie             Die Kunst, andere Mitspieler zu beeinflussen, s. 5.ff
+Draken                 Planet 18, benannt nach legendären schwedischen
+                         Kampfflugzeugen (=Drachen)
+DS                     Verteidigungsstärke (gesamt))
+Dunroamin              Planet 35, benannt nach einer australischen Kleinstadt
+
+Earth oder Erde        Planet 1, Urheimat der Ashes-Bevölkerung, der "blaue" Planet
+Eastside               Planet 3, "östlichste" Kolonie
+Einstein               Planet 34, benannt nach einem dt. Physiker (Albert E.)
+Evergreen              Planet 30, der "grüne" Planet
+
+FI,                    Fighter   Raumjäger, kann mit 10 A, 1 FY, 1 Fuel, 1 Ore
+                         und 3 Rare gebaut werden
+FM%                    Fightermoral (maximal 150%; minimal 50%)
+FP                     Fuel Plant (Treibstoffabrik), kann mit 5 A gebaut
+                         werden, s. 4.45
+Frachter               s. CS (Frachtraumschiff), s.6.35
+Fuel                   Treibstoff für Raumschiffe
+FY                     Fighter Yard (Werft für Fighter), kann mit 15 A gebaut
+                         werden, s. 4.46
+
+Gefechtsbericht        Ergebnisbericht eines Gefechtes, s. 4.8, 6.2ff
+GIP                    Gross Industrial Product
+                         (Wirtschaftsfaktor eines Planeten)
+GM                     Game Master (Spielleiter),
+                         auch Galactic Media (Presseorgan)
+GNP                    Gross National Product
+                         (Wirtschaftsfaktor eines Spielers), s. 4.5
+
+HD                     Home Defense (revolutionäres Potential der Bevölkerung)
+HoF                    Hall of Fame (ewige Bestenliste)
+HP                     Home Planet (Heimatplanet,
+                         also Zielplanet flüchtender Flotten), s. 6.32
+
+I                      Flotte im Orbit eines Planeten
+
+Kaironow               Planet 38, benannt nach einer ägyptischen Großstadt
+Kalgourlie             Planet 17, benannt nach einer Stadt in Australien
+Kolonie                gängige Bezeichnung für Planeten, die ein Spieler
+                         kontrolliert
+
+Landfall               Planet 27, Zentrum der bekannten Galaxis,
+                         eine der ersten Kolonien
+Last Hope              Planet 13, letzte Kolonie der Eastern Democratic Union
+Lenin                  Planet 5, benannt nach einem sowj. Politiker
+                         (Wladimir Iljitsch)
+Lermontov              Planet 33, benannt nach einem russ. Dichter
+                         (Michail Jurjewitsch L.)
+Lesser Evil            Planet 32, im Gegensatz zu Aitchison das kleinere Übel
+Lizenzgebühr           s. 1.1
+Lone Star              Planet 8, benannt von texanischen Siedlern
+LV                     Landeversuch
+
+Mechanica              Planet 12, höchstindustrialisierte Welt bei AoE
+Mike's Dream           Planet 40, Mike Costello hätte sich den dt. AoE-Erfolg
+                         nie träumen lassen...
+MS                     Mitspieler (Gegner)
+
+Nameless               Planet 4, benannt nach einer Hochalmgemeinde in Tirol
+Namensänderung         Bestimmung von Namen für Planeten, etc., s. 6.33
+Neutral                PV=1, auch Bezeichnung der Flotten "neutraler" Welten,
+                         quasi Spieler 9
+New Earth              Planet 22, eine der ersten Kolonien
+New Jerusalem          Planet 31, benannt nach der heiligen Stadt des
+                         Juden-/Christentums
+New Mecca              Planet 29, benannt nach der heiligen Stadt des Islam
+New Nome               Planet 15, Kolonie der Lone Star Republik,
+                         benannt nach einer Stadt in Alaska
+Newton                 Planet 24, benannt nach einem engl. Astronom
+                         (Sir Isaak)
+NMR                    No Move Received, ein Spieler hat den ZAT/ZAS versäumt
+
+OP                     Ore Plant (Stahl-Werk),
+                         kann mit 4 A gebaut werden, s. 4.45
+Ore                    Stahl für Raumschiffshüllen
+Outpost                Planet 10, abgelegener Außenposten,
+                         Stammkolonie von Crab
+
+PDU                    Planetary Defense Unit (Verteidigungsanlagen),
+                         kann für 15 A gebaut werden
+PL                     Planet
+PM%                    Planetenmoral (maximal 250%; minimal 50%), s. 4.42
+Potter's Bar           Planet 37, Einladung der Redaktion an die Mitspieler
+                         mal vorbeizuschauen...
+PP                     Politische Punkte, s. 6.34
+PR                     Produktionsrate bzw. -faktor eines PL, s. 4.43
+Programm               Auswertungsprogramm, s. 1.1
+PV                     Politisches Verhältnis zu anderen MS, s. 6.31
+
+Rare                   Rare material (High-Tech-Produkte)
+                         für Raumschiffs-Elektronik
+Rebellion,             Revolte - Erhebung der Bevölkerung
+                         gegen den Kolonialherren
+Revolution             erfolgreiche Revolte,
+                         d.h. der Planet wird (wieder) neutral
+RG                     Raumgefecht
+Rivet                  Planet 19, üblicherweise ein "Zankapfel"
+                         zwischen Erde und Lone Star
+RP                     Rare material Processing Area (High-Tech-Fabrik),
+                         kann mit 10 A gebaut werden
+
+Scott's Home           Planet 23, benannt nach einem engl. Programmierer
+                         (Richard Bodley)
+Shadow                 Planet 6, Planet einer sterbenden Sonne
+SL                     Spielleiter (s. GM)
+SP                     Stock Piles (Vorräte)
+Spionage               Einsatz von PP zur Erlangung von Informationen
+                         über andere MS
+Spielanmeldung         s. 3.1 oder ZSL
+Spielende              s. 0.5, 1.5 oder 2.ff
+Spielgebühr            s. 1.4
+Spielstrategien        s. "Im Zentrum der Macht"
+                         oder ältere Ausgaben der MegaZine ab #3
+Stab                   gängige Bezeichnung für einen Bündnisbruch
+Stand-by               von ZSL und SL gerne gesehener Ersatzspieler
+Stormbringer           Planet 39, Traditionsname
+Strife                 Planet 36, Zankapfel zwischen Lenin und Shadow,
+                         Nebelwelt
+TM%                    Transportermoral (maximal 150%; minimal 50%)
+TR                     Transporter, kann mit 20 A, 1 TY, 2 fuel,
+                         3 ore und 1 rare gebaut werden
+TY                     Transport Yard (Werft für Transporter),
+                         kann mit 20 A gebaut werden, s. 4.46
+Tramp                  Planet 15, einsamer Planet eines vergessenen Sterns
+
+ZAS/ZAT                Zug Annahme Schluß/Tag, an dem die Befehle
+                         beim GM sein soll(t)en
+Zentrale Spielleitung  ZSL, Adresse für Anmeldungen, Spielgebühren,
+                         Rückfragen, etc.
+ZSL                    Harald Topf, Alfred-Bucherer-Straße 63, D-53115 Bonn
