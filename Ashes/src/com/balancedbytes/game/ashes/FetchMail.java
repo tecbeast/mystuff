@@ -19,14 +19,16 @@ public class FetchMail {
 	public static void main(String args[]) throws Exception {
 
 		// mail server info
-		String host = "pop.ionos.de";
-		String user = "ashes@balancedbytes.com";
-		String password = "AoE_2019";
-
-		// connect to my pop3 inbox in read-only mode
+		Properties mailProperties = new Properties();
+		mailProperties.load(FetchMail.class.getResourceAsStream("/mail.properties"));
+		
+		// connect to my IMAP inbox in read-only mode
 		Properties properties = System.getProperties();
 		Session session = Session.getDefaultInstance(properties);
-		Store store = session.getStore("pop3");
+		Store store = session.getStore("imap");
+		String host = mailProperties.getProperty("mail.host");
+		String user = mailProperties.getProperty("mail.user");
+		String password = mailProperties.getProperty("mail.password");
 		store.connect(host, user, password);
 		Folder inbox = store.getFolder("inbox");
 		inbox.open(Folder.READ_ONLY);

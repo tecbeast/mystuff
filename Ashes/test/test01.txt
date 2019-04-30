@@ -1,8 +1,11 @@
-
+# mail subject:
+# game 1 player 2 turn 3 move
+# game 1 player 2 turn 3 message 5
+# game 1 player 2 turn 3 message gm
 #
 # ein erster kleiner Test des neuen Parsers für Ashes
 #
-begin
+begin authorization a123456789
 
   game 1 turn 2
 
@@ -21,6 +24,6 @@ begin
   message to 1 "dies ist ein kleiner test"
   message to 1 "ueber mehrere Zeilen hinweg"
 
-  playername "Kalimar"  # mir ist nach einem neuen image :-)
+  playername "Kalimar ist doof"  # mir ist nach einem neuen image :-)
 
 end

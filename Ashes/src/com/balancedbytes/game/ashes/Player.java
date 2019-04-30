@@ -5,87 +5,90 @@ import java.util.Iterator;
 // import javax.mail.*;
 // import javax.mail.internet.*;
 
+import com.balancedbytes.game.ashes.parser.Parser;
+
 /**
  *
  */
-public class Player implements Serializable {
+public class Player {
 
-  protected   Game game       = null;
-  protected String user       = null;
-  protected String name       = null;
-  protected    int number     = 0;
-  protected Planet homePlanet = null;
-  protected    int pp         = 0;
-  protected  float fm         = 0.0f;
-  protected  float tm         = 0.0f;
-  protected  int[] pt         = null;
+  private Game fGame;
+  private String fUser;
+  private String fName;
+  private int fNr;
+  private int fHomePlanetNr;
+  private int fPp;
+  private float fFm;
+  private float fTm;
+  private int[] fPt;
 
-  transient protected Report report = null;
+  transient private Report report = null;
 
   /**
    *
    */
-  public Player(Game game, String user, int homePlanetNr) {
+  public Player(Game game, String user, int nr) {
   
-  	this.game = game;
-  	this.user = user;
-  	this.homePlanet = game.getPlanet(homePlanetNr);
-    this.number = homePlanetNr;
-    this.name = "player" + this.number;
+  	this.fGame = game;
+  	this.fUser = user;
+    this.fNr = nr;
+    this.fHomePlanetNr = nr;
+    this.fName = "player" + this.fNr;
   
-  	pp = 0;
-  	fm = 1.00f;
-  	tm = 1.00f;
+  	fPp = 0;
+  	fFm = 1.00f;
+  	fTm = 1.00f;
   
-  	pt = new int[9];
-    pt[0] = Parser.WAR;
-    for (int i = 1; i < pt.length; i++) {
-  		if (i == number) { pt[i] = Parser.PEACE; } else { pt[i] = Parser.NEUTRAL; }
+  	fPt = new int[9];
+    fPt[0] = Parser.WAR;
+    for (int i = 1; i < fPt.length; i++) {
+  		if (i == fNr) { fPt[i] = Parser.PEACE; } else { fPt[i] = Parser.NEUTRAL; }
     }
   
   }
-
+  
+  public int getHomePlanetNr() {
+	  return fHomePlanetNr;
+  }
+  
+  public void setHomePlanetNr(int nr) {
+	  fHomePlanetNr = nr;
+  }
+  
   /**
    *
    */
   public float getFighterMorale() {
-  	return fm;
-  }
-
-  /**
-   *
-   */
-  public Planet getHomePlanet() {
-  	return homePlanet;
+  	return fFm;
   }
 
   /**
    *
    */
   public String getName() {
-  	return name;
+  	return fName;
   }
 
   /**
    *
    */
   public int getNumber() {
-  	return number;
+  	return fNr;
   }
 
   /**
    *
    */
   public int getPoliticalPoints() {
-  	return pp;
+  	return fPp;
   }
 
   /**
    *
    */
   public int getPoliticalTerms(int otherPlayer) {
-  	if ((otherPlayer < 0) || (otherPlayer > pt.length)) { return -1; }
-  	return pt[otherPlayer];
+  	if ((otherPlayer < 0) || (otherPlayer > fPt.length)) { return -1; }
+  	return fPt[otherPlayer];
   }
 
   /**
@@ -100,14 +103,14 @@ public class Player implements Serializable {
    *
    */
   public float getTransporterMorale() {
-  	return tm;
+  	return fTm;
   }
 
   /**
    *
    */
   public String getUser() {
-  	return user;
+  	return fUser;
   }
 
   /**
@@ -125,29 +128,29 @@ public class Player implements Serializable {
   	  iterator = cmdList.iterator();
   	  while (iterator.hasNext()) {
   			cmd = (Command)iterator.next();
-  			if (cmd.getPlayer() == number) {
+  			if (cmd.getPlayer() == fNr) {
   			  switch (cmd.getToken()) {
   					case Parser.DECLARE:
-  			 			pt[cmd.getDestination()] = cmd.getType();
+  			 			fPt[cmd.getDestination()] = cmd.getType();
   				  	break;
   					case Parser.PLAYERNAME:
-  				 		name = cmd.getText();
+  				 		fName = cmd.getText();
   					  break;
   				}
   			}
   	  }
   
-  	  if (this.fm < 0.96f) { this.fm += 0.05; }
-  	  if (this.tm < 0.96f) { this.tm += 0.05; }
+  	  if (this.fFm < 0.96f) { this.fFm += 0.05; }
+  	  if (this.fTm < 0.96f) { this.fTm += 0.05; }
   
   	  buffer.append("\nplayer1  player2  player3  player4  player5  player6  player7  player8\n");
-  	  for (int i = 1; i < pt.length; i++) {
-  			switch (pt[i]) {
+  	  for (int i = 1; i < fPt.length; i++) {
+  			switch (fPt[i]) {
   			  case     Parser.WAR: buffer.append("  war  "); break;
   			  case   Parser.PEACE: buffer.append(" peace "); break;
   		 		case Parser.NEUTRAL: buffer.append("neutral"); break;
   			}
-  		if (i < pt.length - 1) { buffer.append("  "); }
+  		if (i < fPt.length - 1) { buffer.append("  "); }
   	  }
   	  buffer.append('\n');
   
@@ -160,32 +163,25 @@ public class Player implements Serializable {
    *
    */
   public void setFighterMorale(float fm) {
-  	this.fm = fm;
-  	if (this.fm < 0.5f) { this.fm = 0.5f; }
-  	if (this.fm > 1.5f) { this.fm = 1.5f; }
-  }
-
-  /**
-   *
-   */
-  public void setHomePlanet(Planet homePlanet) {
-    this.homePlanet = homePlanet;
+  	this.fFm = fm;
+  	if (this.fFm < 0.5f) { this.fFm = 0.5f; }
+  	if (this.fFm > 1.5f) { this.fFm = 1.5f; }
   }
 
   /**
    *
    */
   public void setName(String name) {
-  	this.name = name;
+  	this.fName = name;
   }
 
   /**
    *
    */
   public void setTransporterMorale(float tm) {
-  	this.tm = tm;
-  	if (this.tm < 0.5f) { this.tm = 0.5f; }
-  	if (this.tm > 1.5f) { this.tm = 1.5f; }
+  	this.fTm = tm;
+  	if (this.fTm < 0.5f) { this.fTm = 0.5f; }
+  	if (this.fTm > 1.5f) { this.fTm = 1.5f; }
   }
   
 }

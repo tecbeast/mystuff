@@ -1,12 +1,16 @@
 package com.balancedbytes.game.ashes;
 
-import java.io.Serializable;
 import java.util.Iterator;
+
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+
+import com.balancedbytes.game.ashes.parser.Parser;
 
 /**
  * Central object for Ashes: handles building, space travel and fights.
  */
-public class Planet implements Serializable {
+public class Planet {
 
   private final static int QUEUESIZE = 6;
 
@@ -42,6 +46,8 @@ public class Planet implements Serializable {
   private Player player = null;
 
   private FleetSet[] flightQueue;
+  
+  private static final Logger LOG = LogManager.getLogger(Planet.class);
 
   /**
    * Create a Planet with the given default settings.
@@ -73,7 +79,7 @@ public class Planet implements Serializable {
   	  if (distances[i] == 0) { planetsInD[cnt++] = i; }
   	}
   
-  	if (player.getHomePlanet() == this) {
+  	if (playerNr == number) {
   	  pm = 1.50f;
   	} else {
   	  pm = 1.00f;
@@ -92,8 +98,6 @@ public class Planet implements Serializable {
    */
   private void battle() {
   	StringBuffer buffer = new StringBuffer();
-  
-  	Log log = LogFactory.getLog(getClass());
   
   	// calculate attack strength and defense strength
   	int af = 0, df = 0, as = 0, ds = 0;
@@ -124,7 +128,7 @@ public class Planet implements Serializable {
   	  }
   	}
   
-    if (as > 0) { log.info("Battle at " + number + ":  AS " + as + " DS " + ds); }
+    if (as > 0) { LOG.info("Battle at " + number + ":  AS " + as + " DS " + ds); }
   
   	int[] atkWin = new int[attacker.size()], atkLoss = new int[attacker.size()];
   	int atkBonus = 0;
@@ -149,9 +153,9 @@ public class Planet implements Serializable {
   					int defKills = (int)(((defFleet.getFighter() * defPlayer.getFighterMorale() / ad) * (atkFleet.getFighter() / af) + 1) / 2);
   					int atkKills = (int)(((atkFleet.getFighter() * atkPlayer.getFighterMorale() / ad) * (defFleet.getFighter() / df) + 1) / 2);
   
-  					log.info("atkFighter " + atkFleet.getFighter() + " atkMorale " + atkPlayer.getFighterMorale() + " af " + af);
-  					log.info("defFighter " + defFleet.getFighter() + " defMorale " + defPlayer.getFighterMorale() + " df " + df);
-  					log.info("ad " + ad + " defKills " + defKills + " atkKills " + atkKills);
+  					LOG.info("atkFighter " + atkFleet.getFighter() + " atkMorale " + atkPlayer.getFighterMorale() + " af " + af);
+  					LOG.info("defFighter " + defFleet.getFighter() + " defMorale " + defPlayer.getFighterMorale() + " df " + df);
+  					LOG.info("ad " + ad + " defKills " + defKills + " atkKills " + atkKills);
   
   					defWin[j] += defKills; defLoss[j] += atkKills;
   					atkWin[i] += atkKills; atkLoss[i] += defKills;
@@ -296,50 +300,48 @@ public class Planet implements Serializable {
    */
   private boolean build(int type, int quantity) {
   
-  	Log log = LogFactory.getLog(getClass());
-  	
   	switch (type) {
   	  // buildType -> PDU | FP | OP | RP | FY | TY | FI | TR
   	  case Parser.PDU:
   			while ((quantity > 0) && (currentWf >= 15)) {
-  			  log.info("build PDU");
+  			  LOG.info("build PDU");
   			  currentWf -= 15; ++pdu;  --quantity;
   			}
   			break;
   	  case Parser.FP:
   			while ((quantity > 0) && (currentWf >= 5)) {
-  		  	log.info("build FP");
+  				LOG.info("build FP");
   			  currentWf -= 5;  ++fp;  --quantity;
   			}
   			break;
   	  case Parser.OP:
   			while ((quantity > 0) && (currentWf >= 4)) {
-  		 		log.info("build OP");
+  		 		LOG.info("build OP");
   			  currentWf -= 4; ++op;  --quantity;
   			}
   			break;
   	  case Parser.RP:
   			while ((quantity > 0) && (currentWf >= 10)) {
-  		 		log.info("build RP");
+  		 		LOG.info("build RP");
   			  currentWf -= 10; ++rp; --quantity;
   			}
   			break;
   	  case Parser.FY:
   			while ((quantity > 0) && (currentWf >= 15)) {
-  		 		log.info("build FY");
+  		 		LOG.info("build FY");
   			  currentWf -= 15; ++fy; --quantity;
   			}
   			break;
   	 	case Parser.TY:
   			while ((quantity > 0) && (currentWf >= 20)) {
-  		  	log.info("build TY");
+  		  	LOG.info("build TY");
   		  	currentWf -= 20; ++ty; --quantity;
   			}
   			break;
   	  case Parser.FI:
   			int fi = 0;
   			while ((quantity > 0) && (currentWf >= 10) && (fuel >= 1) && (ore >= 1) && (rare >= 3) && (currentFy >=1)) {
-  		  	log.info("build FI");
+  		  	LOG.info("build FI");
   		  	currentWf -= 10; fuel -= 1; ore -= 1; rare -= 3; currentFy -= 1; ++fi; --quantity;
   			}
   			if (fi > 0) { flightQueue[0].add(new Fleet(player, fi, 0)); }
@@ -347,7 +349,7 @@ public class Planet implements Serializable {
   	  case Parser.TR:
   			int tr = 0;
   			while ((quantity > 0) && (currentWf >= 20) && (fuel >= 2) && (ore >= 3) && (rare >= 1) && (currentTy >= 1)) {
-  		  	log.info("build TR");
+  		  	LOG.info("build TR");
   		  	currentWf -= 20; fuel -= 2; ore -= 3; rare -= 1; currentTy -= 1; ++tr; --quantity;
   			}
   			if (tr > 0) { flightQueue[0].add(new Fleet(player, 0, tr)); }
@@ -442,7 +444,7 @@ public class Planet implements Serializable {
   	  // fighter (and transporter) flee
   	  // this takes an extra turn for orientation (distance increased by one)
   	  if ((fleet.getFighter() > 0) || (fleet.getTransporter() > 0)) {
-  			Planet destination = fleet.getPlayer().getHomePlanet();
+  			Planet destination = game.getPlanet(fleet.getPlayer().getHomePlanetNr());
   			if (destination.getNumber() > number) {
   		 		destination.receive(fleet, distances[destination.getNumber()]+2);
   			} else {
@@ -552,8 +554,6 @@ public class Planet implements Serializable {
   	Iterator iterator = null;
   	Command cmd = null;
   
-  	Log log = LogFactory.getLog(getClass());
-  
   	if (phaseNr > 0) {
   
   	  // fleet report to all friendly players and owner (who is friendly to himself)
@@ -566,7 +566,7 @@ public class Planet implements Serializable {
   
   	} else {
   
-  	  log.info("Processing Planet " + number);
+  	  LOG.info("Processing Planet " + number);
   
   	  // cargo ships (unloading)
   
@@ -608,7 +608,7 @@ public class Planet implements Serializable {
   			  	case Parser.HOMEPLANET:
   						Planet homePlanet = game.getPlanet(cmd.getSource());
   						if (homePlanet.getPlayer() == player) {
-  				 			player.setHomePlanet(homePlanet);
+  				 			player.setHomePlanetNr(homePlanet.getNumber());
   						}
   						break;
   			  	case Parser.PLANETNAME:
@@ -681,7 +681,7 @@ public class Planet implements Serializable {
   	if (pduLoss > pdu) { pduLoss = pdu; }
   	pdu -= pduLoss;
   	if (pdu == 0) {
-  	  changeOwner(new Enemy(game));
+  	  // changeOwner(new Enemy(game));
   	  Report.addAll(Report.REVOLTS, "\nRevolution on " + name + " (" + number + ")\n");
   	  Report.addAll(Report.REVOLTS, "Planet falls to neutral.\n");
   	}

@@ -34,8 +34,6 @@ public class Report {
   };
   // private final static String MAIL_PROPERTY = "mail.smtp.host";
 
-  private static StarRealms master = null;
-
   // private static Session session = null;
   private static Vector all = null;
 
@@ -74,8 +72,6 @@ public class Report {
    */
   public Report() {
   	phase = new StringBuffer[NR_PHASES];
-  	
-  	if (master == null) { master = StarRealms.getInstance(); }
   	
   	/*
   	if (session == null) {
@@ -117,6 +113,7 @@ public class Report {
    *
    */
   public static void addAll(int phaseNr, String text) {
+	  /*
   	if ((phaseNr >= 0) && (phaseNr < NR_PHASES) && (text != null)) {
   	  Enumeration enum = all.elements();
   	  while (enum.hasMoreElements()) {
@@ -124,12 +121,14 @@ public class Report {
   			report.add(phaseNr, text);
   	  }
   	}
+  	*/
   }
 
   /**
    *
    */
   public static void addAll(int phaseNr, StringBuffer buffer) {
+	  /*
   	if ((phaseNr >= 0) && (phaseNr < NR_PHASES) && (buffer != null)) {
   	  Enumeration enum = all.elements();
   	  while (enum.hasMoreElements()) {
@@ -137,6 +136,7 @@ public class Report {
   			report.add(phaseNr, buffer);
   	  }
   	}
+  	*/
   }
 
   /**

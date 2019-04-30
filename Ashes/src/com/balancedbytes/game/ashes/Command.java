@@ -2,6 +2,8 @@ package com.balancedbytes.game.ashes;
 
 import java.io.Serializable;
 
+import com.balancedbytes.game.ashes.parser.Parser;
+
 /**
  * A regular Ashes Command. Usually parsed from player input. Consists of:
  * <ul>
@@ -127,72 +129,58 @@ public class Command implements Serializable {
 	 * Returns String representation of this Command.
 	 */
 	public String toString() {
-		StringBuffer buffer = new StringBuffer();
-		buffer.append("player ");
-		buffer.append(player);
-		buffer.append(": ");
-		buffer.append(Parser.getText(token));
-		buffer.append(" ");
-
+		StringBuilder builder = new StringBuilder();
+		builder.append("player ");
+		builder.append(player);
+		builder.append(": ");
+		builder.append(Parser.getText(token));
+		builder.append(" ");
 		switch (token) {
-		case Parser.GAME:
-		case Parser.TURN:
-			buffer.append(number);
-			break;
-		case Parser.USER:
-		case Parser.PASSWORD:
-		case Parser.PLAYERNAME:
-			buffer.append(text);
-			break;
-		case Parser.BUILD:
-			buffer.append(number);
-			buffer.append(" ");
-			buffer.append(Parser.getText(type));
-			buffer.append(" on ");
-			buffer.append(source);
-			break;
-		case Parser.DECLARE:
-			buffer.append(Parser.getText(type));
-			buffer.append(" with ");
-			buffer.append(destination);
-			break;
-		case Parser.HOMEPLANET:
-			buffer.append("on ");
-			buffer.append(source);
-			break;
-		case Parser.MESSAGE:
-			buffer.append("to ");
-			buffer.append(destination);
-			buffer.append(' ');
-			buffer.append('"');
-			buffer.append(text);
-			buffer.append('"');
-			break;
-		case Parser.PLANETNAME:
-			buffer.append(text);
-			buffer.append(" on ");
-			buffer.append(source);
-			break;
-		case Parser.RESEARCH:
-			buffer.append(Parser.getText(type));
-			buffer.append(" on ");
-			buffer.append(source);
-			break;
-		case Parser.SEND:
-			buffer.append(number);
-			buffer.append(" ");
-			buffer.append(Parser.getText(type));
-			buffer.append(" to ");
-			buffer.append(destination);
-			break;
-		case Parser.SPY:
-			buffer.append("on ");
-			buffer.append(source);
-			break;
-		default:
-			break;
+			case Parser.AUTHORIZATION:
+			case Parser.PLAYERNAME:
+				builder.append(text);
+				break;
+			case Parser.BUILD:
+				builder.append(number);
+				builder.append(" ");
+				builder.append(Parser.getText(type));
+				builder.append(" on ");
+				builder.append(source);
+				break;
+			case Parser.DECLARE:
+				builder.append(Parser.getText(type));
+				builder.append(" with ");
+				builder.append(destination);
+				break;
+			case Parser.HOMEPLANET:
+				builder.append("on ");
+				builder.append(source);
+				break;
+			case Parser.PLANETNAME:
+				builder.append(text);
+				builder.append(" on ");
+				builder.append(source);
+				break;
+			case Parser.RESEARCH:
+				builder.append(Parser.getText(type));
+				builder.append(" on ");
+				builder.append(source);
+				break;
+			case Parser.SEND:
+				builder.append(number);
+				builder.append(" ");
+				builder.append(Parser.getText(type));
+				builder.append(" to ");
+				builder.append(destination);
+				break;
+			case Parser.SPY:
+				builder.append("on ");
+				builder.append(source);
+				break;
+			default:
+				break;
 		}
-		return buffer.toString();
+		return builder.toString();
 	}
 
 }

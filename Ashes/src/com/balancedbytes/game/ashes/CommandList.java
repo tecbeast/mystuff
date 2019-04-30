@@ -9,13 +9,13 @@ import java.util.List;
  */
 public class CommandList {
 
-	private List list;
+	private List<Command> fCommands;
 
 	/**
 	 * Default constructor.
 	 */
 	public CommandList() {
-		list = new ArrayList();
+		fCommands = new ArrayList<Command>();
 	}
 
 	/**
@@ -23,7 +23,7 @@ public class CommandList {
 	 */
 	public void add(Command cmd) {
 		if (cmd != null) {
-			list.add(cmd);
+			fCommands.add(cmd);
 		}
 	}
 
@@ -32,7 +32,7 @@ public class CommandList {
 	 */
 	public void add(CommandList addList) {
 		if (addList != null) {
-			list.addAll(addList.list);
+			fCommands.addAll(addList.fCommands);
 		}
 	}
 
@@ -43,7 +43,7 @@ public class CommandList {
 		Command cmd = null;
 		CommandList result = new CommandList();
 
-		Iterator iterator = list.listIterator();
+		Iterator<Command> iterator = fCommands.listIterator();
 		while (iterator.hasNext()) {
 			cmd = (Command) iterator.next();
 			if (cmd.getToken() == token) {
@@ -56,8 +56,8 @@ public class CommandList {
 	/**
 	 * Iterator over the elements of this list.
 	 */
-	public Iterator iterator() {
-		return list.listIterator();
+	public Iterator<Command> iterator() {
+		return fCommands.iterator();
 	}
 
 	/**
@@ -65,7 +65,7 @@ public class CommandList {
 	 */
 	public void setPlayer(int player) {
 		Command cmd = null;
-		Iterator iterator = list.listIterator();
+		Iterator<Command> iterator = fCommands.iterator();
 		while (iterator.hasNext()) {
 			cmd = (Command) iterator.next();
 			cmd.setPlayer(player);
@@ -77,7 +77,7 @@ public class CommandList {
 	 */
 	public void setSource(int source) {
 		Command cmd = null;
-		Iterator iterator = list.listIterator();
+		Iterator<Command> iterator = fCommands.iterator();
 		while (iterator.hasNext()) {
 			cmd = (Command) iterator.next();
 			cmd.setSource(source);
@@ -90,7 +90,7 @@ public class CommandList {
 	public String toString() {
 		StringBuffer buffer = new StringBuffer();
 		boolean first = true;
-		Iterator iterator = list.listIterator();
+		Iterator<Command> iterator = fCommands.iterator();
 		while (iterator.hasNext()) {
 			if (first) {
 				first = false;
