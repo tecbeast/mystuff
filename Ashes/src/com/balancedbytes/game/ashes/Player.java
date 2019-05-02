@@ -1,6 +1,5 @@
 package com.balancedbytes.game.ashes;
 
-import java.io.Serializable;
 import java.util.Iterator;
 // import javax.mail.*;
 // import javax.mail.internet.*;
@@ -12,7 +11,8 @@ import com.balancedbytes.game.ashes.parser.Parser;
  */
 public class Player {
 
-  private Game fGame;
+  private transient Game fGame;
+  
   private String fUser;
   private String fName;
   private int fNr;
@@ -118,7 +118,7 @@ public class Player {
    */
   public void phase(int phaseNr, CommandList cmdList) {
   	StringBuffer buffer = new StringBuffer();
-  	Iterator iterator = null;
+  	Iterator<Command> iterator = null;
   	Command cmd = null;
   
   	if (phaseNr > 0) {

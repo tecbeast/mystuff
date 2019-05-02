@@ -2,8 +2,6 @@ package com.balancedbytes.game.ashes;
 
 import java.util.Iterator;
 
-import com.balancedbytes.game.ashes.parser.Parser;
-
 /**
  * Control class for each individual game.
  * Management on a turn by turn basis.

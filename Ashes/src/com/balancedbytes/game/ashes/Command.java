@@ -136,8 +136,9 @@ public class Command implements Serializable {
 		builder.append(Parser.getText(token));
 		builder.append(" ");
 		switch (token) {
-			case Parser.AUTHORIZATION:
+			case Parser.ANNOUNCE:
 			case Parser.PLAYERNAME:
+			case Parser.TURNTOKEN:
 				builder.append(text);
 				break;
 			case Parser.BUILD:

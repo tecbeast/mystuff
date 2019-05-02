@@ -2,8 +2,8 @@ package com.balancedbytes.game.ashes;
 
 import java.util.Iterator;
 
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 
 import com.balancedbytes.game.ashes.parser.Parser;
 
@@ -47,7 +47,7 @@ public class Planet {
 
   private FleetSet[] flightQueue;
   
-  private static final Logger LOG = LogManager.getLogger(Planet.class);
+  private static final Log LOG = LogFactory.getLog(Planet.class);
 
   /**
    * Create a Planet with the given default settings.
@@ -104,7 +104,7 @@ public class Planet {
   	FleetSet attacker = new FleetSet(), defender = new FleetSet();
   	FleetSet involved = flightQueue[0];
   
-  	Iterator iterator = involved.iterator();
+  	Iterator<Fleet> iterator = involved.iterator();
   	while (iterator.hasNext()) {
   	  Fleet incomingFleet = (Fleet)iterator.next();
   	 	Player incomingPlayer = incomingFleet.getPlayer();
@@ -429,7 +429,7 @@ public class Planet {
    *
    */
   private void flee(FleetSet fleets) {
-  	Iterator iterator = fleets.iterator();
+  	Iterator<Fleet> iterator = fleets.iterator();
   	while (iterator.hasNext()) {
   	  Fleet fleet = (Fleet)iterator.next();
   	  // cargo stays
@@ -551,7 +551,7 @@ public class Planet {
    * </pre>
    */
   public void phase(int phaseNr, CommandList cmdList) {
-  	Iterator iterator = null;
+  	Iterator<Command> iterator = null;
   	Command cmd = null;
   
   	if (phaseNr > 0) {
@@ -571,8 +571,8 @@ public class Planet {
   	  // cargo ships (unloading)
   
   	  int tr = 0;  // nr of transporter gained
-  	  iterator = flightQueue[0].iterator();
       /*
+  	  iterator = flightQueue[0].iterator();
   	  while (iterator.hasNext()) {
   			Fleet fleet = (Fleet)iterator.next();
   		 	if (fleet.hasCargo()) {

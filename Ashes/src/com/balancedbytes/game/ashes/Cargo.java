@@ -1,11 +1,9 @@
 package com.balancedbytes.game.ashes;
 
-import java.io.Serializable;
-
 /**
  *
  */
-public class Cargo implements Serializable {
+public class Cargo {
   
   public final static int CARGOTYPES = 10;
   private int[] cargo = null;

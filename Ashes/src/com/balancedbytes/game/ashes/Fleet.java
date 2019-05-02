@@ -1,11 +1,9 @@
 package com.balancedbytes.game.ashes;
 
-import java.io.Serializable;
-
 /**
  *
  */
-public class Fleet implements Serializable {
+public class Fleet {
 
   private int tr = 0;
   private int fi = 0;

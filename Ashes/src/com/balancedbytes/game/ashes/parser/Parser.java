@@ -4,12 +4,14 @@ import java.io.BufferedReader;
 import java.io.FileReader;
 import java.io.IOException;
 import java.io.StreamTokenizer;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Map;
 
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 
 import com.balancedbytes.game.ashes.Command;
 import com.balancedbytes.game.ashes.CommandList;
@@ -19,25 +21,24 @@ import com.balancedbytes.game.ashes.CommandList;
  * Type 2 language for player use. The full grammar is given here in BNF
  * (Backus-Naur-Form):
  * <pre>
- *         parse -> BEGIN authorization statements END
- * authorization -> AUTHORIZATION WORD
- *    statements -> statement statements | onBlock statements | (0)
- *     statement -> onBlockStmt ON NUMBER | declare | message | playername
- *       onBlock -> ON NUMBER DO onBlockStmts DONE
- *  onBlockStmts -> onBlockStmt onBlockStmts | (0)
- *   onBlockStmt -> build | homeplanet | planetname | research | send | spy
- *         build -> BUILD NUMBER buildType
- *     buildType -> PDU | FP | OP | RP | FY | TY | FI | TR
- *       declare -> DECLARE declareType ON NUMBER
- *   declareType -> WAR | PEACE | NEUTRAL
- *    homeplanet -> HOMEPLANET
- *    planetname -> PLANETNAME WORD
- *    playername -> PLAYERNAME WORD
- *      research -> RESEARCH researchType
- *  researchType -> PR | FM | TM
- *          send -> SEND NUMBER sendType TO NUMBER
- *      sendType -> FI | TR | C0 | C1 | C2 | C3 | C4 | C5 | C6 | C7 | C7 | C8 | C9
- *           spy -> SPY
+ *        parse -> statements
+ *   statements -> statement statements | onBlock statements | (0)
+ *    statement -> onBlockStmt ON NUMBER | declare | playername | turntoken | announce
+ *      onBlock -> ON NUMBER DO onBlockStmts DONE
+ * onBlockStmts -> onBlockStmt onBlockStmts | (0)
+ *  onBlockStmt -> build | homeplanet | planetname | research | send | spy
+ *        build -> BUILD NUMBER buildType
+ *    buildType -> PDU | FP | OP | RP | FY | TY | FI | TR
+ *      declare -> DECLARE declareType ON NUMBER
+ *  declareType -> WAR | PEACE | NEUTRAL
+ *   homeplanet -> HOMEPLANET
+ *   planetname -> PLANETNAME WORD
+ *   playername -> PLAYERNAME WORD
+ *     research -> RESEARCH researchType
+ * researchType -> PR | FM | TM
+ *         send -> SEND NUMBER sendType TO NUMBER
+ *     sendType -> FI | TR | C0 | C1 | C2 | C3 | C4 | C5 | C6 | C7 | C7 | C8 | C9
+ *          spy -> SPY
  * </pre>
  * <b>Note:</b>
  * non-terminal symbols are in small letters and terminals in big,
@@ -51,21 +52,20 @@ public class Parser {
 	public static final int NUMBER =  2;
 	public static final int WORD   =  3;
 
-	public static final int BEGIN         = 100;
-	public static final int END           = 103;
-	public static final int AUTHORIZATION = 104;
-	public static final int ON            = 106;
-	public static final int DO            = 107;
-	public static final int DONE          = 108;
-	public static final int BUILD         = 109;
-	public static final int PLANETNAME    = 110;
-	public static final int PLAYERNAME    = 111;
-	public static final int SEND          = 112;
-	public static final int RESEARCH      = 113;
-	public static final int TO            = 115;
-	public static final int DECLARE       = 116;
-	public static final int HOMEPLANET    = 118;
-	public static final int SPY           = 119;
+	public static final int ANNOUNCE   = 100;
+	public static final int TURNTOKEN  = 101;
+	public static final int ON         = 102;
+	public static final int DO         = 103;
+	public static final int DONE       = 104;
+	public static final int BUILD      = 105;
+	public static final int PLANETNAME = 106;
+	public static final int PLAYERNAME = 107;
+	public static final int SEND       = 108;
+	public static final int RESEARCH   = 109;
+	public static final int TO         = 110;
+	public static final int DECLARE    = 111;
+	public static final int HOMEPLANET = 112;
+	public static final int SPY        = 113;
 
 	public static final int PDU = 200;
 	public static final int FP  = 201;
@@ -95,7 +95,7 @@ public class Parser {
 
 	public static final String UNDEFINED = "undefined";
 	
-	private static final Logger LOG = LogManager.getLogger(Parser.class);
+	private static final Log LOG = LogFactory.getLog(Parser.class);
 
 	private static final Map<String, Integer> sTextToToken = new HashMap<String, Integer>();
 	private static final Map<Integer, String> sTokenToText = new HashMap<Integer, String>();
@@ -108,21 +108,20 @@ public class Parser {
 		sTextToToken.put("NUMBER", NUMBER);
 		sTextToToken.put("WORD",   WORD);
 		
-		sTextToToken.put("begin",         BEGIN);
-		sTextToToken.put("end",           END);
-		sTextToToken.put("authorization", AUTHORIZATION);
-		sTextToToken.put("on",            ON);
-		sTextToToken.put("do",            DO);
-		sTextToToken.put("done",          DONE);
-		sTextToToken.put("build",         BUILD);
-		sTextToToken.put("planetname",    PLANETNAME);
-		sTextToToken.put("playername",    PLAYERNAME);
-		sTextToToken.put("send",          SEND);
-		sTextToToken.put("research",      RESEARCH);
-		sTextToToken.put("to",            TO);
-		sTextToToken.put("declare",       DECLARE);
-		sTextToToken.put("homeplanet",    HOMEPLANET);
-		sTextToToken.put("spy",           SPY);
+		sTextToToken.put("announce",   ANNOUNCE);
+		sTextToToken.put("turntoken",  TURNTOKEN);
+		sTextToToken.put("on",         ON);
+		sTextToToken.put("do",         DO);
+		sTextToToken.put("done",       DONE);
+		sTextToToken.put("build",      BUILD);
+		sTextToToken.put("planetname", PLANETNAME);
+		sTextToToken.put("playername", PLAYERNAME);
+		sTextToToken.put("send",       SEND);
+		sTextToToken.put("research",   RESEARCH);
+		sTextToToken.put("to",         TO);
+		sTextToToken.put("declare",    DECLARE);
+		sTextToToken.put("homeplanet", HOMEPLANET);
+		sTextToToken.put("spy",        SPY);
 
 		sTextToToken.put("pdu", PDU);
 		sTextToToken.put("fp",  FP);
@@ -161,11 +160,10 @@ public class Parser {
 
 	private StreamTokenizer fTokenizer;
 	private String fWord;
-	private StringBuffer fErrorBuffer;
+	private List<String> fErrors;
 	private int fNumber;
 	private int fLookAhead;
 	private boolean fBlocked;
-	private boolean fErrorOccured;
 
 	/**
 	 * Starts a parserun.
@@ -192,36 +190,24 @@ public class Parser {
 		fNumber = -1;
 		fWord = "";
 		fBlocked = false;
-		fErrorOccured = false;
-		fErrorBuffer = new StringBuffer();
+		fErrors = new ArrayList<String>();
 
 		// get first lookahead token
 		fLookAhead = scanner();
 
-		CommandList cmdList = new CommandList();
 		try {
-			match(BEGIN);
-			cmdList.add(authorization());
-			cmdList.add(statements());
-			match(END);
-			return cmdList;
+			return statements();
 		} catch (ParserException pe) {
-			fErrorOccured = true;
-			addError(pe.getMessage());
+			addError("! error line " + fTokenizer.lineno() + ": " + pe.getMessage());
 			return null;
 		}
-		
 	}
 
 	/**
 	 *
 	 */
 	private void addError(String msg) {
-		if (fErrorOccured) {
-			fErrorBuffer.append('\n');
-		}
-		fErrorBuffer.append(msg);
-		fErrorOccured = true;
+		fErrors.add(msg);
 	}
 
 	/**
@@ -304,52 +290,22 @@ public class Parser {
 	/**
 	 *
 	 */
-	private int error(String msg, int[] begin, int[] end) {
-		LOG.trace("error()");
-		int startLine = fTokenizer.lineno();
-		int endLine = startLine;
-		int result = -1;
-		addError("! error line " + fTokenizer.lineno() + ": " + msg);
-		do {
-			fLookAhead = scanner();
-			if (inArray(fLookAhead, begin)) {
-				result = 1;
-				break;
-			} else if (inArray(fLookAhead, end)) {
-				result = 0;
-				break;
-			}
-			endLine = fTokenizer.lineno();
-		} while (fLookAhead != EOF);
-		if (endLine > startLine) {
-			if (endLine > startLine + 1) {
-				addError("skipping lines " + (startLine + 1) + " - " + endLine + " ...");
-			} else {
-				addError("skipping line " + endLine + " ...");
-			}
-		}
-		return result;
-	}
-
-	/**
-	 *
-	 */
-	private Command authorization() {
-		LOG.trace("authorization()");
+	private Command turntoken() {
+		LOG.trace("turntoken()");
 		try {
-			Command authorizationCmd = new Command(match(AUTHORIZATION));
-			authorizationCmd.setText(parseWord());
-			return authorizationCmd;
+			Command cmd = new Command(match(TURNTOKEN));
+			cmd.setText(parseWord());
+			return cmd;
 		} catch (ParserException pe) {
-			throw new ParserException("AUTHORIZATION: " + pe.getMessage());
+			throw new ParserException("TURNTOKEN: " + pe.getMessage());
 		}
 	}
 
 	/**
 	 *
 	 */
-	public String getErrors() {
-		return fErrorBuffer.toString();
+	public String[] getErrors() {
+		return fErrors.toArray(new String[fErrors.size()]);
 	}
 
 	/**
@@ -382,18 +338,6 @@ public class Parser {
 		LOG.trace("homeplanet()");
 		match(HOMEPLANET);
 		return new Command(HOMEPLANET);
-	}
-
-	/**
-	 *
-	 */
-	private boolean inArray(int test, int[] array) {
-		for (int i = 0; i < array.length; i++) {
-			if (test == array[i]) {
-				return true;
-			}
-		}
-		return false;
 	}
 
 	/**
@@ -455,8 +399,6 @@ public class Parser {
 	 */
 	private CommandList onBlockStmts() {
 		LOG.trace("onBlockStmts()");
-		final int[] first = { BUILD, HOMEPLANET, PLANETNAME, RESEARCH, SEND, SPY };
-		final int[] follow = { DONE };
 		try {
 			switch (fLookAhead) {
 				case BUILD:
@@ -475,9 +417,7 @@ public class Parser {
 					throw new ParserException("unknown command");
 			}
 		} catch (ParserException pe) {
-			if (error(pe.getMessage(), first, follow) > 0) {
-				return onBlockStmts();
-			}
+			addError("! error line " + fTokenizer.lineno() + ": " + pe.getMessage());
 			return null;
 		}
 	}
@@ -507,6 +447,21 @@ public class Parser {
 			return aWord;
 		} else {
 			throw new ParserException("word expected");
+		}
+	}
+
+	/**
+	 *
+	 */
+	private Command announce() {
+		LOG.trace("announce()");
+		try {
+			match(ANNOUNCE);
+			Command cmd = new Command(ANNOUNCE);
+			cmd.setText(parseWord());
+			return cmd;
+		} catch (ParserException pe) {
+			throw new ParserException("ANNOUNCE: " + pe.getMessage());
 		}
 	}
 
@@ -693,10 +648,14 @@ public class Parser {
 	private Command statement() {
 		LOG.trace("statement()");
 		switch (fLookAhead) {
+			case ANNOUNCE:
+				return announce();
 			case DECLARE:
 				return declare();
 			case PLAYERNAME:
 				return playername();
+			case TURNTOKEN:
+				return turntoken();
 			default:
 				Command cmd = onBlockStmt();
 				match(ON);
@@ -710,11 +669,10 @@ public class Parser {
 	 */
 	private CommandList statements() {
 		LOG.trace("statements()");
-		final int[] first = { BUILD, DECLARE, HOMEPLANET, ON, PLANETNAME, PLAYERNAME, RESEARCH, SEND, SPY };
-		final int[] follow = { END };
 		CommandList cmdList = null;
 		try {
 			switch (fLookAhead) {
+				case ANNOUNCE:
 				case BUILD:
 				case DECLARE:
 				case HOMEPLANET:
@@ -723,6 +681,7 @@ public class Parser {
 				case RESEARCH:
 				case SEND:
 				case SPY:
+				case TURNTOKEN:
 					cmdList = new CommandList();
 					cmdList.add(statement());
 					cmdList.add(statements());
@@ -731,15 +690,11 @@ public class Parser {
 					cmdList = onBlock();
 					cmdList.add(statements());
 					return cmdList;
-				case END:
-					return null;
 				default:
 					throw new ParserException("unknown command");
 			}
 		} catch (ParserException pe) {
-			if (error(pe.getMessage(), first, follow) > 0) {
-				return statements();
-			}
+			addError("! error line " + fTokenizer.lineno() + ": " + pe.getMessage());
 			return null;
 		}
 	}
@@ -760,7 +715,9 @@ public class Parser {
 			cmdList = parser.parse(br);
 			if (cmdList == null) {
 				System.out.println("[ Parser reports errors ]");
-				System.out.println(parser.getErrors());
+				for (String error: parser.getErrors()) {
+					System.out.println(error);
+				}
 			} else {
 				System.out.println(cmdList);
 			}

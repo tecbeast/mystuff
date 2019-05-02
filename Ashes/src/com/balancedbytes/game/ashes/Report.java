@@ -1,7 +1,5 @@
 package com.balancedbytes.game.ashes;
 
-import java.util.Vector;
-
 /**
  *
  */
@@ -35,7 +33,7 @@ public class Report {
   // private final static String MAIL_PROPERTY = "mail.smtp.host";
 
   // private static Session session = null;
-  private static Vector all = null;
+  // private static Vector all = null;
 
   private StringBuffer[] phase = null;
 
@@ -85,8 +83,8 @@ public class Report {
   	}
   	*/
   	
-  	if (all == null) { all = new Vector(); }
-  	all.addElement(this);
+//  	if (all == null) { all = new Vector(); }
+//  	all.addElement(this);
   }
 
   /**
@@ -143,8 +141,8 @@ public class Report {
    * Cleans up and remove this Report from the list of all Reports.
    */
   public void cleanUp() {
-  	all.removeElement(this);
-  	if (all.size() == 0) { all = null; }
+//  	all.removeElement(this);
+//  	if (all.size() == 0) { all = null; }
   }
 
   /**
