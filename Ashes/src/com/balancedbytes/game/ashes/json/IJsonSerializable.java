@@ -1,4 +1,4 @@
-package com.balancedbytes.game.ashes;
+package com.balancedbytes.game.ashes.json;
 
 import com.eclipsesource.json.JsonValue;
 

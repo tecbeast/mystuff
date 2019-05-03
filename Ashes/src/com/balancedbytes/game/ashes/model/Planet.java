@@ -1,11 +1,16 @@
-package com.balancedbytes.game.ashes;
+package com.balancedbytes.game.ashes.model;
 
 import java.util.Iterator;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
-import com.balancedbytes.game.ashes.parser.Parser;
+import com.balancedbytes.game.ashes.Fleet;
+import com.balancedbytes.game.ashes.FleetSet;
+import com.balancedbytes.game.ashes.OldCommand;
+import com.balancedbytes.game.ashes.Report;
+import com.balancedbytes.game.ashes.command.CommandList;
+import com.balancedbytes.game.ashes.parser.ParserToken;
 
 /**
  * Central object for Ashes: handles building, space travel and fights.
@@ -113,9 +118,9 @@ public class Planet {
   			df += incomingFleet.getFighter();
   			ds += (int)(incomingFleet.getFighter() * player.getFighterMorale() * pm);
   	  } else {
-  			int terms = incomingPlayer.getPoliticalTerms(player.getNumber());
-  			if (terms != Parser.NEUTRAL) {
-  		 		if (terms == Parser.PEACE) {
+  			ParserToken terms = incomingPlayer.getPoliticalTerms(player.getNumber());
+  			if (terms != ParserToken.NEUTRAL) {
+  		 		if (terms == ParserToken.PEACE) {
   					defender.add(incomingFleet);
   					df += incomingFleet.getFighter();
   					ds += (int)(incomingFleet.getFighter() * incomingPlayer.getFighterMorale());
@@ -298,47 +303,47 @@ public class Planet {
   /**
    *
    */
-  private boolean build(int type, int quantity) {
+  private boolean build(ParserToken type, int quantity) {
   
   	switch (type) {
   	  // buildType -> PDU | FP | OP | RP | FY | TY | FI | TR
-  	  case Parser.PDU:
+  	  case PDU:
   			while ((quantity > 0) && (currentWf >= 15)) {
   			  LOG.info("build PDU");
   			  currentWf -= 15; ++pdu;  --quantity;
   			}
   			break;
-  	  case Parser.FP:
+  	  case FP:
   			while ((quantity > 0) && (currentWf >= 5)) {
   				LOG.info("build FP");
   			  currentWf -= 5;  ++fp;  --quantity;
   			}
   			break;
-  	  case Parser.OP:
+  	  case OP:
   			while ((quantity > 0) && (currentWf >= 4)) {
   		 		LOG.info("build OP");
   			  currentWf -= 4; ++op;  --quantity;
   			}
   			break;
-  	  case Parser.RP:
+  	  case RP:
   			while ((quantity > 0) && (currentWf >= 10)) {
   		 		LOG.info("build RP");
   			  currentWf -= 10; ++rp; --quantity;
   			}
   			break;
-  	  case Parser.FY:
+  	  case FY:
   			while ((quantity > 0) && (currentWf >= 15)) {
   		 		LOG.info("build FY");
   			  currentWf -= 15; ++fy; --quantity;
   			}
   			break;
-  	 	case Parser.TY:
+  	 	case TY:
   			while ((quantity > 0) && (currentWf >= 20)) {
   		  	LOG.info("build TY");
   		  	currentWf -= 20; ++ty; --quantity;
   			}
   			break;
-  	  case Parser.FI:
+  	  case FI:
   			int fi = 0;
   			while ((quantity > 0) && (currentWf >= 10) && (fuel >= 1) && (ore >= 1) && (rare >= 3) && (currentFy >=1)) {
   		  	LOG.info("build FI");
@@ -346,7 +351,7 @@ public class Planet {
   			}
   			if (fi > 0) { flightQueue[0].add(new Fleet(player, fi, 0)); }
   			break;
-  	  case Parser.TR:
+  	  case TR:
   			int tr = 0;
   			while ((quantity > 0) && (currentWf >= 20) && (fuel >= 2) && (ore >= 3) && (rare >= 1) && (currentTy >= 1)) {
   		  	LOG.info("build TR");
@@ -354,6 +359,9 @@ public class Planet {
   			}
   			if (tr > 0) { flightQueue[0].add(new Fleet(player, 0, tr)); }
   			break;
+		default:
+			break;
+
   	}
   	if (quantity == 0) { return true; } else { return false; }
   }
@@ -551,14 +559,14 @@ public class Planet {
    * </pre>
    */
   public void phase(int phaseNr, CommandList cmdList) {
-  	Iterator<Command> iterator = null;
-  	Command cmd = null;
+  	Iterator<OldCommand> iterator = null;
+  	OldCommand cmd = null;
   
   	if (phaseNr > 0) {
   
   	  // fleet report to all friendly players and owner (who is friendly to himself)
   	  for (int i = 0; i < Game.NR_PLAYERS; i++) {
-  			if (game.getPlayer(i).getPoliticalTerms(player.getNumber()) == Parser.PEACE) { fleetReport(i); }
+  			if (game.getPlayer(i).getPoliticalTerms(player.getNumber()) == ParserToken.PEACE) { fleetReport(i); }
   	  }
   
   	  // report approaching cargoships
@@ -569,9 +577,10 @@ public class Planet {
   	  LOG.info("Processing Planet " + number);
   
   	  // cargo ships (unloading)
-  
-  	  int tr = 0;  // nr of transporter gained
+
       /*
+
+  	  int tr = 0;  // nr of transporter gained
   	  iterator = flightQueue[0].iterator();
   	  while (iterator.hasNext()) {
   			Fleet fleet = (Fleet)iterator.next();
@@ -591,29 +600,36 @@ public class Planet {
   		   if (fleet.getCargo(9) > 0) { ty += fleet.getCargo(9); tr += fleet.getCargo(9); }
   		 	}
   	  }
-      */
+
   	  if (tr > 0) {
   			flightQueue[0].add(new Fleet(player, 0, tr));
   	  }
+  	  
+    */
+
   
   	  // space travel and cargo ships (loading this time)
+  	  
+  	  /*
   		iterator = cmdList.iterator();
   		while (iterator.hasNext()) {
-  		  cmd = (Command)iterator.next();
-  	 		if ((cmd.getSource() == number) && (cmd.getPlayer() == player.getNumber())) {
+  		  cmd = (OldCommand)iterator.next();
+  	 		if ((cmd.getSource() == number) && (cmd.getPlayerNr() == player.getNumber())) {
   				switch (cmd.getToken()) {
-  		  		case Parser.SEND:
+  		  			case SEND:
   			 			send(cmd.getDestination(), cmd.getType(), cmd.getNumber());
   						break;
-  			  	case Parser.HOMEPLANET:
+  		  			case HOMEPLANET:
   						Planet homePlanet = game.getPlanet(cmd.getSource());
   						if (homePlanet.getPlayer() == player) {
   				 			player.setHomePlanetNr(homePlanet.getNumber());
   						}
   						break;
-  			  	case Parser.PLANETNAME:
+  		  			case PLANETNAME:
   						name = cmd.getText();
   						break;
+					default:
+						break;
   				}
   		  }
   		}
@@ -624,8 +640,8 @@ public class Planet {
   	  // building and resources
   		iterator = cmdList.iterator();
   		while (iterator.hasNext()) {
-  	  	cmd = (Command)iterator.next();
-  	  	if ((cmd.getToken() == Parser.BUILD) && (cmd.getSource() == number) && (cmd.getPlayer() == player.getNumber())) {
+  	  	cmd = (OldCommand)iterator.next();
+  	  	if ((cmd.getToken() == ParserToken.BUILD) && (cmd.getSource() == number) && (cmd.getPlayerNr() == player.getNumber())) {
   				build(cmd.getType(), cmd.getNumber());
   		  }
   		}
@@ -660,8 +676,12 @@ public class Planet {
   
   	  Report report = player.getReport();
   	  report.add(Report.PLANETS, "\n" + toString());
-  
+
+    	*/
+
   	}
+
+
   }
 
   /**
@@ -691,7 +711,7 @@ public class Planet {
   /**
    *
    */
-  private void send(int dest, int type, int quantity) {
+  private void send(int dest, ParserToken type, int quantity) {
   	Fleet orbit = flightQueue[0].get(player);
   
   	if (orbit == null) { return; }
@@ -702,7 +722,7 @@ public class Planet {
   
   	// sendType -> FI | TR | C0 | C1 | C2 | C3 | C4 | C5 | C6 | C7 | C7 | C8 | C9
   	switch (type) {
-  	  case Parser.FI:
+  	  case FI:
   			if (fi > quantity) {
   			  ships = quantity; fi -= quantity;
   			} else {
@@ -710,7 +730,7 @@ public class Planet {
   			}
   			if (ships > 0) { send(new Fleet(player, ships, 0), dest); }
   			break;
-  	  case Parser.TR:
+  	  case TR:
   			if (tr > quantity) {
   			  ships = quantity; tr -= quantity;
   			} else {

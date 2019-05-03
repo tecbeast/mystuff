@@ -5,40 +5,56 @@ import java.io.FileReader;
 import java.io.IOException;
 import java.io.StreamTokenizer;
 import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Iterator;
+import java.util.HashSet;
 import java.util.List;
-import java.util.Map;
+import java.util.Set;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
-import com.balancedbytes.game.ashes.Command;
-import com.balancedbytes.game.ashes.CommandList;
+import com.balancedbytes.game.ashes.command.CmdAnnounce;
+import com.balancedbytes.game.ashes.command.CmdBuild;
+import com.balancedbytes.game.ashes.command.CmdDeclare;
+import com.balancedbytes.game.ashes.command.CmdHomeplanet;
+import com.balancedbytes.game.ashes.command.CmdPlanetname;
+import com.balancedbytes.game.ashes.command.CmdPlayername;
+import com.balancedbytes.game.ashes.command.CmdResearch;
+import com.balancedbytes.game.ashes.command.CmdSend;
+import com.balancedbytes.game.ashes.command.CmdSpy;
+import com.balancedbytes.game.ashes.command.CmdTurntoken;
+import com.balancedbytes.game.ashes.command.Command;
+import com.balancedbytes.game.ashes.command.CommandList;
+import com.balancedbytes.game.ashes.model.Improvement;
+import com.balancedbytes.game.ashes.model.PoliticalTerm;
+import com.balancedbytes.game.ashes.model.Unit;
 
 /**
  * Recursive-Descent-Parser for Ashes Commands. Ashes defines a complete
  * Type 2 language for player use. The full grammar is given here in BNF
  * (Backus-Naur-Form):
  * <pre>
- *        parse -> statements
- *   statements -> statement statements | onBlock statements | (0)
- *    statement -> onBlockStmt ON NUMBER | declare | playername | turntoken | announce
- *      onBlock -> ON NUMBER DO onBlockStmts DONE
- * onBlockStmts -> onBlockStmt onBlockStmts | (0)
- *  onBlockStmt -> build | homeplanet | planetname | research | send | spy
- *        build -> BUILD NUMBER buildType
- *    buildType -> PDU | FP | OP | RP | FY | TY | FI | TR
- *      declare -> DECLARE declareType ON NUMBER
- *  declareType -> WAR | PEACE | NEUTRAL
- *   homeplanet -> HOMEPLANET
- *   planetname -> PLANETNAME WORD
- *   playername -> PLAYERNAME WORD
- *     research -> RESEARCH researchType
- * researchType -> PR | FM | TM
- *         send -> SEND NUMBER sendType TO NUMBER
- *     sendType -> FI | TR | C0 | C1 | C2 | C3 | C4 | C5 | C6 | C7 | C7 | C8 | C9
- *          spy -> SPY
+ *          parse -> statements
+ *     statements -> statement statements | onBlock statements | (0)
+ *      statement -> onBlockStmt ON NUMBER | declare | playerName | turntoken | announce
+ *        onBlock -> ON planetNumber DO onBlockStmts DONE
+ *   onBlockStmts -> onBlockStmt onBlockStmts | (0)
+ *    onBlockStmt -> build | homeplanet | planetName | research | send | spy
+ *          build -> BUILD NUMBER buildUnit
+ *      buildUnit -> PDU | FP | OP | RP | FY | TY | FI | TR
+ *        declare -> DECLARE politicalTerm ON playerNumber
+ *  politicalTerm -> WAR | PEACE | NEUTRAL
+ *     homeplanet -> HOMEPLANET
+ *     planetName -> PLANETNAME WORD
+ *   planetNumber -> NUMBER [1-40]
+ *     playerName -> PLAYERNAME WORD
+ *   playerNumber -> NUMBER [1-8]
+ *       research -> RESEARCH NUMBER improvement
+ *    improvement -> PR | FM | TM
+ *           send -> SEND NUMBER sendUnit TO planetNumber
+ *       sendUnit -> FI | TR | C0 | C1 | C2 | C3 | C4 | C5 | C6 | C7 | C7 | C8 | C9
+ *            spy -> SPY
+ *      turntoken -> TURNTOKEN WORD
+ *       announce -> ANNOUNCE WORD
  * </pre>
  * <b>Note:</b>
  * non-terminal symbols are in small letters and terminals in big,
@@ -46,131 +62,30 @@ import com.balancedbytes.game.ashes.CommandList;
  */
 public class Parser {
 
-	public static final int ERROR  = -1;
-	public static final int EOF    =  0;
-	public static final int EOL    =  1;
-	public static final int NUMBER =  2;
-	public static final int WORD   =  3;
-
-	public static final int ANNOUNCE   = 100;
-	public static final int TURNTOKEN  = 101;
-	public static final int ON         = 102;
-	public static final int DO         = 103;
-	public static final int DONE       = 104;
-	public static final int BUILD      = 105;
-	public static final int PLANETNAME = 106;
-	public static final int PLAYERNAME = 107;
-	public static final int SEND       = 108;
-	public static final int RESEARCH   = 109;
-	public static final int TO         = 110;
-	public static final int DECLARE    = 111;
-	public static final int HOMEPLANET = 112;
-	public static final int SPY        = 113;
-
-	public static final int PDU = 200;
-	public static final int FP  = 201;
-	public static final int OP  = 202;
-	public static final int RP  = 203;
-	public static final int FY  = 204;
-	public static final int TY  = 205;
-	public static final int FI  = 206;
-	public static final int TR  = 207;
-	public static final int PR  = 208;
-	public static final int FM  = 209;
-	public static final int TM  = 210;
-	public static final int C0  = 211;
-	public static final int C1  = 212;
-	public static final int C2  = 213;
-	public static final int C3  = 214;
-	public static final int C4  = 215;
-	public static final int C5  = 216;
-	public static final int C6  = 217;
-	public static final int C7  = 218;
-	public static final int C8  = 219;
-	public static final int C9  = 220;
-
-	public static final int WAR     = 300;
-	public static final int PEACE   = 302;
-	public static final int NEUTRAL = 303;
-
-	public static final String UNDEFINED = "undefined";
-	
 	private static final Log LOG = LogFactory.getLog(Parser.class);
-
-	private static final Map<String, Integer> sTextToToken = new HashMap<String, Integer>();
-	private static final Map<Integer, String> sTokenToText = new HashMap<Integer, String>();
-
- 	static {
-
-		sTextToToken.put("ERROR",  ERROR);
-		sTextToToken.put("EOF",    EOF);
-		sTextToToken.put("EOL",    EOL);
-		sTextToToken.put("NUMBER", NUMBER);
-		sTextToToken.put("WORD",   WORD);
-		
-		sTextToToken.put("announce",   ANNOUNCE);
-		sTextToToken.put("turntoken",  TURNTOKEN);
-		sTextToToken.put("on",         ON);
-		sTextToToken.put("do",         DO);
-		sTextToToken.put("done",       DONE);
-		sTextToToken.put("build",      BUILD);
-		sTextToToken.put("planetname", PLANETNAME);
-		sTextToToken.put("playername", PLAYERNAME);
-		sTextToToken.put("send",       SEND);
-		sTextToToken.put("research",   RESEARCH);
-		sTextToToken.put("to",         TO);
-		sTextToToken.put("declare",    DECLARE);
-		sTextToToken.put("homeplanet", HOMEPLANET);
-		sTextToToken.put("spy",        SPY);
-
-		sTextToToken.put("pdu", PDU);
-		sTextToToken.put("fp",  FP);
-		sTextToToken.put("op",  OP);
-		sTextToToken.put("rp",  RP);
-		sTextToToken.put("fy",  FY);
-		sTextToToken.put("ty",  TY);
-		sTextToToken.put("fi",  FI);
-		sTextToToken.put("tr",  TR);
-		sTextToToken.put("pr",  PR);
-		sTextToToken.put("fm",  FM);
-		sTextToToken.put("tm",  TM);
-		sTextToToken.put("c0",  C0);
-		sTextToToken.put("c1",  C1);
-		sTextToToken.put("c2",  C2);
-		sTextToToken.put("c3",  C3);
-		sTextToToken.put("c4",  C4);
-		sTextToToken.put("c5",  C5);
-		sTextToToken.put("c6",  C6);
-		sTextToToken.put("c7",  C7);
-		sTextToToken.put("c8",  C8);
-		sTextToToken.put("c9",  C9);
-
-		sTextToToken.put("war",     WAR);
-		sTextToToken.put("peace",   PEACE);
-		sTextToToken.put("neutral", NEUTRAL);
-
-		// build the inverted Hashtable tokenToText
-		Iterator<String> iterator = sTextToToken.keySet().iterator();
-		while (iterator.hasNext()) {
-			String key = iterator.next();
-			sTokenToText.put(sTextToToken.get(key), key);
+	
+	private static final Set<String> TOKENS = new HashSet<String>();
+	
+	static {
+		for (ParserToken token : ParserToken.values()) {
+			TOKENS.add(token.toString());
 		}
-    
-  	}
+	}
 
 	private StreamTokenizer fTokenizer;
 	private String fWord;
 	private List<String> fErrors;
 	private int fNumber;
-	private int fLookAhead;
+	private ParserToken fLookAhead;
 	private boolean fBlocked;
+	private int fPlayerNr;
 
 	/**
 	 * Starts a parserun.
 	 */
-	public CommandList parse(BufferedReader in) {
+	public CommandList parse(BufferedReader in, int playerNr) {
 		LOG.trace("parse()");
-
+		
 		// initialize tokenizer
 		fTokenizer = new StreamTokenizer(in);
 		
@@ -191,6 +106,7 @@ public class Parser {
 		fWord = "";
 		fBlocked = false;
 		fErrors = new ArrayList<String>();
+		fPlayerNr = playerNr;
 
 		// get first lookahead token
 		fLookAhead = scanner();
@@ -213,14 +129,17 @@ public class Parser {
 	/**
 	 *
 	 */
-	private Command build() {
-		LOG.trace("build()");
+	private CmdBuild build(int onPlanetNr) {
+		LOG.trace("build(" + onPlanetNr + ")");
 		try {
-			match(BUILD);
-			Command cmd = new Command(BUILD);
-			cmd.setNumber(parseNumber());
-			cmd.setType(buildType());
-			return cmd;
+			match(ParserToken.BUILD);
+			int count = number(1, 9999);
+			Unit unit = buildUnit();
+			if (onPlanetNr > 0) {
+				return new CmdBuild(fPlayerNr, count, unit, onPlanetNr);
+			}
+			match(ParserToken.ON);
+			return new CmdBuild(fPlayerNr, count, unit, planetNumber());
 		} catch (ParserException pe) {
 			throw new ParserException("BUILD: " + pe.getMessage());
 		}
@@ -229,42 +148,48 @@ public class Parser {
 	/**
 	 *
 	 */
-	private int buildType() {
-		LOG.trace("buildType()");
+	private Unit buildUnit() {
+		LOG.trace("buildUnit()");
 		switch (fLookAhead) {
 			case PDU:
-				return match(PDU);
+				match(ParserToken.PDU);
+				return Unit.PDU;
 			case FP:
-				return match(FP);
+				match(ParserToken.FP);
+				return Unit.FP;
 			case OP:
-				return match(OP);
+				match(ParserToken.OP);
+				return Unit.OP;
 			case RP:
-				return match(RP);
+				match(ParserToken.RP);
+				return Unit.RP;
 			case FY:
-				return match(FY);
+				match(ParserToken.FY);
+				return Unit.FY;
 			case TY:
-				return match(TY);
+				match(ParserToken.TY);
+				return Unit.TY;
 			case FI:
-				return match(FI);
+				match(ParserToken.FI);
+				return Unit.FI;
 			case TR:
-				return match(TR);
+				match(ParserToken.TR);
+				return Unit.TR;
 			default:
-				throw new ParserException("production type expected");
+				throw new ParserException("build unit expected");
 		}
 	}
 
 	/**
 	 *
 	 */
-	private Command declare() {
+	private CmdDeclare declare() {
 		LOG.trace("declare()");
 		try {
-			match(DECLARE);
-			Command cmd = new Command(DECLARE);
-			cmd.setType(declareType());
-			match(ON);
-			cmd.setDestination(parseNumber());
-			return cmd;
+			match(ParserToken.DECLARE);
+			PoliticalTerm politicalTerm = politicalTerm();
+			match(ParserToken.ON);
+			return new CmdDeclare(fPlayerNr, politicalTerm, playerNumber());
 		} catch (ParserException pe) {
 			throw new ParserException("DECLARE: " + pe.getMessage());
 		}
@@ -273,29 +198,31 @@ public class Parser {
 	/**
 	 *
 	 */
-	private int declareType() {
-		LOG.trace("declareType()");
+	private PoliticalTerm politicalTerm() {
+		LOG.trace("politicalTerm()");
 		switch (fLookAhead) {
 			case WAR:
-				return match(WAR);
+				match(ParserToken.WAR);
+				return PoliticalTerm.WAR;
 			case PEACE:
-				return match(PEACE);
+				match(ParserToken.PEACE);
+				return PoliticalTerm.PEACE;
 			case NEUTRAL:
-				return match(NEUTRAL);
+				match(ParserToken.NEUTRAL);
+				return PoliticalTerm.NEUTRAL;
 			default:
-				throw new ParserException("political status expected");
+				throw new ParserException("political term expected");
 		}
 	}
 
 	/**
 	 *
 	 */
-	private Command turntoken() {
+	private CmdTurntoken turntoken() {
 		LOG.trace("turntoken()");
 		try {
-			Command cmd = new Command(match(TURNTOKEN));
-			cmd.setText(parseWord());
-			return cmd;
+			match(ParserToken.TURNTOKEN);
+			return new CmdTurntoken(fPlayerNr, word());
 		} catch (ParserException pe) {
 			throw new ParserException("TURNTOKEN: " + pe.getMessage());
 		}
@@ -309,47 +236,45 @@ public class Parser {
 	}
 
 	/**
-	 * Transforms text to parser token.
-	 */
-	public static String getText(int token) {
-		if (sTokenToText.containsKey(token)) {
-			return (String) sTokenToText.get(token);
-		} else {
-			return UNDEFINED;
-		}
-	}
-
-	/**
 	 * Transforms parser token to text.
 	 */
-	public static int getToken(String text) {
-		String lookup = text.toLowerCase();
-		if (sTextToToken.containsKey(lookup)) {
-			return ((Integer) sTextToToken.get(lookup)).intValue();
-		} else {
-			return ERROR;
+	public static ParserToken getToken(String text) {
+		if (text != null) {
+			String tokenText = text.toUpperCase();
+			if (TOKENS.contains(tokenText)) {
+				return ParserToken.valueOf(tokenText);
+			}
+		}
+		return null;
+	}
+
+	/**
+	 *
+	 */
+	private CmdHomeplanet homeplanet(int onPlanetNr) {
+		LOG.trace("homeplanet(" + onPlanetNr + ")");
+		try {
+			match(ParserToken.HOMEPLANET);
+			if (onPlanetNr > 0) {
+				return new CmdHomeplanet(fPlayerNr, onPlanetNr);
+			}
+			match(ParserToken.ON);
+			return new CmdHomeplanet(fPlayerNr, planetNumber());
+		} catch (ParserException pe) {
+			throw new ParserException("HOMEPLANET: " + pe.getMessage());
 		}
 	}
 
 	/**
 	 *
 	 */
-	private Command homeplanet() {
-		LOG.trace("homeplanet()");
-		match(HOMEPLANET);
-		return new Command(HOMEPLANET);
-	}
-
-	/**
-	 *
-	 */
-	private int match(int token) {
-		LOG.trace("match(" + getText(token) + ")");
+	private ParserToken match(ParserToken token) {
+		LOG.trace("match(" + token + ")");
 		if (fLookAhead == token) {
 			fLookAhead = scanner();
 			return token;
 		} else {
-			throw new ParserException("token " + getText(token).toUpperCase() + " expected");
+			throw new ParserException("token " + token + " expected");
 		}
 	}
 
@@ -359,12 +284,11 @@ public class Parser {
 	private CommandList onBlock() {
 		LOG.trace("onBlock()");
 		try {
-			match(ON);
-			int planetNr = parseNumber();
-			match(DO);
-			CommandList cmdList = onBlockStmts();
-			cmdList.setSource(planetNr);
-			match(DONE);
+			match(ParserToken.ON);
+			int onPlanetNr = planetNumber();
+			match(ParserToken.DO);
+			CommandList cmdList = onBlockStmts(onPlanetNr);
+			match(ParserToken.DONE);
 			return cmdList;
 		} catch (ParserException pe) {
 			throw new ParserException("ON BLOCK: " + pe.getMessage());
@@ -374,21 +298,21 @@ public class Parser {
 	/**
 	 *
 	 */
-	private Command onBlockStmt() {
-		LOG.trace("onBlockStmt()");
+	private Command onBlockStmt(int onPlanetNr) {
+		LOG.trace("onBlockStmt(" + onPlanetNr + ")");
 		switch (fLookAhead) {
 			case BUILD:
-				return build();
+				return build(onPlanetNr);
 			case HOMEPLANET:
-				return homeplanet();
+				return homeplanet(onPlanetNr);
 			case PLANETNAME:
-				return planetname();
+				return planetName(onPlanetNr);
 			case RESEARCH:
-				return research();
+				return research(onPlanetNr);
 			case SEND:
-				return send();
+				return send(onPlanetNr);
 			case SPY:
-				return spy();
+				return spy(onPlanetNr);
 			default:
 				throw new ParserException("unknown command");
 		}
@@ -397,8 +321,8 @@ public class Parser {
 	/**
 	 *
 	 */
-	private CommandList onBlockStmts() {
-		LOG.trace("onBlockStmts()");
+	private CommandList onBlockStmts(int planetNr) {
+		LOG.trace("onBlockStmts(" + planetNr + ")");
 		try {
 			switch (fLookAhead) {
 				case BUILD:
@@ -408,8 +332,8 @@ public class Parser {
 				case SEND:
 				case SPY:
 					CommandList cmdList = new CommandList();
-					cmdList.add(onBlockStmt());
-					cmdList.add(onBlockStmts());
+					cmdList.add(onBlockStmt(planetNr));
+					cmdList.add(onBlockStmts(planetNr));
 					return cmdList;
 				case DONE:
 					return null;
@@ -425,25 +349,40 @@ public class Parser {
 	/**
 	 *
 	 */
-	private int parseNumber() {
-		LOG.trace("parseNumber()");
-		if (fLookAhead == NUMBER) {
+	private int number(int min, int max) {
+		LOG.trace("number(" + min + "," + max + ")");
+		if (fLookAhead == ParserToken.NUMBER) {
 			int aNumber = fNumber;
-			match(NUMBER);
-			return aNumber;
-		} else {
-			throw new ParserException("number expected");
+			match(ParserToken.NUMBER);
+			if ((aNumber >= min) && (aNumber <= max)) {
+				return aNumber;
+			}
 		}
+		throw new ParserException("number between " + min + " and " + max + " expected");
+	}
+	
+	/**
+	 * 
+	 */
+	private int playerNumber() {
+		return number(1, 8);
+	}
+
+	/**
+	 * 
+	 */
+	private int planetNumber() {
+		return number(1, 40);
 	}
 
 	/**
 	 *
 	 */
-	private String parseWord() {
-		LOG.trace("parseWord()");
-		if (fLookAhead == WORD) {
+	private String word() {
+		LOG.trace("word()");
+		if (fLookAhead == ParserToken.WORD) {
 			String aWord = fWord;
-			match(WORD);
+			match(ParserToken.WORD);
 			return aWord;
 		} else {
 			throw new ParserException("word expected");
@@ -453,13 +392,11 @@ public class Parser {
 	/**
 	 *
 	 */
-	private Command announce() {
+	private CmdAnnounce announce() {
 		LOG.trace("announce()");
 		try {
-			match(ANNOUNCE);
-			Command cmd = new Command(ANNOUNCE);
-			cmd.setText(parseWord());
-			return cmd;
+			match(ParserToken.ANNOUNCE);
+			return new CmdAnnounce(fPlayerNr, word());
 		} catch (ParserException pe) {
 			throw new ParserException("ANNOUNCE: " + pe.getMessage());
 		}
@@ -468,13 +405,16 @@ public class Parser {
 	/**
 	 *
 	 */
-	private Command planetname() {
-		LOG.trace("planetname()");
+	private CmdPlanetname planetName(int onPlanetNr) {
+		LOG.trace("planetName(" + onPlanetNr + ")");
 		try {
-			match(PLANETNAME);
-			Command cmd = new Command(PLANETNAME);
-			cmd.setText(parseWord());
-			return cmd;
+			match(ParserToken.PLANETNAME);
+			String name = word();
+			if (onPlanetNr > 0) {
+				return new CmdPlanetname(fPlayerNr, name, onPlanetNr);
+			}
+			match(ParserToken.ON);
+			return new CmdPlanetname(fPlayerNr, name, planetNumber());
 		} catch (ParserException pe) {
 			throw new ParserException("PLANETNAME: " + pe.getMessage());
 		}
@@ -483,13 +423,11 @@ public class Parser {
 	/**
 	 *
 	 */
-	private Command playername() {
+	private CmdPlayername playername() {
 		LOG.trace("playername()");
 		try {
-			match(PLAYERNAME);
-			Command cmd = new Command(PLAYERNAME);
-			cmd.setText(parseWord());
-			return cmd;
+			match(ParserToken.PLAYERNAME);
+			return new CmdPlayername(fPlayerNr, word());
 		} catch (ParserException pe) {
 			throw new ParserException("PLAYERNAME: " + pe.getMessage());
 		}
@@ -498,13 +436,17 @@ public class Parser {
 	/**
 	 *
 	 */
-	private Command research() {
-		LOG.trace("research()");
+	private CmdResearch research(int onPlanetNr) {
+		LOG.trace("research(" + onPlanetNr + ")");
 		try {
-			match(RESEARCH);
-			Command cmd = new Command(RESEARCH);
-			cmd.setType(researchType());
-			return cmd;
+			match(ParserToken.RESEARCH);
+			int count = number(1, 999);
+			Improvement improvement = improvement();
+			if (onPlanetNr > 0) {
+				return new CmdResearch(fPlayerNr, count, improvement, onPlanetNr);
+			}
+			match(ParserToken.ON);
+			return new CmdResearch(fPlayerNr, count, improvement, planetNumber());
 		} catch (ParserException pe) {
 			throw new ParserException("RESEARCH: " + pe.getMessage());
 		}
@@ -513,28 +455,31 @@ public class Parser {
 	/**
 	 *
 	 */
-	private int researchType() {
-		LOG.trace("researchType()");
+	private Improvement improvement() {
+		LOG.trace("improvement()");
 		switch (fLookAhead) {
 			case PR:
-				return match(PR);
+				match(ParserToken.PR);
+				return Improvement.PR;
 			case FM:
-				return match(FM);
+				match(ParserToken.FM);
+				return Improvement.FM;
 			case TM:
-				return match(TM);
+				match(ParserToken.TM);
+				return Improvement.TM;
 			default:
-				throw new ParserException("improvement expected");
+				throw new ParserException("research field expected");
 		}
 	}
 
 	/**
 	 *
 	 */
-	private int scanner() {
-		int token;
+	private ParserToken scanner() {
+		ParserToken token;
 		// do not read over EOF (lineno() will be increased otherwise)
 		if (fBlocked) {
-			return EOF;
+			return ParserToken.EOF;
 		}
 		try {
 			// get next token from stream
@@ -542,57 +487,54 @@ public class Parser {
 				// end of file or stream
 				case StreamTokenizer.TT_EOF:
 					fBlocked = true;
-					return EOF;
+					return ParserToken.EOF;
 				// end of line
 				case StreamTokenizer.TT_EOL:
-					return EOL;
+					return ParserToken.EOL;
 				// a number (double value)
 				case StreamTokenizer.TT_NUMBER:
 					fNumber = (new Double(fTokenizer.nval)).intValue();
-					return NUMBER;
+					return ParserToken.NUMBER;
 				// a word or string
 				// look up in symboltable (keys in lowercase)
 				case StreamTokenizer.TT_WORD: // a word (string)
 					fWord = fTokenizer.sval;
 					token = getToken(fWord);
-					if (token < 0) {
-						return WORD;
-					}
-					return token;
+					return (token != null) ? token : ParserToken.WORD;
 				// a single character - convert it to a string
 				// look up in symboltable (keys in lowercase)
 				default:
 					if ((char) fTokenizer.ttype == '"') {
 						fWord = fTokenizer.sval;
-						return WORD;
+						return ParserToken.WORD;
 					} else {
 						fWord = String.valueOf((char) fTokenizer.ttype);
 						token = getToken(fWord);
-						if (token < 0) {
-							return WORD;
-						}
-						return token;
+						return (token != null) ? token : ParserToken.WORD;
 					}
 			}
 		// this shouldn't happen - return error token
 		} catch (IOException e) {
-			return ERROR;
+			return ParserToken.ERROR;
 		}
 	}
 
 	/**
 	 *
 	 */
-	private Command send() {
-		LOG.trace("send()");
+	private CmdSend send(int onPlanetNr) {
+		LOG.trace("send(" + onPlanetNr + ")");
 		try {
-			match(SEND);
-			Command cmd = new Command(SEND);
-			cmd.setNumber(parseNumber());
-			cmd.setType(sendType());
-			match(TO);
-			cmd.setSource(parseNumber());
-			return cmd;
+			match(ParserToken.SEND);
+			int count = number(1, 9999);
+			Unit unit = sendUnit();
+			match(ParserToken.TO);
+			int toPlanetNr = planetNumber();
+			if (onPlanetNr > 0) {
+				return new CmdSend(fPlayerNr, count, unit, toPlanetNr, onPlanetNr);
+			}
+			match(ParserToken.ON);
+			return new CmdSend(fPlayerNr, count, unit, toPlanetNr, planetNumber());
 		} catch (ParserException pe) {
 			throw new ParserException("SEND: " + pe.getMessage());
 		}
@@ -601,47 +543,69 @@ public class Parser {
 	/**
 	 *
 	 */
-	private int sendType() {
+	private Unit sendUnit() {
 		LOG.trace("sendType()");
 		switch (fLookAhead) {
 			case FI:
-				return match(FI);
+				match(ParserToken.FI);
+				return Unit.FI;
 			case TR:
-				return match(TR);
+				match(ParserToken.TR);
+				return Unit.TR;
 			case C0:
-				return match(C0);
+				match(ParserToken.C0);
+				return Unit.C0;
 			case C1:
-				return match(C1);
+				match(ParserToken.C1);
+				return Unit.C1;
 			case C2:
-				return match(C2);
+				match(ParserToken.C2);
+				return Unit.C2;
 			case C3:
-				return match(C3);
+				match(ParserToken.C3);
+				return Unit.C3;
 			case C4:
-				return match(C4);
+				match(ParserToken.C4);
+				return Unit.C4;
 			case C5:
-				return match(C5);
+				match(ParserToken.C5);
+				return Unit.C5;
 			case C6:
-				return match(C6);
+				match(ParserToken.C6);
+				return Unit.C6;
 			case C7:
-				return match(C7);
+				match(ParserToken.C7);
+				return Unit.C7;
 			case C8:
-				return match(C8);
+				match(ParserToken.C8);
+				return Unit.C8;
 			case C9:
-				return match(C9);
+				match(ParserToken.C9);
+				return Unit.C9;
 			default:
-				throw new ParserException("ship type expected");
+				throw new ParserException("send unit expected");
 		}
 	}
 
+	
 	/**
 	 *
 	 */
-	private Command spy() {
-		LOG.trace("spy()");
-		match(SPY);
-		return new Command(SPY);
+	private CmdSpy spy(int onPlanetNr) {
+		LOG.trace("spy(" + onPlanetNr + ")");
+		try {
+			match(ParserToken.SPY);
+			if (onPlanetNr > 0) {
+				return new CmdSpy(fPlayerNr, onPlanetNr);
+			}
+			match(ParserToken.ON);
+			return new CmdSpy(fPlayerNr, planetNumber());
+		} catch (ParserException pe) {
+			throw new ParserException("SPY: " + pe.getMessage());
+		}
 	}
 
+	
 	/**
 	 *
 	 */
@@ -657,10 +621,7 @@ public class Parser {
 			case TURNTOKEN:
 				return turntoken();
 			default:
-				Command cmd = onBlockStmt();
-				match(ON);
-				cmd.setSource(parseNumber());
-				return cmd;
+				return onBlockStmt(0);
 		}
 	}
 
@@ -682,14 +643,11 @@ public class Parser {
 				case SEND:
 				case SPY:
 				case TURNTOKEN:
-					cmdList = new CommandList();
-					cmdList.add(statement());
-					cmdList.add(statements());
-					return cmdList;
+					cmdList = new CommandList().add(statement());
+					return cmdList.add(statements());
 				case ON:
 					cmdList = onBlock();
-					cmdList.add(statements());
-					return cmdList;
+					return cmdList.add(statements());
 				default:
 					throw new ParserException("unknown command");
 			}
@@ -712,7 +670,7 @@ public class Parser {
 		}
 		try (BufferedReader br = new BufferedReader(new FileReader(args[0]))) {
 			Parser parser = new Parser();
-			cmdList = parser.parse(br);
+			cmdList = parser.parse(br, 1);
 			if (cmdList == null) {
 				System.out.println("[ Parser reports errors ]");
 				for (String error: parser.getErrors()) {

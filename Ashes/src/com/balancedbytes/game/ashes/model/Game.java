@@ -1,6 +1,9 @@
-package com.balancedbytes.game.ashes;
+package com.balancedbytes.game.ashes.model;
 
 import java.util.Iterator;
+
+import com.balancedbytes.game.ashes.OldCommand;
+import com.balancedbytes.game.ashes.command.CommandList;
 
 /**
  * Control class for each individual game.
@@ -194,16 +197,17 @@ public class Game {
 	 * Play a full turn for this game with the given commands.
 	 */
 	public void nextTurn(CommandList cmdList) {
-		Command cmd = null;
+		OldCommand cmd = null;
 
 		for (int i = 0; i < NR_PLAYERS; i++) {
 			getPlayer(i).phase(0, cmdList);
 		}
 
-		Iterator<Command> iterator = cmdList.iterator();
+		/*
+
+		Iterator<OldCommand> iterator = cmdList.iterator();
 		while (iterator.hasNext()) {
-			cmd = (Command) iterator.next();
-			/*
+			cmd = (OldCommand) iterator.next();
 			if (cmd.getToken() == Parser.MESSAGE) {
 				String header = "\n" + getPlayer(cmd.getPlayer()).getName() + " sends:\n";
 				int dest = cmd.getDestination();
@@ -213,8 +217,9 @@ public class Game {
 					Report.addAll(Report.MESSAGES, header + cmd.getText());
 				}
 			}
-			*/
 		}
+
+			*/
 
 		for (int i = 0; i < 2; i++) {
 			for (int j = 1; j < NR_PLANETS; j++) {

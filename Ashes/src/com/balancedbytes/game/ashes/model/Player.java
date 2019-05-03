@@ -1,10 +1,8 @@
-package com.balancedbytes.game.ashes;
+package com.balancedbytes.game.ashes.model;
 
-import java.util.Iterator;
-// import javax.mail.*;
-// import javax.mail.internet.*;
-
-import com.balancedbytes.game.ashes.parser.Parser;
+import com.balancedbytes.game.ashes.Report;
+import com.balancedbytes.game.ashes.command.CommandList;
+import com.balancedbytes.game.ashes.parser.ParserToken;
 
 /**
  *
@@ -20,7 +18,7 @@ public class Player {
   private int fPp;
   private float fFm;
   private float fTm;
-  private int[] fPt;
+  private ParserToken[] fPt;
 
   transient private Report report = null;
 
@@ -29,20 +27,20 @@ public class Player {
    */
   public Player(Game game, String user, int nr) {
   
-  	this.fGame = game;
-  	this.fUser = user;
-    this.fNr = nr;
-    this.fHomePlanetNr = nr;
-    this.fName = "player" + this.fNr;
+  	fGame = game;
+  	fUser = user;
+    fNr = nr;
+    fHomePlanetNr = nr;
+    fName = "player" + fNr;
   
   	fPp = 0;
   	fFm = 1.00f;
   	fTm = 1.00f;
   
-  	fPt = new int[9];
-    fPt[0] = Parser.WAR;
+  	fPt = new ParserToken[9];
+    fPt[0] = ParserToken.WAR;
     for (int i = 1; i < fPt.length; i++) {
-  		if (i == fNr) { fPt[i] = Parser.PEACE; } else { fPt[i] = Parser.NEUTRAL; }
+  		if (i == fNr) { fPt[i] = ParserToken.PEACE; } else { fPt[i] = ParserToken.NEUTRAL; }
     }
   
   }
@@ -86,8 +84,8 @@ public class Player {
   /**
    *
    */
-  public int getPoliticalTerms(int otherPlayer) {
-  	if ((otherPlayer < 0) || (otherPlayer > fPt.length)) { return -1; }
+  public ParserToken getPoliticalTerms(int otherPlayer) {
+  	if ((otherPlayer < 0) || (otherPlayer > fPt.length)) { return null; }
   	return fPt[otherPlayer];
   }
 
@@ -117,38 +115,43 @@ public class Player {
    *  Play a full turn for this player with the given commands.
    */
   public void phase(int phaseNr, CommandList cmdList) {
-  	StringBuffer buffer = new StringBuffer();
+	  
+	  /*
+
+	  StringBuffer buffer = new StringBuffer();
   	Iterator<Command> iterator = null;
-  	Command cmd = null;
   
   	if (phaseNr > 0) {
   
   	} else {
   
-  	  iterator = cmdList.iterator();
-  	  while (iterator.hasNext()) {
-  			cmd = (Command)iterator.next();
-  			if (cmd.getPlayer() == fNr) {
+  	  while (Command cmd : cmdList.getCommands()) {
+  			if (cmd.getPlayerNr() == fNr) {
   			  switch (cmd.getToken()) {
-  					case Parser.DECLARE:
+  					case DECLARE:
   			 			fPt[cmd.getDestination()] = cmd.getType();
   				  	break;
-  					case Parser.PLAYERNAME:
+  					case PLAYERNAME:
   				 		fName = cmd.getText();
   					  break;
+					default:
+						break;
   				}
   			}
   	  }
   
-  	  if (this.fFm < 0.96f) { this.fFm += 0.05; }
-  	  if (this.fTm < 0.96f) { this.fTm += 0.05; }
+  	  if (fFm < 0.96f) { fFm += 0.05; }
+  	  if (fTm < 0.96f) { fTm += 0.05; }
   
   	  buffer.append("\nplayer1  player2  player3  player4  player5  player6  player7  player8\n");
   	  for (int i = 1; i < fPt.length; i++) {
   			switch (fPt[i]) {
-  			  case     Parser.WAR: buffer.append("  war  "); break;
-  			  case   Parser.PEACE: buffer.append(" peace "); break;
-  		 		case Parser.NEUTRAL: buffer.append("neutral"); break;
+  			  case     WAR: buffer.append("  war  "); break;
+  			  case   PEACE: buffer.append(" peace "); break;
+  		 		case NEUTRAL: buffer.append("neutral"); break;
+				default:
+					break;
+
   			}
   		if (i < fPt.length - 1) { buffer.append("  "); }
   	  }
@@ -157,31 +160,34 @@ public class Player {
   	  getReport().add(Report.POLITICS, buffer);
   
   	}
+  	
+  	*/
+	  
   }
 
   /**
    *
    */
   public void setFighterMorale(float fm) {
-  	this.fFm = fm;
-  	if (this.fFm < 0.5f) { this.fFm = 0.5f; }
-  	if (this.fFm > 1.5f) { this.fFm = 1.5f; }
+  	fFm = fm;
+  	if (fFm < 0.5f) { fFm = 0.5f; }
+  	if (fFm > 1.5f) { fFm = 1.5f; }
   }
 
   /**
    *
    */
   public void setName(String name) {
-  	this.fName = name;
+  	fName = name;
   }
 
   /**
    *
    */
   public void setTransporterMorale(float tm) {
-  	this.fTm = tm;
-  	if (this.fTm < 0.5f) { this.fTm = 0.5f; }
-  	if (this.fTm > 1.5f) { this.fTm = 1.5f; }
+  	fTm = tm;
+  	if (fTm < 0.5f) { fTm = 0.5f; }
+  	if (fTm > 1.5f) { fTm = 1.5f; }
   }
   
 }

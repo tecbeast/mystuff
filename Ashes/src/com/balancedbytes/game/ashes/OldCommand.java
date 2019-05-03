@@ -3,6 +3,7 @@ package com.balancedbytes.game.ashes;
 import java.io.Serializable;
 
 import com.balancedbytes.game.ashes.parser.Parser;
+import com.balancedbytes.game.ashes.parser.ParserToken;
 
 /**
  * A regular Ashes Command. Usually parsed from player input. Consists of:
@@ -20,18 +21,21 @@ import com.balancedbytes.game.ashes.parser.Parser;
  * 
  * @see Parser
  */
-public class Command implements Serializable {
+public class OldCommand implements Serializable {
 
 	private static final long serialVersionUID = -4845328538079114057L;
 	
-	private int token, number, type, source, destination, player;
+	private ParserToken fToken;
+	private ParserToken fType;
+	private int fPlayerNr;
+	private int number, source, destination;
 	private String text;
 
 	/**
 	 * Default constructor. Token must be specified at creation time.
 	 */
-	public Command(int token) {
-		this.token = token;
+	public OldCommand(ParserToken token) {
+		fToken = token;
 	}
 
 	/**
@@ -51,8 +55,8 @@ public class Command implements Serializable {
 	/**
 	 * Returns player.
 	 */
-	public int getPlayer() {
-		return player;
+	public int getPlayerNr() {
+		return fPlayerNr;
 	}
 
 	/**
@@ -72,15 +76,15 @@ public class Command implements Serializable {
 	/**
 	 * Returns token (command).
 	 */
-	public int getToken() {
-		return token;
+	public ParserToken getToken() {
+		return fToken;
 	}
 
 	/**
 	 * Returns type.
 	 */
-	public int getType() {
-		return type;
+	public ParserToken getType() {
+		return fType;
 	}
 
 	/**
@@ -100,8 +104,8 @@ public class Command implements Serializable {
 	/**
 	 * Specifies executing player.
 	 */
-	public void setPlayer(int player) {
-		this.player = player;
+	public void setPlayerNr(int playerNr) {
+		fPlayerNr = playerNr;
 	}
 
 	/**
@@ -121,8 +125,8 @@ public class Command implements Serializable {
 	/**
 	 * Specifies type.
 	 */
-	public void setType(int type) {
-		this.type = type;
+	public void setType(ParserToken type) {
+		fType = type;
 	}
 
 	/**
@@ -131,50 +135,50 @@ public class Command implements Serializable {
 	public String toString() {
 		StringBuilder builder = new StringBuilder();
 		builder.append("player ");
-		builder.append(player);
+		builder.append(fPlayerNr);
 		builder.append(": ");
-		builder.append(Parser.getText(token));
+		builder.append(fToken);
 		builder.append(" ");
-		switch (token) {
-			case Parser.ANNOUNCE:
-			case Parser.PLAYERNAME:
-			case Parser.TURNTOKEN:
+		switch (fToken) {
+			case ANNOUNCE:
+			case PLAYERNAME:
+			case TURNTOKEN:
 				builder.append(text);
 				break;
-			case Parser.BUILD:
+			case BUILD:
 				builder.append(number);
 				builder.append(" ");
-				builder.append(Parser.getText(type));
+				builder.append(fType);
 				builder.append(" on ");
 				builder.append(source);
 				break;
-			case Parser.DECLARE:
-				builder.append(Parser.getText(type));
+			case DECLARE:
+				builder.append(fType);
 				builder.append(" with ");
 				builder.append(destination);
 				break;
-			case Parser.HOMEPLANET:
+			case HOMEPLANET:
 				builder.append("on ");
 				builder.append(source);
 				break;
-			case Parser.PLANETNAME:
+			case PLANETNAME:
 				builder.append(text);
 				builder.append(" on ");
 				builder.append(source);
 				break;
-			case Parser.RESEARCH:
-				builder.append(Parser.getText(type));
+			case RESEARCH:
+				builder.append(fType);
 				builder.append(" on ");
 				builder.append(source);
 				break;
-			case Parser.SEND:
+			case SEND:
 				builder.append(number);
 				builder.append(" ");
-				builder.append(Parser.getText(type));
+				builder.append(fType);
 				builder.append(" to ");
 				builder.append(destination);
 				break;
-			case Parser.SPY:
+			case SPY:
 				builder.append("on ");
 				builder.append(source);
 				break;

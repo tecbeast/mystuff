@@ -1,5 +1,7 @@
 package com.balancedbytes.game.ashes;
 
+import com.balancedbytes.game.ashes.model.Player;
+
 /**
  *
  */

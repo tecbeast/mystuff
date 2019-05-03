@@ -1,4 +1,4 @@
-package com.balancedbytes.game.ashes;
+package com.balancedbytes.game.ashes.json;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
