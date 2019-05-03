@@ -1,10 +1,11 @@
 <?xml version="1.0"?>
 
-<project name="AshesOfEmpire" default="jar" basedir=".">
+<project name="AshesOfEmpire" default="buildAll" basedir=".">
 
     <property name="src.dir" value="src" />
     <property name="bin.dir" value="bin" />
     <property name="lib.dir" value="lib" />
+    <property name="conf.dir" value="conf" />
     <property name="build.dir" value="build" />
 
 	<path id="libraries">
@@ -22,38 +23,56 @@
 	</target>
 
 	<target name="compile" depends="prepare">
+		
 		<path id="classpath">
 			<path refid="libraries" />
+			<!-- <pathelement location="../FantasyFootballCommon/bin" /> -->
 		</path>
-		<property name="myClasspath" refid="classpath" />
-		<!--
-		<echo message="Classpath = ${myClasspath}" />
-		-->
+		
 		<javac srcdir="${src.dir}" destdir="${bin.dir}" target="1.8" source="1.8" includeantruntime="false" debug="on">
 			<classpath refid="classpath" />
 		</javac>
+		
 	</target>
 
     <target name="jar" depends="compile">
+
+    	<pathconvert pathsep=" " property="manifest-classpath" refid="libraries">
+			<map from="${basedir}\${lib.dir}\" to="${lib.dir}/" />
+			<map from="${basedir}/${lib.dir}/" to="${lib.dir}/" />
+		</pathconvert>
+
     	<!-- add compress="false" attribute to jar tag for no compression -->
         <jar destfile="${build.dir}/AshesOfEmpire.jar">
         	
             <zipfileset dir="${bin.dir}" includes="**/*.class" />
-            <zipfileset dir="${lib.dir}" includes="**/*.jar" />
 
         	<!-- Specify the manifest file of the JAR -->
             <manifest>
-                <attribute name="Main-Class" value="com.balancedbytes.game.ashes.JarLauncher" />
+                <attribute name="Main-Class" value="com.balancedbytes.game.ashes.AshesOfEmpire" />
                 <attribute name="Application-Name" value="AshesOfEmpire" />
-                <attribute name="Class-Path" value="."/>
+                <attribute name="Class-Path" value=". ${manifest-classpath}" />
             </manifest>
         	
         </jar>
     	
+	</target>
+
+	<target name="buildAll" depends="jar">
+	
     	<copy todir="${build.dir}" >  
-      		<fileset dir="${build.dir}/.." includes="users/**"/>
-      		<fileset dir="${build.dir}/.." includes="conf/**"/>
+      		<fileset dir="${basedir}" includes="users/**" />
+    		<fileset dir="${basedir}" includes="lib/*.jar" />
     	</copy>
+    	
+    	<copy file="${conf.dir}/log-build.properties" tofile="${build.dir}/conf/log.properties" />
+    	<copy file="${conf.dir}/ashes.properties" tofile="${build.dir}/conf/ashes.properties" />
+
+    	<mkdir dir="${build.dir}/log" />
+    	
+		<zip destfile="${build.dir}/${ant.project.name}.zip">
+	  		<fileset dir="${build.dir}" includes="**/*" />
+    	</zip>
     	
     </target>
 
