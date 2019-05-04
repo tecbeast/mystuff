@@ -4,7 +4,7 @@ import java.util.List;
 
 import com.balancedbytes.game.ashes.json.IJsonSerializable;
 import com.balancedbytes.game.ashes.json.JsonSerializationException;
-import com.balancedbytes.game.ashes.json.JsonWrapper;
+import com.balancedbytes.game.ashes.json.JsonObjectWrapper;
 import com.balancedbytes.game.ashes.model.Game;
 import com.eclipsesource.json.JsonObject;
 import com.eclipsesource.json.JsonValue;
@@ -36,7 +36,7 @@ public abstract class Command implements IJsonSerializable {
 	
 	@Override
 	public JsonObject toJson() {
-		JsonWrapper json = new JsonWrapper(new JsonObject());
+		JsonObjectWrapper json = new JsonObjectWrapper(new JsonObject());
 		json.add(TYPE, getType().toString());
 		json.add(PLAYER_NR, getPlayerNr());
 		return json.getJsonObject();
@@ -44,7 +44,7 @@ public abstract class Command implements IJsonSerializable {
 	
 	@Override
 	public Command fromJson(JsonValue jsonValue) {
-		JsonWrapper json = new JsonWrapper(jsonValue.asObject());
+		JsonObjectWrapper json = new JsonObjectWrapper(jsonValue.asObject());
 		try {
 			CommandType type = CommandType.valueOf(json.getString(TYPE));
 			if (getType() != type) {

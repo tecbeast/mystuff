@@ -3,27 +3,32 @@ package com.balancedbytes.game.ashes.command;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.balancedbytes.game.ashes.json.JsonObjectWrapper;
 import com.balancedbytes.game.ashes.model.Game;
+import com.eclipsesource.json.JsonObject;
+import com.eclipsesource.json.JsonValue;
 
 public class CmdTurntoken extends Command {
 	
-	private String fTurntoken;
+	private static final String TOKEN = "token";
+	
+	private String fToken;
 	
 	protected CmdTurntoken() {
 		super();
 	}
 	
-	public CmdTurntoken(int playerNr, String turntoken) {
+	public CmdTurntoken(int playerNr, String token) {
 		setPlayerNr(playerNr);
-		setTurntoken(turntoken);
+		setToken(token);
 	}
 	
-	public String getTurntoken() {
-		return fTurntoken;
+	public String getToken() {
+		return fToken;
 	}
 	
-	protected void setTurntoken(String turntoken) {
-		fTurntoken = turntoken;
+	protected void setToken(String token) {
+		fToken = token;
 	}
 	
 	@Override
@@ -39,6 +44,21 @@ public class CmdTurntoken extends Command {
 	@Override
 	public boolean execute(Game game) {
 		return false;
+	}
+	
+	@Override
+	public JsonObject toJson() {
+		JsonObjectWrapper json = new JsonObjectWrapper(super.toJson());
+		json.add(TOKEN, getToken());
+		return json.getJsonObject();
+	}
+
+	@Override
+	public CmdTurntoken fromJson(JsonValue jsonValue) {
+		super.fromJson(jsonValue);
+		JsonObjectWrapper json = new JsonObjectWrapper(jsonValue.asObject());
+		setToken(json.getString(TOKEN));
+		return this;
 	}
 
 }

@@ -6,13 +6,13 @@ import java.util.Date;
 
 import com.eclipsesource.json.JsonObject;
 
-public class JsonWrapper {
+public class JsonObjectWrapper {
 	
 	private static final SimpleDateFormat DATE_FORMAT = new SimpleDateFormat("dd.MM.yyyy");
 	
 	private JsonObject fJsonObject;
 	
-	public JsonWrapper(JsonObject jsonObject) {
+	public JsonObjectWrapper(JsonObject jsonObject) {
 		if (jsonObject == null) {
 			throw new NullPointerException("Parameter jsonObject must not be null.");
 		}
@@ -51,7 +51,7 @@ public class JsonWrapper {
 		return 0;
 	}
 
-	public JsonWrapper add(String key, Date value) {
+	public JsonObjectWrapper add(String key, Date value) {
 		if (key != null) {
 			String dateString = (value != null) ? DATE_FORMAT.format(value) : null;
 			fJsonObject.add(key, dateString);
@@ -59,14 +59,14 @@ public class JsonWrapper {
 		return this;
 	}
 
-	public JsonWrapper add(String key, String value) {
+	public JsonObjectWrapper add(String key, String value) {
 		if (key != null) {
 			fJsonObject.add(key, value);
 		}
 		return this;
 	}
 
-	public JsonWrapper add(String key, int value) {
+	public JsonObjectWrapper add(String key, int value) {
 		if (key != null) {
 			fJsonObject.add(key, value);
 		}

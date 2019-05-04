@@ -3,7 +3,7 @@ package com.balancedbytes.game.ashes;
 import java.util.Date;
 
 import com.balancedbytes.game.ashes.json.IJsonSerializable;
-import com.balancedbytes.game.ashes.json.JsonWrapper;
+import com.balancedbytes.game.ashes.json.JsonObjectWrapper;
 import com.eclipsesource.json.JsonObject;
 import com.eclipsesource.json.JsonValue;
 
@@ -93,7 +93,7 @@ public class User implements IJsonSerializable {
 	
 	@Override
 	public JsonObject toJson() {
-		JsonWrapper json = new JsonWrapper(new JsonObject());
+		JsonObjectWrapper json = new JsonObjectWrapper(new JsonObject());
 		json.add(ID,  getId());
 		json.add(NAME, getName());
 		json.add(EMAIL, getEmail());
@@ -107,7 +107,7 @@ public class User implements IJsonSerializable {
 	
 	@Override
 	public User fromJson(JsonValue jsonValue) {
-		JsonWrapper json = new JsonWrapper(jsonValue.asObject());
+		JsonObjectWrapper json = new JsonObjectWrapper(jsonValue.asObject());
 		setId(json.getString(ID));
 		setName(json.getString(NAME));
 		setEmail(json.getString(EMAIL));
