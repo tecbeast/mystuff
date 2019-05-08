@@ -102,7 +102,7 @@ public class User implements IJsonSerializable {
 		json.add(GAMES_JOINED, getGamesJoined());
 		json.add(GAMES_FINISHED, getGamesFinished());
 		json.add(GAMES_WON, getGamesWon());
-		return json.getJsonObject();
+		return json.toJsonObject();
 	}
 	
 	@Override

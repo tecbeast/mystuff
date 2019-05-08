@@ -41,15 +41,10 @@ public class CmdSpy extends Command {
 	}
 	
 	@Override
-	public boolean execute(Game game) {
-		return false;
-	}
-	
-	@Override
 	public JsonObject toJson() {
 		JsonObjectWrapper json = new JsonObjectWrapper(super.toJson());
 		json.add(PLANET_NR, getPlanetNr());
-		return json.getJsonObject();
+		return json.toJsonObject();
 	}
 
 	@Override

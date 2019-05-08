@@ -62,13 +62,13 @@ public class CmdBuild extends Command {
 	
 	@Override
 	public List<String> validate(Game game) {
-		// TODO: check if player owns planet
-		return new ArrayList<String>();
-	}
-	
-	@Override
-	public boolean execute(Game game) {
-		return false;
+		List<String> messages = new ArrayList<String>();
+		if (game != null) {
+			if (game.getPlanet(fPlanetNr).getPlayerNr() != getPlayerNr()) {
+				messages.add("You cannot build on a planet you do not control.");
+			}
+		}
+		return messages;
 	}
 	
 	@Override
@@ -77,7 +77,7 @@ public class CmdBuild extends Command {
 		json.add(COUNT, getCount());
 		json.add(UNIT, AshesUtil.toString(getUnit()));
 		json.add(PLANET_NR, getPlanetNr());
-		return json.getJsonObject();
+		return json.toJsonObject();
 	}
 
 	@Override

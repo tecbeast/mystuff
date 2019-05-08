@@ -697,7 +697,7 @@ abgeschossen werden.
 transportieren (-> 6.35). TR werden in der Werft einmal aufgetankt, was für
 das ganze Spiel ausreicht.
 
-6.2 Flugbefehle du Raumgefechte
+6.2 Flugbefehle und Raumgefechte
 
 6.2.1 Flugbefehle
 

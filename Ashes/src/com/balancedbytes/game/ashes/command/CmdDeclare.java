@@ -55,16 +55,11 @@ public class CmdDeclare extends Command {
 	}
 	
 	@Override
-	public boolean execute(Game game) {
-		return false;
-	}
-	
-	@Override
 	public JsonObject toJson() {
 		JsonObjectWrapper json = new JsonObjectWrapper(super.toJson());
 		json.add(OPPONENT_PLAYER_NR, getOpponentPlayerNr());
 		json.add(POLITICAL_TERM, AshesUtil.toString(getPoliticalTerm()));
-		return json.getJsonObject();
+		return json.toJsonObject();
 	}
 
 	@Override

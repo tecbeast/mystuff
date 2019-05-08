@@ -67,17 +67,12 @@ public class CmdResearch extends Command {
 	}
 	
 	@Override
-	public boolean execute(Game game) {
-		return false;
-	}
-	
-	@Override
 	public JsonObject toJson() {
 		JsonObjectWrapper json = new JsonObjectWrapper(super.toJson());
 		json.add(COUNT, getCount());
 		json.add(IMPROVEMENT, AshesUtil.toString(getImprovement()));
 		json.add(PLANET_NR, getPlanetNr());
-		return json.getJsonObject();
+		return json.toJsonObject();
 	}
 
 	@Override

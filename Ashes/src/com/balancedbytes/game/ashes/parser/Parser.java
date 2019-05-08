@@ -27,6 +27,7 @@ import com.balancedbytes.game.ashes.command.CommandList;
 import com.balancedbytes.game.ashes.model.Improvement;
 import com.balancedbytes.game.ashes.model.PoliticalTerm;
 import com.balancedbytes.game.ashes.model.Unit;
+import com.eclipsesource.json.WriterConfig;
 
 /**
  * Recursive-Descent-Parser for Ashes Commands. Ashes defines a complete
@@ -153,28 +154,28 @@ public class Parser {
 		switch (fLookAhead) {
 			case PDU:
 				match(ParserToken.PDU);
-				return Unit.PDU;
+				return Unit.PLANETARY_DEFENSE_UNIT;
 			case FP:
 				match(ParserToken.FP);
-				return Unit.FP;
+				return Unit.FUEL_PLANT;
 			case OP:
 				match(ParserToken.OP);
-				return Unit.OP;
+				return Unit.ORE_PLANT;
 			case RP:
 				match(ParserToken.RP);
-				return Unit.RP;
+				return Unit.RARE_PLANT;
 			case FY:
 				match(ParserToken.FY);
-				return Unit.FY;
+				return Unit.FIGHTER_YARD;
 			case TY:
 				match(ParserToken.TY);
-				return Unit.TY;
+				return Unit.TRANSPORTER_YARD;
 			case FI:
 				match(ParserToken.FI);
-				return Unit.FI;
+				return Unit.FIGHTER;
 			case TR:
 				match(ParserToken.TR);
-				return Unit.TR;
+				return Unit.TRANSPORTER;
 			default:
 				throw new ParserException("build unit expected");
 		}
@@ -460,13 +461,13 @@ public class Parser {
 		switch (fLookAhead) {
 			case PR:
 				match(ParserToken.PR);
-				return Improvement.PR;
+				return Improvement.PRODUCTION_RATE;
 			case FM:
 				match(ParserToken.FM);
-				return Improvement.FM;
+				return Improvement.FIGHTER_MORALE;
 			case TM:
 				match(ParserToken.TM);
-				return Improvement.TM;
+				return Improvement.TRANSPORTER_MORALE;
 			default:
 				throw new ParserException("research field expected");
 		}
@@ -531,10 +532,10 @@ public class Parser {
 			match(ParserToken.TO);
 			int toPlanetNr = planetNumber();
 			if (onPlanetNr > 0) {
-				return new CmdSend(fPlayerNr, count, unit, toPlanetNr, onPlanetNr);
+				return new CmdSend(fPlayerNr, count, unit, onPlanetNr, toPlanetNr);
 			}
 			match(ParserToken.ON);
-			return new CmdSend(fPlayerNr, count, unit, toPlanetNr, planetNumber());
+			return new CmdSend(fPlayerNr, count, unit, planetNumber(), toPlanetNr);
 		} catch (ParserException pe) {
 			throw new ParserException("SEND: " + pe.getMessage());
 		}
@@ -548,40 +549,40 @@ public class Parser {
 		switch (fLookAhead) {
 			case FI:
 				match(ParserToken.FI);
-				return Unit.FI;
+				return Unit.FIGHTER;
 			case TR:
 				match(ParserToken.TR);
-				return Unit.TR;
+				return Unit.TRANSPORTER;
 			case C0:
 				match(ParserToken.C0);
-				return Unit.C0;
+				return Unit.CARGO_0;
 			case C1:
 				match(ParserToken.C1);
-				return Unit.C1;
+				return Unit.CARGO_1;
 			case C2:
 				match(ParserToken.C2);
-				return Unit.C2;
+				return Unit.CARGO_2;
 			case C3:
 				match(ParserToken.C3);
-				return Unit.C3;
+				return Unit.CARGO_3;
 			case C4:
 				match(ParserToken.C4);
-				return Unit.C4;
+				return Unit.CARGO_4;
 			case C5:
 				match(ParserToken.C5);
-				return Unit.C5;
+				return Unit.CARGO_5;
 			case C6:
 				match(ParserToken.C6);
-				return Unit.C6;
+				return Unit.CARGO_6;
 			case C7:
 				match(ParserToken.C7);
-				return Unit.C7;
+				return Unit.CARGO_7;
 			case C8:
 				match(ParserToken.C8);
-				return Unit.C8;
+				return Unit.CARGO_8;
 			case C9:
 				match(ParserToken.C9);
-				return Unit.C9;
+				return Unit.CARGO_9;
 			default:
 				throw new ParserException("send unit expected");
 		}
@@ -677,7 +678,7 @@ public class Parser {
 					System.out.println(error);
 				}
 			} else {
-				System.out.println(cmdList);
+				System.out.println(cmdList.toJson().toString(WriterConfig.PRETTY_PRINT));
 			}
 		} catch (Exception e) {
 			e.printStackTrace();

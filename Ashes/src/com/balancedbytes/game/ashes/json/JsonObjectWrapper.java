@@ -4,6 +4,7 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
+import com.eclipsesource.json.JsonArray;
 import com.eclipsesource.json.JsonObject;
 
 public class JsonObjectWrapper {
@@ -19,7 +20,7 @@ public class JsonObjectWrapper {
 		fJsonObject = jsonObject;
 	}
 	
-	public JsonObject getJsonObject() {
+	public JsonObject toJsonObject() {
 		return fJsonObject;
 	}
 
@@ -50,6 +51,13 @@ public class JsonObjectWrapper {
 		}
 		return 0;
 	}
+	
+	public JsonArray getArray(String key) {
+		if (key != null) {
+			return fJsonObject.get(key).asArray();
+		}
+		return null;
+	}
 
 	public JsonObjectWrapper add(String key, Date value) {
 		if (key != null) {
@@ -67,6 +75,13 @@ public class JsonObjectWrapper {
 	}
 
 	public JsonObjectWrapper add(String key, int value) {
+		if (key != null) {
+			fJsonObject.add(key, value);
+		}
+		return this;
+	}
+	
+	public JsonObjectWrapper add(String key, JsonArray value) {
 		if (key != null) {
 			fJsonObject.add(key, value);
 		}

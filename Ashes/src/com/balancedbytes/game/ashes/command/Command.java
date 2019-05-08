@@ -32,14 +32,12 @@ public abstract class Command implements IJsonSerializable {
 	
 	public abstract List<String> validate(Game game);
 	
-	public abstract boolean execute(Game game);
-	
 	@Override
 	public JsonObject toJson() {
 		JsonObjectWrapper json = new JsonObjectWrapper(new JsonObject());
 		json.add(TYPE, getType().toString());
 		json.add(PLAYER_NR, getPlayerNr());
-		return json.getJsonObject();
+		return json.toJsonObject();
 	}
 	
 	@Override

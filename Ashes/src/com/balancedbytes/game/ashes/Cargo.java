@@ -1,96 +1,104 @@
 package com.balancedbytes.game.ashes;
 
+import com.balancedbytes.game.ashes.json.IJsonSerializable;
+import com.eclipsesource.json.JsonArray;
+import com.eclipsesource.json.JsonValue;
+
 /**
  *
  */
-public class Cargo {
-  
-  public final static int CARGOTYPES = 10;
-  private int[] cargo = null;
-  
-  /**
-   *
-   */
-  public Cargo(int type, int quantity) {
-    cargo = new int[CARGOTYPES];
-    setCargo(type, quantity);
-  }
-  
-  /**
-   * Adds another fleet to this one.
-   */
-  public void add(Cargo anotherCargo) {
-    for (int i = 0; i < cargo.length; i++) {
-      cargo[i] = anotherCargo.getCargo(i);
-    }
-  }
-  
-  /**
-   *
-   */
-  public void clearCargo() {
-    for (int i = 0; i < cargo.length; i++) {
-      cargo[i] = 0;
-    }
-  }
+public class Cargo implements IJsonSerializable {
 
-  /**
-   *
-   */
-  public int[] getCargo() {
-    return cargo;
-  }
+	private int[] fCargos;
+	
+	/**
+	 *
+	 */
+	protected Cargo() {
+		this(0, 0);
+	}
+	
+	/**
+	 *
+	 */
+	public Cargo(int type, int quantity) {
+		fCargos = new int[10];
+		set(type, quantity);
+	}
 
-  /**
-   *
-   */
-  public int getCargo(int type) {
-    if ((type >= 0) && (type < cargo.length)) {
-      return cargo[type];
-    } else {
-      return -1;
-    }
-  }
+	/**
+	 * Adds another fleet to this one.
+	 */
+	public Cargo add(Cargo anotherCargo) {
+		if (anotherCargo != null) {
+			for (int i = 0; i < fCargos.length; i++) {
+				fCargos[i] = anotherCargo.get(i);
+			}
+		}
+		return this;
+	}
 
-  /**
-   *
-   */
-  public boolean hasCargo() {
-    for (int i = 0; i < cargo.length; i++) {
-      if (cargo[i] > 0) {
-        return true;
-      }
-    }
-    return false;
-  }
+	/**
+	 *
+	 */
+	public void clearCargo() {
+		for (int i = 0; i < fCargos.length; i++) {
+			fCargos[i] = 0;
+		}
+	}
 
-  /**
-   *
-   */
-  public void setCargo(int type, int quantity) {
-    if ((type >= 0) && (type < cargo.length)) {
-      if (quantity > 0) {
-        cargo[type] = quantity;
-      } else {
-        cargo[type] = 0;
-      }
-    }
-  }
+	/**
+	 *
+	 */
+	public int get(int type) {
+		if ((type >= 0) && (type < fCargos.length)) {
+			return fCargos[type];
+		} else {
+			return 0;
+		}
+	}
 
-  /**
-   *
-   */
-  public String toString() {
-    StringBuffer buffer = new StringBuffer();
+	/**
+	 *
+	 */
+	protected Cargo set(int type, int count) {
+		if ((type >= 0) && (type < fCargos.length)) {
+			if (count > 0) {
+				fCargos[type] = count;
+			} else {
+				fCargos[type] = 0;
+			}
+		}
+		return this;
+	}
+	
+	/**
+	 * 
+	 */
+	public int total() {
+		int total = 0;
+		for (int i = 0; i < fCargos.length; i++) {
+			total += fCargos[i];
+		}
+		return total;
+	}
+	
+	@Override
+	public JsonArray toJson() {
+		JsonArray jsonArray = new JsonArray();
+		for (int i = 0; i < fCargos.length; i++) {
+			jsonArray.add(get(i));
+		}
+		return jsonArray;
+	}
+	
+	@Override
+	public Cargo fromJson(JsonValue jsonValue) {
+		JsonArray jsonArray = jsonValue.asArray();
+		for (int i = 0; i < jsonArray.size(); i++) {
+			set(i, jsonArray.get(i).asInt());
+		}
+		return this;
+	}
 
-    buffer.append("CargoFleet: ");
-    for (int i = 0; i < cargo.length; i++) {
-      if (cargo[i] > 0) {
-        buffer.append(" " + cargo[i] + " C" + i);
-      }
-    }
-
-    return buffer.toString();
-  }
-  
 }
