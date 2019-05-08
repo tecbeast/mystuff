@@ -1,4 +1,4 @@
-package com.balancedbytes.game.ashes;
+package com.balancedbytes.game.ashes.model;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -118,8 +118,12 @@ public class FleetList implements IJsonSerializable {
 	/**
 	 * 
 	 */
-	public int totalShips() {
-		return totalFighters() + totalTransporters();
+	public Cargo getCargo() {
+		Cargo cargo = new Cargo();
+		for (Fleet fleet : fFleets) {
+			cargo.add(fleet.getCargo());
+		}
+		return cargo;
 	}
 	
 	/**

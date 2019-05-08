@@ -33,7 +33,7 @@ public class Player implements IJsonSerializable {
 	private int fFighterMorale;      // percent (min = 50%, max = 150%)
 	private int fTransporterMorale;  // percent (min = 50%, max = 150%) 
 	private PoliticalTerm[] fPoliticalTerms;
-	private Report fReport;
+	private Reporting fReporting;
 
 	/**
 	 *
@@ -49,7 +49,7 @@ public class Player implements IJsonSerializable {
 		setPoliticalPoints(0);
 		setFighterMorale(100);
 		setTransporterMorale(100);
-		fReport = new Report();
+		fReporting = new Reporting();
 		
 		// you start at WAR with neutral,
 		// at PEACE with yourself
@@ -146,8 +146,8 @@ public class Player implements IJsonSerializable {
 		}
 	}
 	
-	public Report getReport() {
-		return fReport;
+	public Reporting getReporting() {
+		return fReporting;
 	}
 	
 	/**

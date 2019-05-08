@@ -1,86 +1,74 @@
 package com.balancedbytes.game.ashes.model;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 /**
  *
  */
 public class Report {
 
-	private Map<ReportSection, List<String>> fContentBySection;
+	private Topic fTopic;
+	private List<String> fLines;
 
 	/**
 	 * 
 	 */
-	public Report() {
-		fContentBySection = new HashMap<ReportSection, List<String>>();
+	public Report(Topic topic) {
+		setTopic(topic);
+		fLines = new ArrayList<String>();
 	}
 	
 	/**
-	 *
+	 * 
 	 */
-	public void add(ReportSection section, String line) {
-		List<String> content = fContentBySection.get(section);
-		if (content == null) {
-			content = new ArrayList<String>();
-			fContentBySection.put(section, content);
+	public Topic getTopic() {
+		return fTopic;
+	}
+	
+	/**
+	 * 
+	 */
+	public Report setTopic(Topic topic) {
+		fTopic = topic;
+		return this;
+	}
+	
+	/**
+	 * 
+	 */
+	public int size() {
+		return fLines.size();
+	}
+	
+	/**
+	 * 
+	 */
+	public Report clear() {
+		fLines.clear();
+		return this;
+	}
+	
+	/**
+	 * 
+	 */
+	public Report add(String line) {
+		if (line != null) {
+			fLines.add(line);
 		}
-		content.add(line);
+		return this;
 	}
 	
 	/**
 	 * 
 	 */
-	public void clear() {
-		fContentBySection.clear();
+	public String toString() {
+		StringBuilder builder = new StringBuilder();
+		for (String line : fLines) {
+			builder.append(line);
+			builder.append(System.lineSeparator());
+		}
+		return builder.toString();
 	}
-	
-  // private final static String MAIL_PROPERTY = "mail.smtp.host";
-
-  // private static Session session = null;
-  // private static Vector all = null;
-
-  /*
-  public void sendMail(String address) {
-
-	for (int i = 0; i < NR_PLAYERS; i++) {
-	  Report report = players[i].getReport();
-	  String subject =  "Ashes Of Empire Game " + nr + " Turn " + turn + " Player " +  i;
-	  getPlayer(i).mailTo(session, subject, report.toString());
-	}
-
-	try {
-	  if (user.getEmail() != null) {
-		Message msg = new MimeMessage(session);
-		msg.setFrom(new InternetAddress(AshesOfEmpire.getFromAddress()));
-		msg.setSubject(subject);
-		InternetAddress[] toAddresses = new InternetAddress[1];
-		toAddresses[0] = new InternetAddress(user.getEmail());
-		msg.setRecipients(Message.RecipientType.TO, toAddresses);
-		msg.setContent(body, "text/plain");
-		// or: msg.setText(report.toString());
-		Transport.send(msg);
-	  }
-	} catch (MessagingException me) {
-	  AshesOfEmpire.log("! Cannot mail report to " + user.getEmail());
-	}
-
-  }
-  */
-  	
-  	/*
-  	if (session == null) {
-  	  Properties props = new Properties();
-  	  if (master.getProperty(MAIL_PROPERTY) != null) {
-  		props.setProperty(MAIL_PROPERTY, master.getProperty(MAIL_PROPERTY));
-  	  } else {
-  		props.setProperty(MAIL_PROPERTY, "localhost");
-  	  }
-  	  session = Session.getDefaultInstance(props, null);
-  	}
-  	*/
   
 }

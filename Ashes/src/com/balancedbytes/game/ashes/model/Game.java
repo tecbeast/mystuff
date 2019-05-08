@@ -59,7 +59,6 @@ public class Game {
   	private int fTurn;
   	private Planet[] fPlanets;
   	private Player[] fPlayers;
-  	private Report fReport;
 
 	/**
 	 * Start a new Game with given planets.
@@ -74,7 +73,6 @@ public class Game {
 		}
   
 	  	fTurn = 1;
-	  	fReport = new Report();
 	  	fPlanets = new Planet[NR_PLANETS];
   
 	  	// planet name, planet number, player, WF, HD, PR, FI, TR, PDU
@@ -197,8 +195,10 @@ public class Game {
 	/**
 	 * 
 	 */
-	public Report getReport() {
-		return fReport;
+	public void addReportToAllPlayers(Report report) {
+		for (Player player : fPlayers) {
+			player.getReporting().add(report);
+		}
 	}
 
 	/**

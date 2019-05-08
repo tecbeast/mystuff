@@ -6,9 +6,6 @@ import java.util.List;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
-import com.balancedbytes.game.ashes.Cargo;
-import com.balancedbytes.game.ashes.Fleet;
-import com.balancedbytes.game.ashes.FleetList;
 import com.balancedbytes.game.ashes.command.CmdBuild;
 import com.balancedbytes.game.ashes.command.CmdSend;
 import com.balancedbytes.game.ashes.command.Command;
@@ -475,15 +472,15 @@ public class Planet {
 		
 		// fleet report to all friendly players (if higher than limit) and owner (who is friendly to himself)
   	  	for (int i = 1; i < 9; i++) {
-  	  		if (game.getPoliticalTerm(getPlayerNr(), i) == PoliticalTerm.PEACE) {
-  	  			fleetReport(game, i);
+  	  		if (game.getPoliticalTerm(fPlayerNr, i) == PoliticalTerm.PEACE) {
+  	  			Report fleetReport = createFleetReport(game, i);
+  	  			game.getPlayer(i).getReporting().add(fleetReport);
   	  		}
   	  	}
   
   	  	// report approaching cargoships
-  	  	cargoReport(game);
+  	  	reportCargo(game);
 
-  	  	// TODO: move this section to game object
 		//    7.1 Zuerst werden die neuen PV berechnet. Änderungen werden sofort wirksam,
 		//  noch vor den Flugbewegungen. Das gilt auch für den Wechsel des Heimatplaneten
 		//  und alle Namensänderungen.
@@ -556,13 +553,13 @@ public class Planet {
 		//  Raumgefecht ein, sofern sie nicht zum Besitzer des Planeten neutral (PV=1)
 		//  sind.
 
-		battle(game);		
-
 		//    7.8 Hat der Besitzer des Planeten (oder seine Verbündeten) keine Raumschiffe
 		//  (mehr) im Orbit, also die Raumherrschaft verloren, wird anschließend ein
 		//  Landeversuch abgewickelt, falls noch angreifende Flotten da sind. Hat der
 		//  Planetenbesitzer dem Landeversuch abgewehrt, nutzt die Bevölkerung die Gunst
 		//  der Stunde und revoltiert. Hierbei zählt aber bereits die aktualisierte HD.
+
+		battle(game);		
 
 		//    7.9 Erst jetzt können eventuell angenommene Frachter entladen und wieder in
 		//  TR umgewandelt werden; andernfalls beziehen sie eine Warteposition in (D+0).
@@ -577,15 +574,19 @@ public class Planet {
 		//  sollte auf dem Zielplaneten zum Zeitpunkt des Entladens ausreichend
 		//  Lagerkapazität vorhanden sein, weil der Überschuß sonst verloren geht.
 		
-		unloadCargo();
+		Fleet ownFleet = fFlightQueue[0].forPlayerNr(fPlayerNr);
+		if ((ownFleet != null) && (ownFleet.getFighters() > 0)) {
+			unloadCargo();
+		}
+
+  	  	// report about planet
+		Report planetReport = createPlanetReport(game);
+		game.getPlayer(getPlayerNr()).getReporting().add(planetReport);
 
 		//    7.10 Zum Abschluß wird die GNP-Tabelle berechnet.
 
 		//    7.11 Prüfung, ob Siegbedingung erfüllt ist; falls ja, Ausdruck der Statistik
-		//  für die HoF.
-  
-  	  	// report about planet
-		game.getPlayer(getPlayerNr()).getReport().add(ReportSection.PLANETS, statistics(game));
+		//  für die HoF.  
 
   	}
 
@@ -627,8 +628,8 @@ public class Planet {
 	 */
 	private void unloadCargo() {
 		int transporters = 0;  // nr of transporter gained
-		for (int i = 0; i < fFlightQueue[0].size(); i++) {
-			Cargo cargo = fFlightQueue[0].get(i).getCargo();
+		for (Fleet fleet : fFlightQueue[0].toList()) {
+			Cargo cargo = fleet.getCargo();
 			if (cargo.get(0) > 0) {
 				fWorkforce += cargo.get(0) * 8;
 				transporters += cargo.get(0);
@@ -703,7 +704,7 @@ public class Planet {
 	 */
 	private void battle(Game game) {
   	
-		StringBuilder builder = new StringBuilder();
+		Report report = new Report(Topic.BATTLE);
 
 		// calculate attack strength and defense strength
 		int af = 0, df = 0, as = 0, ds = 0;
@@ -749,11 +750,8 @@ public class Planet {
 	  	// is there a fight ?
 	  	if (as > 0) {
   
-	  		Player owner = game.getPlayer(getPlayerNr());
-	  		builder.append(System.lineSeparator());
-	  		builder.append("Battle at ").append(getName()).append(" (").append(getNumber()).append(")");
-	  		builder.append(" Owner: ").append(owner.getName()).append(" (").append(owner.getNumber()).append(")");
-	  		builder.append(System.lineSeparator());
+	  		Player owner = game.getPlayer(fPlayerNr);
+	  		report.add("Battle at " + fName + " (" + fNumber + ") Owner: " + owner.getName() + " (" + owner.getNumber() + ")");
   
 	  		if (ds > 0) {
 	  			
@@ -800,15 +798,16 @@ public class Planet {
 	  				Fleet atkFleet = attacker.get(i);
 	  				Player atkPlayer = game.getPlayer(atkFleet.getPlayerNr());
   
-	  				builder.append(atkPlayer.getName()).append(" (").append(atkPlayer.getNumber()).append(") attacks with ");
-	  				builder.append(atkFleet.getFighters()).append(" FI (-");
+	  				StringBuilder line = new StringBuilder();
+	  				line.append(atkPlayer.getName()).append(" (").append(atkPlayer.getNumber()).append(") attacks with ");
+	  				line.append(atkFleet.getFighters()).append(" FI (-");
 	  				if (atkLoss[i] < atkFleet.getFighters()) {
-	  					builder.append(atkLoss[i]);
+	  					line.append(atkLoss[i]);
 	  				} else {
-	  					 builder.append(atkFleet.getFighters());
+	  					line.append(atkFleet.getFighters());
 	  				}
-					builder.append(" FI)");
-					builder.append(System.lineSeparator());
+	  				line.append(" FI)");
+	  				report.add(line.toString());
   
 	  				atkPlayer.setFighterMorale(atkPlayer.getFighterMorale() + atkWin[i] - atkLoss[i] + atkBonus);
 	  				atkFleet.setFighters(atkFleet.getFighters() - atkLoss[i]);
@@ -820,15 +819,16 @@ public class Planet {
 	  				Fleet defFleet = defender.get(j);
 	  				Player defPlayer = game.getPlayer(defFleet.getPlayerNr());
   
-	  				builder.append(defPlayer.getName()).append(" (").append(defPlayer.getNumber()).append(")  defends with ");
-	  				builder.append(defFleet.getFighters()).append(" FI (-");
+	  				StringBuilder line = new StringBuilder();
+	  				line.append(defPlayer.getName()).append(" (").append(defPlayer.getNumber()).append(")  defends with ");
+	  				line.append(defFleet.getFighters()).append(" FI (-");
 	  				if (defLoss[j] < defFleet.getFighters()) {
-	  					builder.append(defLoss[j]);
+	  					line.append(defLoss[j]);
 	  				} else {
-	  					builder.append(defFleet.getFighters());
+	  					line.append(defFleet.getFighters());
 	  				}
-	  				builder.append(" FI)");
-	  				builder.append(System.lineSeparator());
+	  				line.append(" FI)");
+	  				report.add(line.toString());
 	  				
 	  				defPlayer.setFighterMorale(defPlayer.getFighterMorale() + defWin[j] - defLoss[j] + defBonus);
 	  				defFleet.setFighters(defFleet.getFighters() - defLoss[j]);
@@ -840,29 +840,27 @@ public class Planet {
 	  			for (int i = 0; i < attacker.size(); i++) {
 	  				Fleet atkFleet = attacker.get(i);
 	  				Player atkPlayer = game.getPlayer(atkFleet.getPlayerNr());
-	  				builder.append(atkPlayer.getName()).append(" (").append(atkPlayer.getNumber()).append(")");
-	  				builder.append(" attacks with ").append(atkFleet.getFighters()).append(" FI");
-	  				builder.append(System.lineSeparator());
+	  				report.add(atkPlayer.getName() + " (" + atkPlayer.getNumber() + ") attacks with " + atkFleet.getFighters() + " FI");
 	  			}
-	  			builder.append("no resistance");
-  				builder.append(System.lineSeparator());
+	  			
+	  			report.add("no resistance");
 	  			
 	  		}
 	  		
 	  		if (as > ds) {
 	  			
 	  			if (ds > 0) {
-	  				builder.append("The defenders flee to their homeplanet (-").append(defender.totalTransporters()).append(" TR)");
-	  				builder.append(System.lineSeparator());
+	  				report.add("The defenders flee to their homeplanet (-" + defender.totalTransporters() + " TR)");
 	  				defender.removeTransporters();
 	  				flee(game, defender);
 	  			}
 	  			
 	  		} else {
-	  			builder.append("The attackers flee to their homeplanet (-").append(attacker.totalTransporters()).append(" TR)");
-	  			builder.append(System.lineSeparator());
+	  			
+	  			report.add("The attackers flee to their homeplanet (-" + attacker.totalTransporters() + " TR)");
 	  			attacker.removeTransporters();
 	  			flee(game, attacker);
+	  			
 	  		}
 	  		
 	  	}
@@ -905,8 +903,7 @@ public class Planet {
 	  			Fleet atkFleet = attacker.get(i);
 	  			Player atkPlayer = game.getPlayer(atkFleet.getPlayerNr());
 	  			if (atkFleet.getTransporters() > 0) {
-	  				builder.append(atkPlayer.getName()).append(" (").append(atkPlayer.getNumber()).append(") attempts landing with " + atkFleet.getTransporters() + " TR (-" + atkLoss[i] + " TR)");
-	  				builder.append(System.lineSeparator());
+	  				report.add(atkPlayer.getName() + " (" + atkPlayer.getNumber() + ") attempts landing with " + atkFleet.getTransporters() + " TR (-" + atkLoss[i] + " TR)");
 	  				atkPlayer.setTransporterMorale(atkPlayer.getTransporterMorale() + atkWin[i] - atkLoss[i] + atkBonus);
 	  				atkFleet.setTransporters(atkFleet.getTransporters() - atkLoss[i]);
 	  			}
@@ -916,10 +913,8 @@ public class Planet {
 	  			pduLoss = getPlanetaryDefenseUnits();
 	  		}
   
-	  		builder.append("Planet defends with ").append(getPlanetaryDefenseUnits()).append(" PDU (-").append(pduLoss).append(" PDU)");
-	  		builder.append(System.lineSeparator());
-  
-	  		this.fPlanetaryDefenseUnits -= pduLoss;
+	  		report.add("Planet defends with " + fPlanetaryDefenseUnits + " PDU (-" + pduLoss + " PDU)");
+	  		fPlanetaryDefenseUnits -= pduLoss;
   
 	  		// planet conquered
 	  		if (as > ds) {
@@ -946,39 +941,34 @@ public class Planet {
 	  			if (trMax > 0) {
 	  				Player newOwner = game.getPlayer(attacker.get(conquerer).getPlayerNr());
 	  				changeOwner(newOwner.getNumber());
-	  				builder.append(newOwner.getName()).append(" conquers the planet.");
-	  				builder.append(System.lineSeparator());
+	  				report.add(newOwner.getName() + " (" + newOwner.getNumber() + ")  conquers the planet.");
 	  			}
   
 	  		// revolution attempt
 	  		} else {
   
-	  			builder.append("Planet defends successfully.");
-	  			builder.append(System.lineSeparator());
+	  			report.add("Planet defends successfully.");
   
 	  			pduLoss = revolt(game);
   
 	  			if ((fPlanetaryDefenseUnits > 0) && (pduLoss > 0)) {
-	  				builder.append("Riots destroy further ").append(pduLoss).append(" PDU");
-	  				builder.append(System.lineSeparator());
+	  				report.add("Riots destroy further " + pduLoss + " PDU");
 	  			} else if (fPlanetaryDefenseUnits == 0) {
-	  				builder.append("The population takes advantage and revolts.");
-	  				builder.append(System.lineSeparator());
+	  				report.add("The population takes advantage and revolts.");
 	  			}
 	  			
 	  		}
 	  		
 	  	}
   
-	  	String battleReport = builder.toString(); 
-	  	if (battleReport.length() > 0) {
+	  	if (report.size() > 0) {
 	  		Player owner = game.getPlayer(getPlayerNr());
-	  		owner.getReport().add(ReportSection.BATTLES, battleReport);
+	  		owner.getReporting().add(report);
 	  		for (int i = 0; i < involved.size(); i++) {
 	  			Fleet fleet = involved.get(i);
 	  			if (fleet.getPlayerNr() != getPlayerNr()) {
 	  				Player player = game.getPlayer(fleet.getPlayerNr());
-	  				player.getReport().add(ReportSection.BATTLES, battleReport);
+	  				player.getReporting().add(report);
 	  			}
 	  		}
 	  	}
@@ -986,63 +976,52 @@ public class Planet {
 	}
 
 
-  /**
-   *
-   */
-  private void cargoReport(Game game) {
-    /*
-  	StringBuffer buffer = new StringBuffer();
-  	int total = 0;
-  
-  	if ((flightQueue[0] != null) && flightQueue[0].hasCargo()) {
-  	  buffer.append("(O) ");
-  	  int[] cargo = flightQueue[0].getCargo();
-  	  for (int i = 0; i < Fleet.CARGOTYPES; i++) {
-  		if (cargo[i] > 0) { buffer.append(cargo[i] + " C" + i + " "); total += cargo[i]; }
-  	  }
-  	}
-  	if ((flightQueue[1] != null) && flightQueue[1].hasCargo()) {
-  	  buffer.append("(D) ");
-  	  int[] cargo = flightQueue[1].getCargo();
-  	  for (int i = 0; i < Fleet.CARGOTYPES; i++) {
-  		if (cargo[i] > 0) { buffer.append(cargo[i] + " C" + i + " "); total += cargo[i]; }
-  	  }
-  	}
-  	if ((flightQueue[2] != null) && flightQueue[2].hasCargo()) {
-  	  buffer.append("(D+1) ");
-  	  int[] cargo = flightQueue[2].getCargo();
-  	  for (int i = 0; i < Fleet.CARGOTYPES; i++) {
-  		if (cargo[i] > 0) { buffer.append(cargo[i] + " C" + i + " "); total += cargo[i]; }
-  	  }
-  	}
-  	if ((flightQueue[3] != null) && flightQueue[3].hasCargo()) {
-  	  buffer.append("(D+2) ");
-  	  int[] cargo = flightQueue[3].getCargo();
-  	  for (int i = 0; i < Fleet.CARGOTYPES; i++) {
-  		if (cargo[i] > 0) { buffer.append(cargo[i] + " C" + i + " "); total += cargo[i]; }
-  	  }
-  	}
-  	if ((flightQueue[4] != null) && flightQueue[4].hasCargo()) {
-  	  buffer.append("(D+3) ");
-  	  int[] cargo = flightQueue[4].getCargo();
-  	  for (int i = 0; i < Fleet.CARGOTYPES; i++) {
-  		if (cargo[i] > 0) { buffer.append(cargo[i] + " C" + i + " "); total += cargo[i]; }
-  	  }
-  	}
-  	if (buffer.length() > 0) {
-  	  buffer.insert(0, nr + " "); buffer.append('\n');
-  	  for (int i = 1; i < game.NR_PLAYERS; i++) {
-  		Report report = game.getPlayer(i).getReport();
-  		if ((flightQueue[0].getFleet(i) != null) || (i == playerNr)) {
-  		  report.add(Report.CARGO, buffer);
-  		} else {
-  		  report.add(Report.CARGO, total + "Cargoships approaching " + name + " (" + nr + ")\n");
+	/**
+	 *
+	 */
+	private void reportCargo(Game game) {
+		
+		int total = 0;
+		Report orbitReport = new Report(Topic.CARGO);
+	
+  		for (int i = 0; i < 5; i++) {
+  			
+  			Cargo cargo = fFlightQueue[i].getCargo();
+  			if (cargo.total() > 0) {
+  				total += cargo.total();
+  				StringBuilder line = new StringBuilder();
+  				line.append((getNumber() < 10) ? " " : "").append(getNumber());
+  				if (i == 0) {
+  					line.append("   (I)");
+  				} else if (i == 1) {
+  					line.append("   (D)");
+  				} else {
+  					line.append(" (D+").append(i - 1).append(")");
+  				}
+  				for (int j = 0; j < 10; j++) {
+  					if (cargo.get(j) > 0) {
+  						line.append(" ").append(cargo.get(j)).append(" C").append(j);
+  					}
+  				}
+  				orbitReport.add(line.toString());
+  			}
+  			
   		}
-  	  }
-  	}
-  	*/
+  		
+  		Report otherReport = new Report(Topic.CARGO);
+  		otherReport.add(total + " cargoships approaching " + fName + " (" + fNumber + ")");
+  		
+  		for (int i = 1; i < 9; i++) {
+  			Player player = game.getPlayer(i);
+  			Fleet fleet = fFlightQueue[0].forPlayerNr(i);
+  			if ((i == fPlayerNr) || ((fleet != null) && ((fleet.getFighters() > 0) || (fleet.getTransporters() > 0)))) {
+  				player.getReporting().add(orbitReport);
+  			} else {
+  				player.getReporting().add(otherReport);
+  			}
+  		}
   
-  }
+	}
 
   	private void changeOwner(int newOwnerNr) {
   		// planetary morale drops to 50% if planet was conquered
@@ -1053,44 +1032,40 @@ public class Planet {
 	/**
 	 *
 	 */
-	private void fleetReport(Game game, int playerNr) {
-	  
-  		StringBuilder builder = new StringBuilder();
+	private Report createFleetReport(Game game, int playerNr) {
 
-  		int limit = 0;
-  		if (playerNr != getPlayerNr()) {
+		Report report = new Report((playerNr == fPlayerNr) ? Topic.FLEET : Topic.INTELLIGENCE);
+
+		int limit = 0;
+  		if (playerNr != fPlayerNr) {
   			limit = game.getTurn() * 2 + 9;
   		}
   		
   		for (int i = 0; i < 5; i++) {
   			
-  			if (fFlightQueue[i].totalShips() > limit) {
-  				builder.append((getNumber() < 10) ? " " : "").append(getNumber());
+  			int ships = fFlightQueue[i].totalFighters() + fFlightQueue[i].totalTransporters();
+  			if (ships > limit) {
+  				StringBuilder line = new StringBuilder();
+  				line.append((getNumber() < 10) ? " " : "").append(getNumber());
   				if (i == 0) {
-  					builder.append("   (I) ");
+  					line.append("   (I) ");
   				} else if (i == 1) {
-  					builder.append("   (D) ");
+  					line.append("   (D) ");
   				} else {
-  					builder.append(" (D+").append(i - 1).append(") ");
+  					line.append(" (D+").append(i - 1).append(") ");
   				}
   				if (fFlightQueue[i].totalFighters() > 0) {
-  					builder.append(fFlightQueue[0].totalFighters()).append(" FI ");
+  					line.append(fFlightQueue[0].totalFighters()).append(" FI ");
   				}
   				if (fFlightQueue[i].totalTransporters() > 0) {
-  					builder.append(fFlightQueue[0].totalTransporters()).append(" TR ");
+  					line.append(fFlightQueue[0].totalTransporters()).append(" TR ");
   				}
-  				builder.append(System.lineSeparator());
+  				report.add(line.toString());
   			}
   			
   		}
 
-  		String fleetReport = builder.toString();
-  		Player player = game.getPlayer(playerNr);
-  		if (playerNr == getPlayerNr()) {
-  			player.getReport().add(ReportSection.FLEETS, fleetReport);
-  		} else {
-  			player.getReport().add(ReportSection.INTELLIGENCE, fleetReport);
-  		}
+  		return report;
   	  
 	}
 
@@ -1106,13 +1081,10 @@ public class Planet {
 		fPlanetaryDefenseUnits -= pduLoss;
 		if (fPlanetaryDefenseUnits == 0) {
 			changeOwner(0);
-			StringBuilder builder = new StringBuilder();
-			builder.append(System.lineSeparator());
-			builder.append("Revolution on ").append(getName()).append(" (").append(getNumber()).append(")");
-			builder.append(System.lineSeparator());
-			builder.append("Planet falls to neutral.");
-			builder.append(System.lineSeparator());
-			game.getReport().add(ReportSection.GALACTIC_MEDIA, builder.toString());
+			Report report = new Report(Topic.REVOLT);
+			report.add("Revolution on " + fName + " (" + fNumber + ")");
+			report.add("Planet falls to neutral.");
+			game.addReportToAllPlayers(report);
 		}
 		return pduLoss;
 	}
@@ -1120,37 +1092,42 @@ public class Planet {
 	/**
 	 *
 	 */
-	public String statistics(Game game) {
+	public Report createPlanetReport(Game game) {
 
-		StringBuilder builder = new StringBuilder();
+		Report report = new Report(Topic.PLANET);
+		Player owner = game.getPlayer(fPlayerNr);
 		
-		builder.append("Planet: ").append(getName());
-		builder.append(" (").append(getNumber()).append(")");
-		builder.append(" Owner: ").append(game.getPlayer(getPlayerNr()).getName());
-		builder.append(" (").append(getPlayerNr()).append(")");
-		builder.append(System.lineSeparator());
+		StringBuilder line = new StringBuilder();
+		line.append("Planet: ").append(fName);
+		line.append(" (").append(fNumber).append(")");
+		line.append(" Owner: ").append(owner.getName());
+		line.append(" (").append(owner.getNumber()).append(")");
+		report.add(line.toString());
 
-		builder.append("GIP: ").append(fGrossIndustrialProduct);
-		builder.append(" PM: ").append(fPlanetaryMorale);
-		builder.append(" WF: ").append(fWorkforce);
-		builder.append(" PR: ").append(fProductionRate);
-		builder.append(" HD: ").append(fHomeDefense);
-		builder.append(System.lineSeparator());
+		line = new StringBuilder();
+		line.append("GIP: ").append(fGrossIndustrialProduct);
+		line.append(" PM: ").append(fPlanetaryMorale);
+		line.append(" WF: ").append(fWorkforce);
+		line.append(" PR: ").append(fProductionRate);
+		line.append(" HD: ").append(fHomeDefense);
+		report.add(line.toString());
 
-		builder.append("PDU ").append(fPlanetaryDefenseUnits);
-		builder.append(" FP ").append(fFuelPlants);
-		builder.append(" OP ").append(fOrePlants);
-		builder.append(" RP ").append(fRarePlants);
-		builder.append(" FY ").append(fFighterYards);
-		builder.append(" TY ").append(fTransporterYards);
-		builder.append(System.lineSeparator());
+		line = new StringBuilder();
+		line.append("PDU ").append(fPlanetaryDefenseUnits);
+		line.append(" FP ").append(fFuelPlants);
+		line.append(" OP ").append(fOrePlants);
+		line.append(" RP ").append(fRarePlants);
+		line.append(" FY ").append(fFighterYards);
+		line.append(" TY ").append(fTransporterYards);
+		report.add(line.toString());
 
-		builder.append("Fuel: ").append(fFuelResources);
-		builder.append(" Ore: ").append(fOreResources);
-		builder.append(" Rare: ").append(fRareResources);
-		builder.append(System.lineSeparator());
+		line = new StringBuilder();
+		line.append("Fuel: ").append(fFuelResources);
+		line.append(" Ore: ").append(fOreResources);
+		line.append(" Rare: ").append(fRareResources);
+		report.add(line.toString());
 
-		return builder.toString();
+		return report;
 
 	}
   

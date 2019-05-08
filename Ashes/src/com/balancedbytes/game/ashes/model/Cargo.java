@@ -1,4 +1,4 @@
-package com.balancedbytes.game.ashes;
+package com.balancedbytes.game.ashes.model;
 
 import com.balancedbytes.game.ashes.json.IJsonSerializable;
 import com.eclipsesource.json.JsonArray;
