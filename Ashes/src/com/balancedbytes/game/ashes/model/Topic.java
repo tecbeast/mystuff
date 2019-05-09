@@ -5,6 +5,7 @@ public enum Topic {
 	BATTLE,
 	CARGO,
 	FLEET,
+	GNP,
 	INTELLIGENCE,
 	PLANET,
 	POLITICS,

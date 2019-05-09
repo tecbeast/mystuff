@@ -1,6 +1,7 @@
 package com.balancedbytes.game.ashes.model;
 
 import java.util.List;
+import java.util.Map;
 
 import com.balancedbytes.game.ashes.command.Command;
 import com.balancedbytes.game.ashes.command.CommandList;
@@ -33,7 +34,7 @@ public class Player implements IJsonSerializable {
 	private int fFighterMorale;      // percent (min = 50%, max = 150%)
 	private int fTransporterMorale;  // percent (min = 50%, max = 150%) 
 	private PoliticalTerm[] fPoliticalTerms;
-	private Reporting fReporting;
+	private Report fReport;
 
 	/**
 	 *
@@ -49,7 +50,7 @@ public class Player implements IJsonSerializable {
 		setPoliticalPoints(0);
 		setFighterMorale(100);
 		setTransporterMorale(100);
-		fReporting = new Reporting();
+		fReport = new Report();
 		
 		// you start at WAR with neutral,
 		// at PEACE with yourself
@@ -146,8 +147,30 @@ public class Player implements IJsonSerializable {
 		}
 	}
 	
-	public Reporting getReporting() {
-		return fReporting;
+	public Map<GnpCategory, Integer> calculateGnpTotals(Game game) {
+		Map<GnpCategory, Integer> gnpTotals = GnpCategory.buildEmptyMap();
+		for (int i = 1; i <= 40; i++) {
+			Planet planet = game.getPlanet(i);
+			FleetList playerFleets = planet.findFleetsForPlayerNr(fNumber);
+			gnpTotals.put(GnpCategory.FIGHTERS, gnpTotals.get(GnpCategory.FIGHTERS) + playerFleets.totalFighters());
+			gnpTotals.put(GnpCategory.TRANSPORTERS, gnpTotals.get(GnpCategory.TRANSPORTERS) + playerFleets.totalTransporters());
+			if (planet.getPlayerNr() == fNumber) {
+				gnpTotals.put(GnpCategory.PLANETS, gnpTotals.get(GnpCategory.PLANETS) + 1);
+				gnpTotals.put(GnpCategory.FUEL_PLANTS, gnpTotals.get(GnpCategory.FUEL_PLANTS) + planet.getFuelPlants());
+				gnpTotals.put(GnpCategory.ORE_PLANTS, gnpTotals.get(GnpCategory.ORE_PLANTS) + planet.getOrePlants());
+				gnpTotals.put(GnpCategory.RARE_PLANTS, gnpTotals.get(GnpCategory.RARE_PLANTS) + planet.getRarePlants());
+				gnpTotals.put(GnpCategory.FIGHTER_YARDS, gnpTotals.get(GnpCategory.FIGHTER_YARDS) + planet.getFighterYards());
+				gnpTotals.put(GnpCategory.TRANSPORTER_YARDS, gnpTotals.get(GnpCategory.TRANSPORTER_YARDS) + planet.getTransporterYards());
+				gnpTotals.put(GnpCategory.PLANETARY_DEFENSE_UNITS, gnpTotals.get(GnpCategory.PLANETARY_DEFENSE_UNITS) + planet.getPlanetaryDefenseUnits());
+				gnpTotals.put(GnpCategory.STOCK_PILES, gnpTotals.get(GnpCategory.STOCK_PILES) + planet.getStockPiles());
+				gnpTotals.put(GnpCategory.GROSS_INDUSTRIAL_PRODUCT, gnpTotals.get(GnpCategory.GROSS_INDUSTRIAL_PRODUCT) + planet.getGrossIndustrialProduct());
+			}
+		}
+		return gnpTotals;
+	}
+	
+	public Report getReport() {
+		return fReport;
 	}
 	
 	/**

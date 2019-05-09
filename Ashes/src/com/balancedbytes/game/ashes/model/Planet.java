@@ -12,24 +12,48 @@ import com.balancedbytes.game.ashes.command.Command;
 import com.balancedbytes.game.ashes.command.CommandList;
 import com.balancedbytes.game.ashes.command.CommandType;
 import com.balancedbytes.game.ashes.command.ICommandFilter;
+import com.balancedbytes.game.ashes.json.IJsonSerializable;
+import com.balancedbytes.game.ashes.json.JsonObjectWrapper;
+import com.eclipsesource.json.JsonArray;
+import com.eclipsesource.json.JsonObject;
+import com.eclipsesource.json.JsonValue;
 
 /**
  * Central object for Ashes: handles building, space travel and fights.
  */
-public class Planet {
-
-	private String fName;
+public class Planet implements IJsonSerializable {
+	
+	private static final String NUMBER = "number";
+	private static final String NAME = "name";
+	private static final String PLAYER_NR = "playerNr";
+	private static final String WORKFORCE = "workforce";
+	private static final String FIGHTER_YARDS = "fighterYards";
+	private static final String TRANSPORTER_YARDS = "transporterYards";
+	private static final String PLANETARY_DEFENSE_UNITS = "planetaryDefenseUnits";
+	private static final String FUEL_PLANTS = "fuelPlants";
+	private static final String ORE_PLANTS = "orePlants";
+	private static final String RARE_PLANTS = "rarePlants";
+	private static final String FUEL_RESOURCES = "fuelResources";
+	private static final String ORE_RESOURCES = "oreResources";
+	private static final String RARE_RESOURCES = "rareResources";
+	private static final String HOME_DEFENSE = "homeDefense";
+	private static final String PRODUCTION_RATE = "productionRate";
+	private static final String PLANETARY_MORALE = "planetaryMorale";
+	private static final String STOCK_PILES = "stockPiles";
+	private static final String GROSS_INDUSTRIAL_PRODUCT = "grossIndustrialProduct";
+	private static final String FLIGHT_QUEUE = "flightQueue";
+	
 	private int fNumber;
+	private String fName;
 	private int fPlayerNr;
 	
 	private int fWorkforce;
-	private int fCurrentWorkforce;
-	
 	private int fFighterYards;
-	private int fCurrentFighterYards;
-	
 	private int fTransporterYards;
-	private int fCurrentTransporterYards;	
+
+	private transient int fCurrentWorkforce;
+	private transient int fCurrentFighterYards;
+	private transient int fCurrentTransporterYards;	
 
 	private int fPlanetaryDefenseUnits;
 	private int fFuelPlants;
@@ -97,7 +121,7 @@ public class Planet {
 		fOreResources = 30;
 		fRareResources = 30;
 
-		updateStockpileAndGip();
+		updateStockpilesAndGip();
 
 	}
 	  
@@ -113,10 +137,6 @@ public class Planet {
 		return fPlayerNr;
 	}
 
-	public int getWorkforce() {
-		return fWorkforce;
-	}
-
 	public int getFighterYards() {
 		return fFighterYards;
 	}
@@ -129,8 +149,24 @@ public class Planet {
 		return fPlanetaryDefenseUnits;
 	}
 	
-	public int getPlanetaryMorale() {
-		return fPlanetaryMorale;
+	public int getStockPiles() {
+		return fStockPiles;
+	}
+	
+	public int getGrossIndustrialProduct() {
+		return fGrossIndustrialProduct;
+	}
+	
+	public int getFuelPlants() {
+		return fFuelPlants;
+	}
+	
+	public int getOrePlants() {
+		return fOrePlants;
+	}
+	
+	public int getRarePlants() {
+		return fRarePlants;
 	}
 	
 	/**
@@ -466,24 +502,15 @@ public class Planet {
 	 * 11) test for victory
 	 * </pre>
 	 */
-	public void turn(Game game, CommandList cmdList) {
+	public void playTurn(Game game, CommandList cmdList) {
 
 		LOG.info("Planet " + getNumber() + " turn " + game.getTurn());
 		
 		// fleet report to all friendly players (if higher than limit) and owner (who is friendly to himself)
-  	  	for (int i = 1; i < 9; i++) {
-  	  		if (game.getPoliticalTerm(fPlayerNr, i) == PoliticalTerm.PEACE) {
-  	  			Report fleetReport = createFleetReport(game, i);
-  	  			game.getPlayer(i).getReporting().add(fleetReport);
-  	  		}
-  	  	}
+  	  	reportFleet(game);
   
   	  	// report approaching cargoships
   	  	reportCargo(game);
-
-		//    7.1 Zuerst werden die neuen PV berechnet. Änderungen werden sofort wirksam,
-		//  noch vor den Flugbewegungen. Das gilt auch für den Wechsel des Heimatplaneten
-		//  und alle Namensänderungen.
 
 		//    7.2 Liegen entsprechende Befehle vor und sind ausreichend TR und Güter
 		//  vorhanden, werden Frachtschiffe beladen. Die verladenen Güter stehen in
@@ -541,7 +568,7 @@ public class Planet {
 		fOreResources = Math.min(fOreResources + fOrePlants, fOrePlants * 10);
 		fRareResources = Math.min(fRareResources + fRarePlants, fRarePlants * 10);
 		
-	  	updateStockpileAndGip();
+	  	updateStockpilesAndGip();
 	  	
 	  	fPlanetaryMorale = Math.min(fPlanetaryMorale + 10, 250);
 		fWorkforce += fGrossIndustrialProduct / 40;
@@ -579,14 +606,8 @@ public class Planet {
 			unloadCargo();
 		}
 
-  	  	// report about planet
-		Report planetReport = createPlanetReport(game);
-		game.getPlayer(getPlayerNr()).getReporting().add(planetReport);
-
-		//    7.10 Zum Abschluß wird die GNP-Tabelle berechnet.
-
-		//    7.11 Prüfung, ob Siegbedingung erfüllt ist; falls ja, Ausdruck der Statistik
-		//  für die HoF.  
+  	  	// report planet statistics
+		reportPlanet(game);
 
   	}
 
@@ -679,7 +700,7 @@ public class Planet {
 	/**
 	 * 
 	 */
-	private void updateStockpileAndGip() {
+	private void updateStockpilesAndGip() {
 		fStockPiles = fFuelResources + fOreResources + fRareResources;
 		fGrossIndustrialProduct = (int) (fFuelPlants + fOrePlants + fRarePlants + (int) (fWorkforce * (double) fProductionRate / 20000) + (fStockPiles / 10));
 	}
@@ -704,7 +725,7 @@ public class Planet {
 	 */
 	private void battle(Game game) {
   	
-		Report report = new Report(Topic.BATTLE);
+		Message report = new Message(Topic.BATTLE);
 
 		// calculate attack strength and defense strength
 		int af = 0, df = 0, as = 0, ds = 0;
@@ -873,7 +894,7 @@ public class Planet {
 	  	if ((at > 0) && (((as > 0) && (as > ds)) || ((as == 0) && (ds == 0)))) {
   
 	  		as = 0;
-	  		ds = (int) ((double) getPlanetaryDefenseUnits() * getPlanetaryMorale() / 100);
+	  		ds = (int) ((double) getPlanetaryDefenseUnits() * fPlanetaryMorale / 100);
 	  		
 	  		for (int i = 0; i < attacker.size(); i++) {
 	  			
@@ -963,12 +984,12 @@ public class Planet {
   
 	  	if (report.size() > 0) {
 	  		Player owner = game.getPlayer(getPlayerNr());
-	  		owner.getReporting().add(report);
+	  		owner.getReport().add(report);
 	  		for (int i = 0; i < involved.size(); i++) {
 	  			Fleet fleet = involved.get(i);
 	  			if (fleet.getPlayerNr() != getPlayerNr()) {
 	  				Player player = game.getPlayer(fleet.getPlayerNr());
-	  				player.getReporting().add(report);
+	  				player.getReport().add(report);
 	  			}
 	  		}
 	  	}
@@ -982,7 +1003,7 @@ public class Planet {
 	private void reportCargo(Game game) {
 		
 		int total = 0;
-		Report orbitReport = new Report(Topic.CARGO);
+		Message orbitReport = new Message(Topic.CARGO);
 	
   		for (int i = 0; i < 5; i++) {
   			
@@ -1008,16 +1029,16 @@ public class Planet {
   			
   		}
   		
-  		Report otherReport = new Report(Topic.CARGO);
+  		Message otherReport = new Message(Topic.CARGO);
   		otherReport.add(total + " cargoships approaching " + fName + " (" + fNumber + ")");
   		
   		for (int i = 1; i < 9; i++) {
   			Player player = game.getPlayer(i);
   			Fleet fleet = fFlightQueue[0].forPlayerNr(i);
   			if ((i == fPlayerNr) || ((fleet != null) && ((fleet.getFighters() > 0) || (fleet.getTransporters() > 0)))) {
-  				player.getReporting().add(orbitReport);
+  				player.getReport().add(orbitReport);
   			} else {
-  				player.getReporting().add(otherReport);
+  				player.getReport().add(otherReport);
   			}
   		}
   
@@ -1032,40 +1053,53 @@ public class Planet {
 	/**
 	 *
 	 */
-	private Report createFleetReport(Game game, int playerNr) {
+	private void reportFleet(Game game) {
 
-		Report report = new Report((playerNr == fPlayerNr) ? Topic.FLEET : Topic.INTELLIGENCE);
+  	  	for (int j = 1; j < 9; j++) {
 
-		int limit = 0;
-  		if (playerNr != fPlayerNr) {
-  			limit = game.getTurn() * 2 + 9;
-  		}
-  		
-  		for (int i = 0; i < 5; i++) {
-  			
-  			int ships = fFlightQueue[i].totalFighters() + fFlightQueue[i].totalTransporters();
-  			if (ships > limit) {
+  	  		Player player = game.getPlayer(j);
+  	  		if (game.getPoliticalTerm(fPlayerNr, player.getNumber()) == PoliticalTerm.PEACE) {
+		
+  	  			Message message = new Message((player.getNumber() == fPlayerNr) ? Topic.FLEET : Topic.INTELLIGENCE);
+
+  	  			int limit = 0;
+  	  			if (player.getNumber() != fPlayerNr) {
+  	  				limit = game.getTurn() * 2 + 9;
+  	  			}
+
   				StringBuilder line = new StringBuilder();
-  				line.append((getNumber() < 10) ? " " : "").append(getNumber());
-  				if (i == 0) {
-  					line.append("   (I) ");
-  				} else if (i == 1) {
-  					line.append("   (D) ");
-  				} else {
-  					line.append(" (D+").append(i - 1).append(") ");
-  				}
-  				if (fFlightQueue[i].totalFighters() > 0) {
-  					line.append(fFlightQueue[0].totalFighters()).append(" FI ");
-  				}
-  				if (fFlightQueue[i].totalTransporters() > 0) {
-  					line.append(fFlightQueue[0].totalTransporters()).append(" TR ");
-  				}
-  				report.add(line.toString());
-  			}
-  			
-  		}
 
-  		return report;
+		  		for (int i = 0; i < 5; i++) {
+		  			
+		  			if (fFlightQueue[i].totalShips() > limit) {
+		  				if (line.length() == 0) {
+		  					line.append((getNumber() < 10) ? " " : "").append(getNumber()).append(" ");
+		  				}
+		  				if (i == 0) {
+		  					line.append(" (I) ");
+		  				} else if (i == 1) {
+		  					line.append(" (D) ");
+		  				} else {
+		  					line.append(" (D+").append(i - 1).append(") ");
+		  				}
+		  				if (fFlightQueue[i].totalFighters() > 0) {
+		  					line.append(fFlightQueue[0].totalFighters()).append(" FI ");
+		  				}
+		  				if (fFlightQueue[i].totalTransporters() > 0) {
+		  					line.append(fFlightQueue[0].totalTransporters()).append(" TR ");
+		  				}
+		  			}
+		  			
+		  		}
+
+		  		if (line.length() > 0) {
+	  				message.add(line.toString());
+	  	  			player.getReport().add(message);
+		  		}
+  	  			
+  	  		}
+  	  		
+  	  	}
   	  
 	}
 
@@ -1081,10 +1115,10 @@ public class Planet {
 		fPlanetaryDefenseUnits -= pduLoss;
 		if (fPlanetaryDefenseUnits == 0) {
 			changeOwner(0);
-			Report report = new Report(Topic.REVOLT);
+			Message report = new Message(Topic.REVOLT);
 			report.add("Revolution on " + fName + " (" + fNumber + ")");
 			report.add("Planet falls to neutral.");
-			game.addReportToAllPlayers(report);
+			game.addMessageToAllPlayerReports(report);
 		}
 		return pduLoss;
 	}
@@ -1092,9 +1126,9 @@ public class Planet {
 	/**
 	 *
 	 */
-	public Report createPlanetReport(Game game) {
+	private void reportPlanet(Game game) {
 
-		Report report = new Report(Topic.PLANET);
+		Message message = new Message(Topic.PLANET);
 		Player owner = game.getPlayer(fPlayerNr);
 		
 		StringBuilder line = new StringBuilder();
@@ -1102,7 +1136,7 @@ public class Planet {
 		line.append(" (").append(fNumber).append(")");
 		line.append(" Owner: ").append(owner.getName());
 		line.append(" (").append(owner.getNumber()).append(")");
-		report.add(line.toString());
+		message.add(line.toString());
 
 		line = new StringBuilder();
 		line.append("GIP: ").append(fGrossIndustrialProduct);
@@ -1110,7 +1144,7 @@ public class Planet {
 		line.append(" WF: ").append(fWorkforce);
 		line.append(" PR: ").append(fProductionRate);
 		line.append(" HD: ").append(fHomeDefense);
-		report.add(line.toString());
+		message.add(line.toString());
 
 		line = new StringBuilder();
 		line.append("PDU ").append(fPlanetaryDefenseUnits);
@@ -1119,16 +1153,84 @@ public class Planet {
 		line.append(" RP ").append(fRarePlants);
 		line.append(" FY ").append(fFighterYards);
 		line.append(" TY ").append(fTransporterYards);
-		report.add(line.toString());
+		message.add(line.toString());
 
 		line = new StringBuilder();
 		line.append("Fuel: ").append(fFuelResources);
 		line.append(" Ore: ").append(fOreResources);
 		line.append(" Rare: ").append(fRareResources);
-		report.add(line.toString());
+		message.add(line.toString());
 
-		return report;
+		owner.getReport().add(message);
 
+	}
+	
+	public FleetList findFleetsForPlayerNr(int playerNr) {
+		FleetList result = new FleetList();
+		for (int i = 0; i < fFlightQueue.length; i++) {
+			Fleet fleet = fFlightQueue[i].forPlayerNr(playerNr);
+			if (fleet != null) {
+				result.add(fleet);
+			}
+		}
+		return result;
+	}
+	
+	@Override
+	public JsonObject toJson() {
+		JsonObjectWrapper json = new JsonObjectWrapper(new JsonObject());
+		json.add(NUMBER, fNumber);
+		json.add(NAME, fName);
+		json.add(PLAYER_NR, fPlayerNr);
+		json.add(WORKFORCE, fWorkforce);
+		json.add(FIGHTER_YARDS, fFighterYards);
+		json.add(TRANSPORTER_YARDS, fTransporterYards);
+		json.add(PLANETARY_DEFENSE_UNITS, fPlanetaryDefenseUnits);
+		json.add(FUEL_PLANTS, fFuelPlants);
+		json.add(ORE_PLANTS, fOrePlants);
+		json.add(RARE_PLANTS, fRarePlants);
+		json.add(FUEL_RESOURCES, fFuelResources);
+		json.add(ORE_RESOURCES, fOreResources);
+		json.add(RARE_RESOURCES, fRareResources);
+		json.add(HOME_DEFENSE, fHomeDefense);
+		json.add(PRODUCTION_RATE, fProductionRate);
+		json.add(PLANETARY_MORALE, fPlanetaryMorale);
+		json.add(STOCK_PILES, fStockPiles);
+		json.add(GROSS_INDUSTRIAL_PRODUCT, fGrossIndustrialProduct);
+		JsonArray jsonArray = new JsonArray();
+		for (int i = 0; i < fFlightQueue.length; i++) {
+			jsonArray.add(fFlightQueue[i].toJson());
+		}
+		json.add(FLIGHT_QUEUE, jsonArray);
+		return json.toJsonObject();
+	}
+	
+	@Override
+	public Planet fromJson(JsonValue jsonValue) {
+		JsonObjectWrapper json = new JsonObjectWrapper(jsonValue.asObject());
+		fNumber = json.getInt(NUMBER);
+		fName = json.getString(NAME);
+		fPlayerNr = json.getInt(PLAYER_NR);
+		fWorkforce = json.getInt(WORKFORCE);
+		fFighterYards = json.getInt(FIGHTER_YARDS);
+		fTransporterYards = json.getInt(TRANSPORTER_YARDS);
+		fPlanetaryDefenseUnits = json.getInt(PLANETARY_DEFENSE_UNITS);
+		fFuelPlants = json.getInt(FUEL_PLANTS);
+		fOrePlants = json.getInt(ORE_PLANTS);
+		fRarePlants = json.getInt(RARE_PLANTS);
+		fFuelResources = json.getInt(FUEL_RESOURCES);
+		fOreResources = json.getInt(ORE_RESOURCES);
+		fRareResources = json.getInt(RARE_RESOURCES);
+		fHomeDefense = json.getInt(HOME_DEFENSE);
+		fProductionRate = json.getInt(PRODUCTION_RATE);
+		fPlanetaryMorale = json.getInt(PLANETARY_MORALE);
+		fStockPiles = json.getInt(STOCK_PILES);
+		fGrossIndustrialProduct = json.getInt(GROSS_INDUSTRIAL_PRODUCT);
+		JsonArray jsonArray = json.getArray(FLIGHT_QUEUE);
+		for (int i = 0; i < jsonArray.size(); i++) {
+			fFlightQueue[i] = new FleetList().fromJson(jsonArray.get(i));
+		}
+		return this;
 	}
   
 }

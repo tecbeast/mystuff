@@ -1,5 +1,10 @@
 package com.balancedbytes.game.ashes.model;
 
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
+
+import com.balancedbytes.game.ashes.AshesUtil;
 import com.balancedbytes.game.ashes.command.CommandList;
 
 /**
@@ -58,7 +63,7 @@ public class Game {
   	private int fNumber;
   	private int fTurn;
   	private Planet[] fPlanets;
-  	private Player[] fPlayers;
+  	private Player[] fPlayers;  	
 
 	/**
 	 * Start a new Game with given planets.
@@ -195,9 +200,9 @@ public class Game {
 	/**
 	 * 
 	 */
-	public void addReportToAllPlayers(Report report) {
+	public void addMessageToAllPlayerReports(Message message) {
 		for (Player player : fPlayers) {
-			player.getReporting().add(report);
+			player.getReport().add(message);
 		}
 	}
 
@@ -205,7 +210,11 @@ public class Game {
 	 * Play a full turn for this game with the given commands.
 	 */
 	public void nextTurn(CommandList cmdList) {
-
+		
+		//  7.1 Zuerst werden die neuen PV berechnet. Änderungen werden sofort wirksam,
+		//      noch vor den Flugbewegungen. Das gilt auch für den Wechsel des Heimatplaneten
+		//      und alle Namensänderungen.
+		
 		/*
 
 		for (int i = 0; i < NR_PLAYERS; i++) {
@@ -277,6 +286,117 @@ public class Game {
   
 		// increase turn
 		fTurn++;
+		
+		//  7.10 Zum Abschluß wird die GNP-Tabelle berechnet.
+
+		reportGnpTable();
+		
+		//  7.11 Prüfung, ob Siegbedingung erfüllt ist;
+		//       falls ja, Ausdruck der Statistik für die HoF.  
+		
 	}
-  
+	
+	//	4.5 GNP-Tabelle
+	//	  Die GNP-Tabelle (gross national product) zeigt die aktuelle Wertung aller
+	//	acht MS. Wenn eine Partie durch Erreichen der gewählten Rundenzahl beendet
+	//	wird, gewinnt, wer auf Platz 1 der GNP-Tabelle steht. Die Qualität seines
+	//	Sieges wird durch den GNP-Wert beschrieben. Mit diesem Wert gehen alle
+	//	Mitspieler auch in die "Ashes Hall of Fame" ein. Die entsprechende Meldung
+	//	gibt der SL nach Abschluß der Partie ab.
+	//	  	Das GNP wird aus zwölf Einzelwerten ermittelt: die Anzahl der kontrollierten
+	//	Planten (PL), die Anzahl an FP, OP, RP, FY, TZ, PDU, die Vorräte an FUEL, ORE
+	//	und RARE summiert zu SP (stock piles), die Anzahl an FI und TR, die Höhe des
+	//	GIP und die Anzahl politischer Punkte (PP). Für jede der zwölf Kategorien
+	//	getrennt werden die Werte der MS in eine Rangfolge gebracht und mit
+	//	Kennziffern beschrieben, das heißt, der Spieler mit den meisten Planeten
+	//	bekommt für PL eine 1, der mit den wenigsten eine 8. Haben zwei oder mehr MS
+	//	gleiche Werte, teilen sie sich den entsprechenden Rang.
+	//	  Aus den Einzelrängen in den zwölf Kategorien wird ein Durchschnitt
+	//	errechnet. Dieser Durchschnitt ist das GNP. Das besterreichbare GNP ist 1, was
+	//	bedeutet, daß der betreffende Spieler in allen zwölf Wertungen auf dem ersten
+	//	Platz liegt, also die meisten Planeten kontrolliert, die meisten FP, OP, RP,
+	//	FY, TY, PDU, SP, FI, TR, PP und das höchste GIP besitzt. Ein Spieler der in
+	//	elf Positionen Platz 1 belegt und in einer Platz 3 hat ein GNP von (14/12=)
+	//	1,16.
+	//	  Die GNP-Tabelle ist nützlich, um die Stärke der Gegner einzuschätzen. Wenn
+	//	das Imperium "A" bei FI  Platz 4 belegt und "B" Platz 5, dann weiß "A" mit 416
+	//	FI, daß "B" höchstens 415 FI besitzen kann.
+
+	private void reportGnpTable() {
+		
+		List<Map<GnpCategory, Integer>> playerGnpScores = new ArrayList<Map<GnpCategory,Integer>>();
+		
+		List<Map<GnpCategory, Integer>> playerGnpTotals = new ArrayList<Map<GnpCategory,Integer>>();
+		for (int i = 1; i <= 8; i++) {
+			playerGnpTotals.add(getPlayer(i).calculateGnpTotals(this));
+			playerGnpScores.add(GnpCategory.buildEmptyMap());
+		}
+		
+		for (GnpCategory category : GnpCategory.values()) {
+			List<Integer> values = new ArrayList<Integer>();
+			for (Map<GnpCategory, Integer> playerGnpTotal : playerGnpTotals) {
+				values.add(playerGnpTotal.get(category));
+			}
+			values = AshesUtil.sortHighestFirstRemoveDuplicates(values);
+			for (int i = 0; i < playerGnpTotals.size(); i++) {
+				int total = playerGnpTotals.get(i).get(category); 
+				for (int j = 0; j < values.size(); j++) {
+					if (total == values.get(j)) {
+						playerGnpScores.get(i).put(category, j + 1);
+					}
+				}
+			}
+		}
+		
+		Message message = new Message(Topic.GNP);
+
+		StringBuilder line = new StringBuilder();
+		line.append("Player ");
+		for (int i = 1; i <= 8; i++) {
+			line.append("  (").append(i).append(")  ");
+		}
+		message.add(line.toString());
+
+		addGnpLine(message, "    PL ", GnpCategory.PLANETS, playerGnpScores);
+		addGnpLine(message, "    FP ", GnpCategory.FUEL_PLANTS, playerGnpScores);
+		addGnpLine(message, "    OP ", GnpCategory.ORE_PLANTS, playerGnpScores);
+		addGnpLine(message, "    RP ", GnpCategory.RARE_PLANTS, playerGnpScores);
+		addGnpLine(message, "    FY ", GnpCategory.FIGHTER_YARDS, playerGnpScores);
+		addGnpLine(message, "    TY ", GnpCategory.TRANSPORTER_YARDS, playerGnpScores);
+		addGnpLine(message, "   PDU ", GnpCategory.PLANETARY_DEFENSE_UNITS, playerGnpScores);
+		addGnpLine(message, "    SP ", GnpCategory.STOCK_PILES, playerGnpScores);
+		addGnpLine(message, "    FI ", GnpCategory.FIGHTERS, playerGnpScores);
+		addGnpLine(message, "    TR ", GnpCategory.TRANSPORTERS, playerGnpScores);
+		addGnpLine(message, "   GIP ", GnpCategory.GROSS_INDUSTRIAL_PRODUCT, playerGnpScores);
+		addGnpLine(message, "    PP ", GnpCategory.POLITICAL_POINTS, playerGnpScores);
+		
+		line = new StringBuilder();
+		line.append(" Total ");
+		for (Map<GnpCategory,Integer> playerGnpScore : playerGnpScores) {
+			int total = 0;
+			for (GnpCategory category : playerGnpScore.keySet()) {
+				total += playerGnpScore.get(category);
+			}
+			line.append(" " + String.format("%.3f%n", (double) total / 12) + " ");
+		}
+		message.add(line.toString());
+		
+		addMessageToAllPlayerReports(message);
+		
+	}
+	
+	private void addGnpLine(
+		Message message,
+		String title,
+		GnpCategory category,
+		List<Map<GnpCategory, Integer>> playerGnpScores
+	) {
+		StringBuilder line = new StringBuilder();
+		line.append(title);
+		for (int i = 0; i < playerGnpScores.size(); i++) {
+			line.append(" ").append(playerGnpScores.get(i).get(category)).append(" ");
+		}
+		message.add(line.toString());
+	}
+	
 }

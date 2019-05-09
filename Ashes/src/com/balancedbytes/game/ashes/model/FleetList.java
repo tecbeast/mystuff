@@ -118,6 +118,17 @@ public class FleetList implements IJsonSerializable {
 	/**
 	 * 
 	 */
+	public int totalShips() {
+		int result = 0;
+		for (Fleet fleet : fFleets) {
+			result += fleet.getTransporters() + fleet.getFighters();
+		}
+		return result;
+	}
+	
+	/**
+	 * 
+	 */
 	public Cargo getCargo() {
 		Cargo cargo = new Cargo();
 		for (Fleet fleet : fFleets) {
