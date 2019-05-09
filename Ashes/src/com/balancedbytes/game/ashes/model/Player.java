@@ -34,7 +34,8 @@ public class Player implements IJsonSerializable {
 	private int fFighterMorale;      // percent (min = 50%, max = 150%)
 	private int fTransporterMorale;  // percent (min = 50%, max = 150%) 
 	private PoliticalTerm[] fPoliticalTerms;
-	private Report fReport;
+	
+	private transient Report fReport;
 
 	/**
 	 *

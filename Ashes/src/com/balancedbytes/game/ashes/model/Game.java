@@ -292,7 +292,9 @@ public class Game {
 		reportGnpTable();
 		
 		//  7.11 Prüfung, ob Siegbedingung erfüllt ist;
-		//       falls ja, Ausdruck der Statistik für die HoF.  
+		//       falls ja, Ausdruck der Statistik für die HoF.
+		
+		// TODO
 		
 	}
 	
