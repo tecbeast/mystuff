@@ -128,6 +128,10 @@ public class Planet implements IJsonSerializable {
 	public String getName() {
 		return fName;
 	}
+	
+	public void setName(String name) {
+		fName = name;
+	}
 
 	public int getNumber() {
 		return fNumber;
@@ -167,6 +171,10 @@ public class Planet implements IJsonSerializable {
 	
 	public int getRarePlants() {
 		return fRarePlants;
+	}
+	
+	public int getPlanetaryMorale() {
+		return fPlanetaryMorale;
 	}
 	
 	/**
@@ -276,7 +284,7 @@ public class Planet implements IJsonSerializable {
 			return false;
 		}
 	  	
-		Fleet orbit = fFlightQueue[0].forPlayerNr(fPlayerNr);
+		Fleet orbit = fFlightQueue[0].forPlayer(fPlayerNr);
 	  	if (orbit == null) {
 	  		return false;
 	  	}
@@ -429,7 +437,7 @@ public class Planet implements IJsonSerializable {
 		// because that planet's turn has not been played yet
 		destination.receive(fleet, (toPlanetNr > getNumber()) ? distance + 1 : distance);
 		
-		Fleet orbit = fFlightQueue[0].forPlayerNr(fPlayerNr);
+		Fleet orbit = fFlightQueue[0].forPlayer(fPlayerNr);
 		orbit.setFighters(orbit.getFighters() - fleet.getFighters());
 		orbit.setTransporters(orbit.getTransporters() - fleet.getTransporters() - fleet.getCargo().total());
 		if ((orbit.getFighters() == 0) && (orbit.getTransporters() == 0)) {
@@ -601,13 +609,13 @@ public class Planet implements IJsonSerializable {
 		//  sollte auf dem Zielplaneten zum Zeitpunkt des Entladens ausreichend
 		//  Lagerkapazität vorhanden sein, weil der Überschuß sonst verloren geht.
 		
-		Fleet ownFleet = fFlightQueue[0].forPlayerNr(fPlayerNr);
+		Fleet ownFleet = fFlightQueue[0].forPlayer(fPlayerNr);
 		if ((ownFleet != null) && (ownFleet.getFighters() > 0)) {
 			unloadCargo();
 		}
 
   	  	// report planet statistics
-		reportPlanet(game);
+		game.getPlayer(fPlayerNr).getReport().add(createPlanetReport(game, new Message(Topic.PLANET), 3));
 
   	}
 
@@ -744,7 +752,7 @@ public class Planet implements IJsonSerializable {
 				ds += (int) (fleet.getFighters() * (double) player.getFighterMorale() / 100 * fPlanetaryMorale);
 			
 			} else {
-				PoliticalTerm pt = game.getPoliticalTerm(player.getNumber(), getPlayerNr());
+				PoliticalTerm pt = player.getPoliticalTerm(getPlayerNr());
 				if (pt != PoliticalTerm.NEUTRAL) {
 					if (pt == PoliticalTerm.PEACE) {
 						defender.add(fleet);
@@ -1034,7 +1042,7 @@ public class Planet implements IJsonSerializable {
   		
   		for (int i = 1; i < 9; i++) {
   			Player player = game.getPlayer(i);
-  			Fleet fleet = fFlightQueue[0].forPlayerNr(i);
+  			Fleet fleet = fFlightQueue[0].forPlayer(i);
   			if ((i == fPlayerNr) || ((fleet != null) && ((fleet.getFighters() > 0) || (fleet.getTransporters() > 0)))) {
   				player.getReport().add(orbitReport);
   			} else {
@@ -1058,7 +1066,7 @@ public class Planet implements IJsonSerializable {
   	  	for (int j = 1; j < 9; j++) {
 
   	  		Player player = game.getPlayer(j);
-  	  		if (game.getPoliticalTerm(fPlayerNr, player.getNumber()) == PoliticalTerm.PEACE) {
+  	  		if (player.getPoliticalTerm(fPlayerNr) == PoliticalTerm.PEACE) {
 		
   	  			Message message = new Message((player.getNumber() == fPlayerNr) ? Topic.FLEET : Topic.INTELLIGENCE);
 
@@ -1103,7 +1111,6 @@ public class Planet implements IJsonSerializable {
   	  
 	}
 
-
 	/**
 	 *
 	 */
@@ -1126,9 +1133,8 @@ public class Planet implements IJsonSerializable {
 	/**
 	 *
 	 */
-	private void reportPlanet(Game game) {
+	public Message createPlanetReport(Game game, Message message, int level) {
 
-		Message message = new Message(Topic.PLANET);
 		Player owner = game.getPlayer(fPlayerNr);
 		
 		StringBuilder line = new StringBuilder();
@@ -1138,37 +1144,44 @@ public class Planet implements IJsonSerializable {
 		line.append(" (").append(owner.getNumber()).append(")");
 		message.add(line.toString());
 
-		line = new StringBuilder();
-		line.append("GIP: ").append(fGrossIndustrialProduct);
-		line.append(" PM: ").append(fPlanetaryMorale);
-		line.append(" WF: ").append(fWorkforce);
-		line.append(" PR: ").append(fProductionRate);
-		line.append(" HD: ").append(fHomeDefense);
-		message.add(line.toString());
+		// spy level 3 on neutral
+		// enemy strategy
+		
+		if (level >= 2) { 
+			line = new StringBuilder();
+			line.append("GIP: ").append(fGrossIndustrialProduct);
+			line.append(" PM: ").append(fPlanetaryMorale);
+			line.append(" WF: ").append(fWorkforce);
+			line.append(" PR: ").append(fProductionRate);
+			line.append(" HD: ").append(fHomeDefense);
+			message.add(line.toString());
+		}
 
-		line = new StringBuilder();
-		line.append("PDU ").append(fPlanetaryDefenseUnits);
-		line.append(" FP ").append(fFuelPlants);
-		line.append(" OP ").append(fOrePlants);
-		line.append(" RP ").append(fRarePlants);
-		line.append(" FY ").append(fFighterYards);
-		line.append(" TY ").append(fTransporterYards);
-		message.add(line.toString());
+		if (level >= 1) {
+			line = new StringBuilder();
+			line.append("PDU ").append(fPlanetaryDefenseUnits);
+			line.append(" FP ").append(fFuelPlants);
+			line.append(" OP ").append(fOrePlants);
+			line.append(" RP ").append(fRarePlants);
+			line.append(" FY ").append(fFighterYards);
+			line.append(" TY ").append(fTransporterYards);
+			message.add(line.toString());
+		}
 
 		line = new StringBuilder();
 		line.append("Fuel: ").append(fFuelResources);
 		line.append(" Ore: ").append(fOreResources);
 		line.append(" Rare: ").append(fRareResources);
 		message.add(line.toString());
-
-		owner.getReport().add(message);
+		
+		return message;
 
 	}
 	
 	public FleetList findFleetsForPlayerNr(int playerNr) {
 		FleetList result = new FleetList();
 		for (int i = 0; i < fFlightQueue.length; i++) {
-			Fleet fleet = fFlightQueue[i].forPlayerNr(playerNr);
+			Fleet fleet = fFlightQueue[i].forPlayer(playerNr);
 			if (fleet != null) {
 				result.add(fleet);
 			}

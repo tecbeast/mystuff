@@ -1,11 +1,19 @@
 package com.balancedbytes.game.ashes.model;
 
-import java.util.List;
 import java.util.Map;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+
+import com.balancedbytes.game.ashes.AshesUtil;
+import com.balancedbytes.game.ashes.command.CmdDeclare;
+import com.balancedbytes.game.ashes.command.CmdHomeplanet;
+import com.balancedbytes.game.ashes.command.CmdPlanetname;
+import com.balancedbytes.game.ashes.command.CmdPlayername;
+import com.balancedbytes.game.ashes.command.CmdResearch;
+import com.balancedbytes.game.ashes.command.CmdSpy;
 import com.balancedbytes.game.ashes.command.Command;
 import com.balancedbytes.game.ashes.command.CommandList;
-import com.balancedbytes.game.ashes.command.ICommandFilter;
 import com.balancedbytes.game.ashes.json.IJsonSerializable;
 import com.balancedbytes.game.ashes.json.JsonObjectWrapper;
 import com.eclipsesource.json.JsonArray;
@@ -36,10 +44,10 @@ public class Player implements IJsonSerializable {
 	private PoliticalTerm[] fPoliticalTerms;
 	
 	private transient Report fReport;
+	private transient Map<GnpCategory, Integer> fGnpTotals;
+	
+	private static Log LOG = LogFactory.getLog(Player.class);
 
-	/**
-	 *
-	 */
 	public Player(String user, int number) {
 
 		fNumber = number;
@@ -52,10 +60,10 @@ public class Player implements IJsonSerializable {
 		setFighterMorale(100);
 		setTransporterMorale(100);
 		fReport = new Report();
+		fGnpTotals = GnpCategory.buildEmptyMap();
 		
 		// you start at WAR with neutral,
-		// at PEACE with yourself
-		// and at NEUTRAL with anyone else
+		// at PEACE with yourself and at NEUTRAL with anyone else
 		fPoliticalTerms = new PoliticalTerm[9];
 		for (int i = 0; i < fPoliticalTerms.length; i++) {
 			if (i == 0) {
@@ -148,109 +156,209 @@ public class Player implements IJsonSerializable {
 		}
 	}
 	
-	public Map<GnpCategory, Integer> calculateGnpTotals(Game game) {
-		Map<GnpCategory, Integer> gnpTotals = GnpCategory.buildEmptyMap();
+	public Map<GnpCategory, Integer> getGnpTotals() {
+		return fGnpTotals;
+	}
+	
+	private void executeDeclare(Game game, CmdDeclare declareCmd) {
+		int opponentNr = declareCmd.getOpponentPlayerNr();
+		if ((opponentNr > 0) && (opponentNr != fNumber)) {
+			PoliticalTerm newPt = declareCmd.getPoliticalTerm();
+			PoliticalTerm oldPt = getPoliticalTerm(opponentNr);
+			if (((newPt == PoliticalTerm.WAR) && (oldPt == PoliticalTerm.PEACE))
+				|| ((newPt == PoliticalTerm.PEACE) && (oldPt == PoliticalTerm.WAR))) {
+				newPt = PoliticalTerm.NEUTRAL;
+			}
+			setPoliticalTerm(opponentNr, newPt);
+			LOG.debug("Player " + fNumber + " declares " + newPt + " with player " + opponentNr);
+		}
+	}
+	
+	private void executeHomeplanet(Game game, CmdHomeplanet homeplanetCmd) {
+		Planet homePlanet = game.getPlanet(homeplanetCmd.getPlanetNr());
+		if ((homePlanet != null) && (homePlanet.getPlayerNr() == fNumber)) {
+			fHomePlanetNr = homePlanet.getNumber();
+			LOG.debug("Player " + fNumber + " sets homeplanet on " + homePlanet.getNumber());
+		}					
+	}
+	
+	private void executePlanetname(Game game, CmdPlanetname planetnameCmd) {
+		Planet namedPlanet = game.getPlanet(planetnameCmd.getPlanetNr());
+		if ((namedPlanet != null) && (namedPlanet.getPlayerNr() == fNumber)) {
+			namedPlanet.setName(planetnameCmd.getName());
+			LOG.debug("Player " + fNumber + " renames planet " + namedPlanet.getNumber() +  " to " + namedPlanet.getName());
+		}
+	}
+
+	private void executePlayername(Game game, CmdPlayername playernameCmd) {
+		setName(playernameCmd.getName());
+		LOG.debug("Player " + fNumber + " renames his/herself to " + fName);
+	}
+	
+	private void executeResearch(Game game, CmdResearch researchCmd) {
+		
+		// TODO ...
+		
+		// PP können auch zur Forschung eingesetzt werden. Dabei kann die
+		// wirtschaftliche Entwicklung eines Planeten (Produktionsrate) verbessert oder
+		// die Kampfmoral der FI (FM%) oder TR (TM%) angehoben werden.
+		// Um die PR anzuheben schreibt man auf das Befehlsblatt "x PP für PR
+		// (-Forschung) auf 20 (Crossland)". Mit jedem PP kann die PR des genannten
+		// Planeten um den Betrag 0,016 angehoben werden. Die Wahrscheinlichkeit des
+		// Gelingens beträgt 50%.
+		// Um die Fighter- oder Transporter-Moral anzuheben, notiert man: "x PP für FM%
+		// (bzw TM%)". Mit jedem PP kann FM% (TM%) um den Betrag 0,01 angehoben werden.
+		// Die Wahrscheinlichkeit des Gelingens beträgt 50%.
+		
+	}
+	
+	private void executeSpy(Game game, CmdSpy spyCmd) {
+		Planet planet = game.getPlanet(spyCmd.getPlanetNr());
+		if ((planet != null) && (planet.getPlayerNr() != fNumber) && (fPoliticalPoints >= 7)) {
+			fPoliticalPoints -= 7;
+			// 100% chance for spyLevel 1 or higher
+			// 50% chance for spyLevel 2 or higher
+			// 20% chance for spyLevel 3
+			int spyLevel = 3;  // 20%
+  			int spyProb = (int) (Math.random() * 100 + 1);
+  			if (spyProb > 20) {  // 30% 
+  				spyLevel = 2;
+  			}
+  			if (spyProb > 50) {
+  				spyLevel = 1;
+  			}  			
+  			// 50% chance to detect spy for max. pm of 250%
+  			// 10% chance to detect spy for min. pm of 50%
+			boolean detected = (int) (Math.random() * 500 + 1) < planet.getPlanetaryMorale();			
+			getReport().add(planet.createPlanetReport(game, new Message(Topic.INTELLIGENCE), spyLevel));
+			if (detected) {
+				getReport().add(new Message(Topic.INTELLIGENCE).add("Spy has been caught."));
+	  			Player planetOwner = game.getPlayer(planet.getPlayerNr());
+	  			planetOwner.getReport().add(new Message(Topic.INTELLIGENCE).add("A spy from " + fName + " (" + fNumber + ") has been caught"
+	  				+ " on " + planet.getName() + " ("+ planet.getNumber() + ")"));
+			}
+			LOG.debug("Player " + fNumber + " uses level " + spyLevel + " spy on " + planet.getNumber() + (detected ? " - caught" : " - not caught"));			
+		}		
+	}
+		
+	public void executeCommands(Game game, CommandList cmdList) {
+		
+		//  7.1 Zuerst werden die neuen PV berechnet. Änderungen werden sofort wirksam,
+		//      noch vor den Flugbewegungen. Das gilt auch für den Wechsel des Heimatplaneten
+		//      und alle Namensänderungen.
+		
+		for (Command cmd : cmdList.forPlayer(fNumber).toList()) {
+			switch (cmd.getType()) {
+				case DECLARE:
+					executeDeclare(game, (CmdDeclare) cmd);
+					break;
+				case HOMEPLANET:
+					executeHomeplanet(game, (CmdHomeplanet) cmd);
+					break;
+				case PLANETNAME:
+					executePlanetname(game, (CmdPlanetname) cmd);
+					break;
+				case PLAYERNAME:
+					executePlayername(game, (CmdPlayername) cmd);
+					break;
+				case RESEARCH:
+					executeResearch(game, (CmdResearch) cmd);
+				case SPY:
+					executeSpy(game, (CmdSpy) cmd);
+					break;
+				default:
+					break;
+			}
+		}
+		
+	}
+	
+	public void startTurn(Game game) {
+		
+		// correct my political terms (after all players have executed their declare commands) 
+		for (int i = 1; i <= 8; i++) {
+			PoliticalTerm myPt = getPoliticalTerm(i);
+			PoliticalTerm otherPt = game.getPlayer(i).getPoliticalTerm(fNumber);
+			if ((myPt == PoliticalTerm.PEACE) && (otherPt != PoliticalTerm.PEACE)) {
+				setPoliticalTerm(i, PoliticalTerm.NEUTRAL);
+			}
+			if ((otherPt == PoliticalTerm.WAR) && (myPt != PoliticalTerm.WAR)) {
+				setPoliticalTerm(i, PoliticalTerm.WAR);
+			}
+		}
+		
+		int ppMod = 0;
+		
+		// report political terms and calculate pp modifier
+		Message message = new Message(Topic.POLITICS);
+		for (int i = 1; i <= 8; i++) {
+			if (i != fNumber) {
+				Player otherPlayer = game.getPlayer(i);
+				StringBuilder line = new StringBuilder();
+				line.append("(").append(i).append(") ");
+				line.append(AshesUtil.rightpad(otherPlayer.getName(), 20));
+				line.append(" ").append(getPoliticalTerm(i).name());
+				message.add(line.toString());
+				if (getPoliticalTerm(i) == PoliticalTerm.PEACE) {
+					ppMod += 1;
+				}
+				if (getPoliticalTerm(i) == PoliticalTerm.WAR) {
+					ppMod -= 1;
+				}
+			}
+		}
+		getReport().add(message);
+
+		// modify political points
+		setPoliticalPoints(getPoliticalPoints() + ppMod);		
+		
+		// raise fighter and transporter morale by 5% each turn (max. 100%)
+		if (getFighterMorale() <= 95) {
+			setFighterMorale(getFighterMorale() + 5);
+		}
+		if (getTransporterMorale() <= 95) {
+			setTransporterMorale(getTransporterMorale() + 5);
+		}
+		
+	}
+	
+	public void endTurn(Game game) {
+
+		// calculate GNP totals
+		fGnpTotals = GnpCategory.buildEmptyMap();
 		for (int i = 1; i <= 40; i++) {
 			Planet planet = game.getPlanet(i);
 			FleetList playerFleets = planet.findFleetsForPlayerNr(fNumber);
-			gnpTotals.put(GnpCategory.FIGHTERS, gnpTotals.get(GnpCategory.FIGHTERS) + playerFleets.totalFighters());
-			gnpTotals.put(GnpCategory.TRANSPORTERS, gnpTotals.get(GnpCategory.TRANSPORTERS) + playerFleets.totalTransporters());
+			fGnpTotals.put(GnpCategory.FIGHTERS, fGnpTotals.get(GnpCategory.FIGHTERS) + playerFleets.totalFighters());
+			fGnpTotals.put(GnpCategory.TRANSPORTERS, fGnpTotals.get(GnpCategory.TRANSPORTERS) + playerFleets.totalTransporters());
 			if (planet.getPlayerNr() == fNumber) {
-				gnpTotals.put(GnpCategory.PLANETS, gnpTotals.get(GnpCategory.PLANETS) + 1);
-				gnpTotals.put(GnpCategory.FUEL_PLANTS, gnpTotals.get(GnpCategory.FUEL_PLANTS) + planet.getFuelPlants());
-				gnpTotals.put(GnpCategory.ORE_PLANTS, gnpTotals.get(GnpCategory.ORE_PLANTS) + planet.getOrePlants());
-				gnpTotals.put(GnpCategory.RARE_PLANTS, gnpTotals.get(GnpCategory.RARE_PLANTS) + planet.getRarePlants());
-				gnpTotals.put(GnpCategory.FIGHTER_YARDS, gnpTotals.get(GnpCategory.FIGHTER_YARDS) + planet.getFighterYards());
-				gnpTotals.put(GnpCategory.TRANSPORTER_YARDS, gnpTotals.get(GnpCategory.TRANSPORTER_YARDS) + planet.getTransporterYards());
-				gnpTotals.put(GnpCategory.PLANETARY_DEFENSE_UNITS, gnpTotals.get(GnpCategory.PLANETARY_DEFENSE_UNITS) + planet.getPlanetaryDefenseUnits());
-				gnpTotals.put(GnpCategory.STOCK_PILES, gnpTotals.get(GnpCategory.STOCK_PILES) + planet.getStockPiles());
-				gnpTotals.put(GnpCategory.GROSS_INDUSTRIAL_PRODUCT, gnpTotals.get(GnpCategory.GROSS_INDUSTRIAL_PRODUCT) + planet.getGrossIndustrialProduct());
+				fGnpTotals.put(GnpCategory.PLANETS, fGnpTotals.get(GnpCategory.PLANETS) + 1);
+				fGnpTotals.put(GnpCategory.FUEL_PLANTS, fGnpTotals.get(GnpCategory.FUEL_PLANTS) + planet.getFuelPlants());
+				fGnpTotals.put(GnpCategory.ORE_PLANTS, fGnpTotals.get(GnpCategory.ORE_PLANTS) + planet.getOrePlants());
+				fGnpTotals.put(GnpCategory.RARE_PLANTS, fGnpTotals.get(GnpCategory.RARE_PLANTS) + planet.getRarePlants());
+				fGnpTotals.put(GnpCategory.FIGHTER_YARDS, fGnpTotals.get(GnpCategory.FIGHTER_YARDS) + planet.getFighterYards());
+				fGnpTotals.put(GnpCategory.TRANSPORTER_YARDS, fGnpTotals.get(GnpCategory.TRANSPORTER_YARDS) + planet.getTransporterYards());
+				fGnpTotals.put(GnpCategory.PLANETARY_DEFENSE_UNITS, fGnpTotals.get(GnpCategory.PLANETARY_DEFENSE_UNITS) + planet.getPlanetaryDefenseUnits());
+				fGnpTotals.put(GnpCategory.STOCK_PILES, fGnpTotals.get(GnpCategory.STOCK_PILES) + planet.getStockPiles());
+				fGnpTotals.put(GnpCategory.GROSS_INDUSTRIAL_PRODUCT, fGnpTotals.get(GnpCategory.GROSS_INDUSTRIAL_PRODUCT) + planet.getGrossIndustrialProduct());
 			}
 		}
-		return gnpTotals;
-	}
+
+		// 4.7 Statusbericht
+		//   Direkt an die Flottenübersicht schließt sich der Statusbericht an, in dem
+		// alle Variablen des Imperiums als Summen aufgeführt werden, also die Summe
+		// aller A, aller Planeten etc., aber auch Werte für Stockpiles (SP), Fighter-
+		// (FM%) und Transporter-Moral (TM%), das GIP und die politischen Punkte (PP),
+		// die nur hier erscheinen (FM% und TM% -> 6.25).
+		
+		// TODO ...
+		
+	}	
 	
 	public Report getReport() {
 		return fReport;
 	}
-	
-	/**
-	 *  Play a full turn for this player with the given commands.
-	 */
-	public void turn(Game game, CommandList cmdList) {
-		
-		for (Command cmd : getPlayerCommands(cmdList)) {
-			switch (cmd.getType()) {
-				case DECLARE:
-					break;
-				case HOMEPLANET:
-					break;
-				case PLANETNAME:
-					break;
-				case PLAYERNAME:
-					break;
-				default:
-					break;
-			}
-		}
-			  
-	/*
-	StringBuffer buffer = new StringBuffer();
-  	Iterator<Command> iterator = null;
-  
-  	if (phaseNr > 0) {
-  
-  	} else {
-  
-  	  while (Command cmd : cmdList.getCommands()) {
-  			if (cmd.getPlayerNr() == fNr) {
-  			  switch (cmd.getToken()) {
-  					case DECLARE:
-  			 			fPt[cmd.getDestination()] = cmd.getType();
-  				  	break;
-  					case PLAYERNAME:
-  				 		fName = cmd.getText();
-  					  break;
-					default:
-						break;
-  				}
-  			}
-  	  }
-  
-  	  if (fFm < 0.96f) { fFm += 0.05; }
-  	  if (fTm < 0.96f) { fTm += 0.05; }
-  
-  	  buffer.append("\nplayer1  player2  player3  player4  player5  player6  player7  player8\n");
-  	  for (int i = 1; i < fPt.length; i++) {
-  			switch (fPt[i]) {
-  			  case     WAR: buffer.append("  war  "); break;
-  			  case   PEACE: buffer.append(" peace "); break;
-  		 		case NEUTRAL: buffer.append("neutral"); break;
-				default:
-					break;
 
-  			}
-  		if (i < fPt.length - 1) { buffer.append("  "); }
-  	  }
-  	  buffer.append('\n');
-  
-  	  getReport().add(Report.POLITICS, buffer);
-  
-  	}
-  	
-  	*/
-	  
-	}
-	
-	private List<Command> getPlayerCommands(CommandList cmdList) {
-		return cmdList.filter(new ICommandFilter() {
-			@Override
-			public boolean filter(Command cmd) {
-				return (cmd.getPlayerNr() == getNumber());
-			}
-		}).toList();
-	}
-	
 	@Override
 	public JsonValue toJson() {
 		JsonObjectWrapper json = new JsonObjectWrapper(new JsonObject());

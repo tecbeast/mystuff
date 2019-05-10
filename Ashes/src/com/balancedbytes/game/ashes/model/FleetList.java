@@ -59,7 +59,7 @@ public class FleetList implements IJsonSerializable {
 	 */
 	public FleetList add(Fleet anotherFleet) {
 		if (anotherFleet != null) {
-			Fleet fleet = forPlayerNr(anotherFleet.getPlayerNr());
+			Fleet fleet = forPlayer(anotherFleet.getPlayerNr());
 			if (fleet != null) {
 				fleet.add(anotherFleet);
 			} else {
@@ -84,7 +84,7 @@ public class FleetList implements IJsonSerializable {
 	/**
 	 * Gets Fleet of given player from this list.
 	 */
-	public Fleet forPlayerNr(int playerNr) {
+	public Fleet forPlayer(int playerNr) {
 		for (Fleet fleet : fFleets) {
 			if (fleet.getPlayerNr() == playerNr) {
 				return fleet;

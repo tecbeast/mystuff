@@ -1,10 +1,11 @@
 package com.balancedbytes.game.ashes.model;
 
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
 
-import com.balancedbytes.game.ashes.AshesUtil;
 import com.balancedbytes.game.ashes.command.CommandList;
 
 /**
@@ -182,24 +183,6 @@ public class Game {
 	/**
 	 * 
 	 */
-	public PoliticalTerm getPoliticalTerm(int playerNrA, int playerNrB) {
-		if (playerNrA == playerNrB) {
-			return PoliticalTerm.PEACE;
-		}
-		PoliticalTerm ptAB = getPlayer(playerNrA).getPoliticalTerm(playerNrB);
-		PoliticalTerm ptBA = getPlayer(playerNrB).getPoliticalTerm(playerNrA);
-		if ((ptAB == PoliticalTerm.PEACE) && (ptBA == PoliticalTerm.PEACE)) {
-			return PoliticalTerm.PEACE;
-		} else if ((ptAB == PoliticalTerm.WAR) || (ptBA == PoliticalTerm.WAR)) {
-			return PoliticalTerm.WAR;
-		} else { 
-			return PoliticalTerm.NEUTRAL;
-		}
-	}
-	
-	/**
-	 * 
-	 */
 	public void addMessageToAllPlayerReports(Message message) {
 		for (Player player : fPlayers) {
 			player.getReport().add(message);
@@ -209,84 +192,38 @@ public class Game {
 	/**
 	 * Play a full turn for this game with the given commands.
 	 */
-	public void nextTurn(CommandList cmdList) {
+	public void playTurn(CommandList cmdList) {
 		
 		//  7.1 Zuerst werden die neuen PV berechnet. Änderungen werden sofort wirksam,
 		//      noch vor den Flugbewegungen. Das gilt auch für den Wechsel des Heimatplaneten
 		//      und alle Namensänderungen.
 		
-		/*
-
-		for (int i = 0; i < NR_PLAYERS; i++) {
-			getPlayer(i).phase(0, cmdList);
-		}
-
-		Iterator<OldCommand> iterator = cmdList.iterator();
-		while (iterator.hasNext()) {
-			cmd = (OldCommand) iterator.next();
-			if (cmd.getToken() == Parser.MESSAGE) {
-				String header = "\n" + getPlayer(cmd.getPlayer()).getName() + " sends:\n";
-				int dest = cmd.getDestination();
-				if (dest > 0) {
-					getPlayer(dest).getReport().add(Report.MESSAGES, header + cmd.getText());
-				} else {
-					Report.addAll(Report.MESSAGES, header + cmd.getText());
-				}
-			}
-		}
-
-			*/
-
-		/*
-		for (int i = 0; i < 2; i++) {
-			for (int j = 1; j < NR_PLANETS; j++) {
-				getPlanet(j).phase(i, cmdList);
-			}
-		}
-		*/
-  
-	  	/*
-	  	enum = cset.elements();
-	  	while (enum.hasMoreElements()) {
-	  	  cmd = (Command)enum.nextElement();
-	  	  switch (cmd.getToken()) {
-	  		case Parser.SPY:
-	  		  int spyLevel = 3;
-	  		  boolean detected = false;
-	  		  Planet planet = getPlanet(cmd.getSource());
-	  		  Player player = getPlayer(cmd.getPlayer());
-	  		  if ((Math.random() * 10) < (planet.getPlanetaryMorale() * 2)) {
-	  			detected = true; spyLevel = 0;
-	  		  } else {
-	  			int spyProb = (int)(Math.random() * 100 + 1);
-	  			if (spyProb > 20) { spyLevel = 2; }
-	  			if (spyProb > 40) { spyLevel = 1; }
-	  			if (spyProb > 60) { spyLevel = 0; }
-	  		  }
-	  
-	  		  log.debug(DEBUG_MODULE, DEBUG_LEVEL, "Player " + cmd.getPlayer() + " uses level " + spyLevel + " spy - detected: " + detected);
-	  
-	  		  player.getReport().add(Report.INTELLIGENCE, "\n" + planet.spy(spyLevel));
-	  		  if (detected) {
-	  			player.getReport().add(Report.INTELLIGENCE, "Spy has been detected.\n");
-	  			Player victim = getPlayer(planet.getPlayerNr());
-	  			victim.getReport().add(Report.INTELLIGENCE, "A spy from " + player.getName() + " dected on " + planet.getName() + " ("+ planet.getNr() + ")\n");
-	  		  }
-	  		  break;
-	  	  }
-	  	}
-	  
-	  	Session session = Session.getDefaultInstance(AshesOfEmpire.getProperties(), null);
-	  	for (int i = 0; i < NR_PLAYERS; i++) {
-	  	  Report report = players[i].getReport();
-	  	  String subject =  "Ashes Of Empire Game " + nr + " Turn " + turn + " Player " +  i;
-	  	  getPlayer(i).mailTo(session, subject, report.toString());
-	  	}
-	  	*/
-  
 		// increase turn
-		fTurn++;
+		fTurn += 1;
 		
+		// execute player commands
+		// (declare, homeplanet, planetname, playername, spy)
+		for (int i = 1; i <= 8; i++) {
+			getPlayer(i).executeCommands(this, cmdList);
+		}		
+		
+		// turn start for each player
+		// (update and report political terms, update pp, update fm and tm)
+		for (int i = 1; i <= 8; i++) {
+			getPlayer(i).startTurn(this);
+		}
+		
+		// play turn for each planet
+		for (int i = 1; i <= 40; i++) {
+			getPlanet(i).playTurn(this, cmdList);
+		}		
+  
+		// turn end for each player
+		// (calculate gnp totals, report player status)
+		for (int i = 1; i <= 8; i++) {
+			getPlayer(i).endTurn(this);
+		}
+  
 		//  7.10 Zum Abschluß wird die GNP-Tabelle berechnet.
 
 		reportGnpTable();
@@ -294,8 +231,73 @@ public class Game {
 		//  7.11 Prüfung, ob Siegbedingung erfüllt ist;
 		//       falls ja, Ausdruck der Statistik für die HoF.
 		
-		// TODO
+		// ...
+
+	  	/*
+	  	Session session = Session.getDefaultInstance(AshesOfEmpire.getProperties(), null);
+	  	for (int i = 0; i < NR_PLAYERS; i++) {
+	  	  Report report = players[i].getReport();
+	  	  String subject =  "Ashes Of Empire Game " + nr + " Turn " + turn + " Player " +  i;
+	  	  getPlayer(i).mailTo(session, subject, report.toString());
+	  	}
+	  	*/
 		
+
+	}
+	
+	
+	/**
+	 *  Play a full turn for this player with the given commands.
+	 */
+	public void turn(Game game, CommandList cmdList) {
+		
+			  
+	/*
+	StringBuffer buffer = new StringBuffer();
+  	Iterator<Command> iterator = null;
+  
+  	if (phaseNr > 0) {
+  
+  	} else {
+  
+  	  while (Command cmd : cmdList.getCommands()) {
+  			if (cmd.getPlayerNr() == fNr) {
+  			  switch (cmd.getToken()) {
+  					case DECLARE:
+  			 			fPt[cmd.getDestination()] = cmd.getType();
+  				  	break;
+  					case PLAYERNAME:
+  				 		fName = cmd.getText();
+  					  break;
+					default:
+						break;
+  				}
+  			}
+  	  }
+  
+  	  if (fFm < 0.96f) { fFm += 0.05; }
+  	  if (fTm < 0.96f) { fTm += 0.05; }
+  
+  	  buffer.append("\nplayer1  player2  player3  player4  player5  player6  player7  player8\n");
+  	  for (int i = 1; i < fPt.length; i++) {
+  			switch (fPt[i]) {
+  			  case     WAR: buffer.append("  war  "); break;
+  			  case   PEACE: buffer.append(" peace "); break;
+  		 		case NEUTRAL: buffer.append("neutral"); break;
+				default:
+					break;
+
+  			}
+  		if (i < fPt.length - 1) { buffer.append("  "); }
+  	  }
+  	  buffer.append('\n');
+  
+  	  getReport().add(Report.POLITICS, buffer);
+  
+  	}
+  	
+  	*/
+	  
 	}
 	
 	//	4.5 GNP-Tabelle
@@ -330,7 +332,7 @@ public class Game {
 		
 		List<Map<GnpCategory, Integer>> playerGnpTotals = new ArrayList<Map<GnpCategory,Integer>>();
 		for (int i = 1; i <= 8; i++) {
-			playerGnpTotals.add(getPlayer(i).calculateGnpTotals(this));
+			playerGnpTotals.add(getPlayer(i).getGnpTotals());
 			playerGnpScores.add(GnpCategory.buildEmptyMap());
 		}
 		
@@ -339,7 +341,7 @@ public class Game {
 			for (Map<GnpCategory, Integer> playerGnpTotal : playerGnpTotals) {
 				values.add(playerGnpTotal.get(category));
 			}
-			values = AshesUtil.sortHighestFirstRemoveDuplicates(values);
+			values = sortHighestFirstRemoveDuplicates(values);
 			for (int i = 0; i < playerGnpTotals.size(); i++) {
 				int total = playerGnpTotals.get(i).get(category); 
 				for (int j = 0; j < values.size(); j++) {
@@ -399,6 +401,31 @@ public class Game {
 			line.append(" ").append(playerGnpScores.get(i).get(category)).append(" ");
 		}
 		message.add(line.toString());
+	}
+	
+	
+	private List<Integer> sortHighestFirstRemoveDuplicates(List<Integer> values) {
+		List<Integer> result = new ArrayList<Integer>();
+		Collections.sort(values, new Comparator<Integer>() {
+			@Override
+			public int compare(Integer o1, Integer o2) {
+				if (o1 > o2) {
+					return -1;
+				} else if (o2 > o1) {
+					return 1;
+				} else {
+					return 0;
+				}
+			}
+		});
+		int lastValue = 0;
+		for (int i = 0; i < values.size(); i++) {
+			if ((i == 0) || (lastValue != values.get(i))) {
+				lastValue = values.get(i);
+				result.add(lastValue);
+			}
+		}
+		return result;
 	}
 	
 }

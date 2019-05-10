@@ -86,6 +86,19 @@ public class CommandList implements IJsonSerializable {
 		}
 		return result;
 	}
+	
+	/**
+	 * 
+	 */
+	public CommandList forPlayer(int playerNr) {
+		CommandList result = new CommandList();
+		for (Command command : fCommands) {
+			if (command.getPlayerNr() == playerNr) {
+				result.add(command);
+			}
+		}
+		return result;
+	}
 		
 	@Override
 	public JsonArray toJson() {
