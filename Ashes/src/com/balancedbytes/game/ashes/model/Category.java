@@ -6,7 +6,7 @@ import java.util.Map;
 /**
  * Categories for Gross National Product
  */
-public enum GnpCategory {
+public enum Category {
 
 	PLANETS,
 	FUEL_PLANTS,
@@ -21,9 +21,9 @@ public enum GnpCategory {
 	GROSS_INDUSTRIAL_PRODUCT,
 	POLITICAL_POINTS;
 	
-	public static Map<GnpCategory, Integer> buildEmptyMap() {
-		Map<GnpCategory, Integer> map = new HashMap<GnpCategory, Integer>();
-		for (GnpCategory category : values()) {
+	public static Map<Category, Integer> buildEmptyMap() {
+		Map<Category, Integer> map = new HashMap<Category, Integer>();
+		for (Category category : values()) {
 			map.put(category, 0);
 		}
 		return map;

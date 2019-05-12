@@ -177,6 +177,14 @@ public class Planet implements IJsonSerializable {
 		return fPlanetaryMorale;
 	}
 	
+	public int getProductionRate() {
+		return fProductionRate;
+	}
+	
+	public void setProductionRate(int productionRate) {
+		fProductionRate = productionRate;
+	}
+	
 	/**
 	 * Execute a build command.
 	 */
@@ -615,7 +623,9 @@ public class Planet implements IJsonSerializable {
 		}
 
   	  	// report planet statistics
-		game.getPlayer(fPlayerNr).getReport().add(createPlanetReport(game, new Message(Topic.PLANET), 3));
+		game.getPlayer(fPlayerNr).getReport().add(
+			createPlanetReport(game, new Message(Topic.PLANET), 0)
+		);
 
   	}
 
@@ -1147,7 +1157,7 @@ public class Planet implements IJsonSerializable {
 		// spy level 3 on neutral
 		// enemy strategy
 		
-		if (level >= 2) { 
+		if ((message.getTopic() == Topic.PLANET) || (level >= 2)) { 
 			line = new StringBuilder();
 			line.append("GIP: ").append(fGrossIndustrialProduct);
 			line.append(" PM: ").append(fPlanetaryMorale);
@@ -1157,7 +1167,7 @@ public class Planet implements IJsonSerializable {
 			message.add(line.toString());
 		}
 
-		if (level >= 1) {
+		if ((message.getTopic() == Topic.PLANET) || (level >= 1)) {
 			line = new StringBuilder();
 			line.append("PDU ").append(fPlanetaryDefenseUnits);
 			line.append(" FP ").append(fFuelPlants);

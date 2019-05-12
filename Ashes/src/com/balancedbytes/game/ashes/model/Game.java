@@ -230,8 +230,33 @@ public class Game {
 		
 		//  7.11 Prüfung, ob Siegbedingung erfüllt ist;
 		//       falls ja, Ausdruck der Statistik für die HoF.
+
+		// 2 Siegbedingung
+
+		//   Ein Spieler scheidet aus, wenn er den letzten Planeten und TR verloren hat
+		// (nur mit FI kann man keinen Planeten erobern). Von den MS, die das Ende der
+		// Partie erleben, gewinnt der mit dem besten GNP. Die Partie endet vorzeitig,
+		// wenn ein Imperium eine bestimmte Anzahl Planeten erobert hat.
+
+		// 2.1 GNP-Sieg
+
+		//   Bei Partiebeginn stimmen die acht MS über die Rundendauer der Partie ab,
+		// indem jeder mit seinen ersten Zugbefehlen eine Rundenzahl zwischen 10 und 30
+		// angibt. Der SL ermittelt daraus den ganzzahligen Durchschnittswert, der das
+		// Spielende bestimmt.
+		//   Die Auswertung jeder Runde enthält eine Tabelle, in der die verschiedenen
+		// Besitztümer jedes MS bewertet sind. Aus den verschiedenen Einzelposten wird
+		// das Bruttosozialprodukt (gross national product, GNP) ermittelt und in eine
+		// Rangfolge gebracht - je kleiner der Wert, desto besser der Rang. Endet eine
+		// Partie durch Erreichen dern Rundenzahl, gewinnt der MS mit dem besten GNP.
+
+		// 2.2 Planeten-Sieg
+
+		//   Eine Partie ist sofort beendet, wenn es einem MS gelingt, 13 Planeten zu
+		// erobern und eine Runde zu halten oder mehr als 13 Planeten zu erobern. Ein
+		// solcher Planeten-Sieg rangiert immer vor einem GNP-Sieg.
 		
-		// ...
+		// TODO ...
 
 	  	/*
 	  	Session session = Session.getDefaultInstance(AshesOfEmpire.getProperties(), null);
@@ -243,61 +268,6 @@ public class Game {
 	  	*/
 		
 
-	}
-	
-	
-	/**
-	 *  Play a full turn for this player with the given commands.
-	 */
-	public void turn(Game game, CommandList cmdList) {
-		
-			  
-	/*
-	StringBuffer buffer = new StringBuffer();
-  	Iterator<Command> iterator = null;
-  
-  	if (phaseNr > 0) {
-  
-  	} else {
-  
-  	  while (Command cmd : cmdList.getCommands()) {
-  			if (cmd.getPlayerNr() == fNr) {
-  			  switch (cmd.getToken()) {
-  					case DECLARE:
-  			 			fPt[cmd.getDestination()] = cmd.getType();
-  				  	break;
-  					case PLAYERNAME:
-  				 		fName = cmd.getText();
-  					  break;
-					default:
-						break;
-  				}
-  			}
-  	  }
-  
-  	  if (fFm < 0.96f) { fFm += 0.05; }
-  	  if (fTm < 0.96f) { fTm += 0.05; }
-  
-  	  buffer.append("\nplayer1  player2  player3  player4  player5  player6  player7  player8\n");
-  	  for (int i = 1; i < fPt.length; i++) {
-  			switch (fPt[i]) {
-  			  case     WAR: buffer.append("  war  "); break;
-  			  case   PEACE: buffer.append(" peace "); break;
-  		 		case NEUTRAL: buffer.append("neutral"); break;
-				default:
-					break;
-
-  			}
-  		if (i < fPt.length - 1) { buffer.append("  "); }
-  	  }
-  	  buffer.append('\n');
-  
-  	  getReport().add(Report.POLITICS, buffer);
-  
-  	}
-  	
-  	*/
-	  
 	}
 	
 	//	4.5 GNP-Tabelle
@@ -328,17 +298,17 @@ public class Game {
 
 	private void reportGnpTable() {
 		
-		List<Map<GnpCategory, Integer>> playerGnpScores = new ArrayList<Map<GnpCategory,Integer>>();
+		List<Map<Category, Integer>> playerGnpScores = new ArrayList<Map<Category,Integer>>();
 		
-		List<Map<GnpCategory, Integer>> playerGnpTotals = new ArrayList<Map<GnpCategory,Integer>>();
+		List<Map<Category, Integer>> playerGnpTotals = new ArrayList<Map<Category,Integer>>();
 		for (int i = 1; i <= 8; i++) {
 			playerGnpTotals.add(getPlayer(i).getGnpTotals());
-			playerGnpScores.add(GnpCategory.buildEmptyMap());
+			playerGnpScores.add(Category.buildEmptyMap());
 		}
 		
-		for (GnpCategory category : GnpCategory.values()) {
+		for (Category category : Category.values()) {
 			List<Integer> values = new ArrayList<Integer>();
-			for (Map<GnpCategory, Integer> playerGnpTotal : playerGnpTotals) {
+			for (Map<Category, Integer> playerGnpTotal : playerGnpTotals) {
 				values.add(playerGnpTotal.get(category));
 			}
 			values = sortHighestFirstRemoveDuplicates(values);
@@ -361,24 +331,24 @@ public class Game {
 		}
 		message.add(line.toString());
 
-		addGnpLine(message, "    PL ", GnpCategory.PLANETS, playerGnpScores);
-		addGnpLine(message, "    FP ", GnpCategory.FUEL_PLANTS, playerGnpScores);
-		addGnpLine(message, "    OP ", GnpCategory.ORE_PLANTS, playerGnpScores);
-		addGnpLine(message, "    RP ", GnpCategory.RARE_PLANTS, playerGnpScores);
-		addGnpLine(message, "    FY ", GnpCategory.FIGHTER_YARDS, playerGnpScores);
-		addGnpLine(message, "    TY ", GnpCategory.TRANSPORTER_YARDS, playerGnpScores);
-		addGnpLine(message, "   PDU ", GnpCategory.PLANETARY_DEFENSE_UNITS, playerGnpScores);
-		addGnpLine(message, "    SP ", GnpCategory.STOCK_PILES, playerGnpScores);
-		addGnpLine(message, "    FI ", GnpCategory.FIGHTERS, playerGnpScores);
-		addGnpLine(message, "    TR ", GnpCategory.TRANSPORTERS, playerGnpScores);
-		addGnpLine(message, "   GIP ", GnpCategory.GROSS_INDUSTRIAL_PRODUCT, playerGnpScores);
-		addGnpLine(message, "    PP ", GnpCategory.POLITICAL_POINTS, playerGnpScores);
+		addGnpLine(message, "    PL ", Category.PLANETS, playerGnpScores);
+		addGnpLine(message, "    FP ", Category.FUEL_PLANTS, playerGnpScores);
+		addGnpLine(message, "    OP ", Category.ORE_PLANTS, playerGnpScores);
+		addGnpLine(message, "    RP ", Category.RARE_PLANTS, playerGnpScores);
+		addGnpLine(message, "    FY ", Category.FIGHTER_YARDS, playerGnpScores);
+		addGnpLine(message, "    TY ", Category.TRANSPORTER_YARDS, playerGnpScores);
+		addGnpLine(message, "   PDU ", Category.PLANETARY_DEFENSE_UNITS, playerGnpScores);
+		addGnpLine(message, "    SP ", Category.STOCK_PILES, playerGnpScores);
+		addGnpLine(message, "    FI ", Category.FIGHTERS, playerGnpScores);
+		addGnpLine(message, "    TR ", Category.TRANSPORTERS, playerGnpScores);
+		addGnpLine(message, "   GIP ", Category.GROSS_INDUSTRIAL_PRODUCT, playerGnpScores);
+		addGnpLine(message, "    PP ", Category.POLITICAL_POINTS, playerGnpScores);
 		
 		line = new StringBuilder();
 		line.append(" Total ");
-		for (Map<GnpCategory,Integer> playerGnpScore : playerGnpScores) {
+		for (Map<Category,Integer> playerGnpScore : playerGnpScores) {
 			int total = 0;
-			for (GnpCategory category : playerGnpScore.keySet()) {
+			for (Category category : playerGnpScore.keySet()) {
 				total += playerGnpScore.get(category);
 			}
 			line.append(" " + String.format("%.3f%n", (double) total / 12) + " ");
@@ -392,8 +362,8 @@ public class Game {
 	private void addGnpLine(
 		Message message,
 		String title,
-		GnpCategory category,
-		List<Map<GnpCategory, Integer>> playerGnpScores
+		Category category,
+		List<Map<Category, Integer>> playerGnpScores
 	) {
 		StringBuilder line = new StringBuilder();
 		line.append(title);

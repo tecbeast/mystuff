@@ -9,6 +9,7 @@ public enum Topic {
 	INTELLIGENCE,
 	PLANET,
 	POLITICS,
-	REVOLT;
+	REVOLT,
+	STATUS;
 	
 }

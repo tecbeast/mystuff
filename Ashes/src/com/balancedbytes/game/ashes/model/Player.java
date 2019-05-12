@@ -44,7 +44,7 @@ public class Player implements IJsonSerializable {
 	private PoliticalTerm[] fPoliticalTerms;
 	
 	private transient Report fReport;
-	private transient Map<GnpCategory, Integer> fGnpTotals;
+	private transient Map<Category, Integer> fGnpTotals;
 	
 	private static Log LOG = LogFactory.getLog(Player.class);
 
@@ -60,7 +60,7 @@ public class Player implements IJsonSerializable {
 		setFighterMorale(100);
 		setTransporterMorale(100);
 		fReport = new Report();
-		fGnpTotals = GnpCategory.buildEmptyMap();
+		fGnpTotals = Category.buildEmptyMap();
 		
 		// you start at WAR with neutral,
 		// at PEACE with yourself and at NEUTRAL with anyone else
@@ -156,7 +156,7 @@ public class Player implements IJsonSerializable {
 		}
 	}
 	
-	public Map<GnpCategory, Integer> getGnpTotals() {
+	public Map<Category, Integer> getGnpTotals() {
 		return fGnpTotals;
 	}
 	
@@ -197,18 +197,47 @@ public class Player implements IJsonSerializable {
 	
 	private void executeResearch(Game game, CmdResearch researchCmd) {
 		
-		// TODO ...
-		
-		// PP können auch zur Forschung eingesetzt werden. Dabei kann die
+		// 6.3.4 Politische Punkte (PP)		
+		//   PP können auch zur Forschung eingesetzt werden. Dabei kann die
 		// wirtschaftliche Entwicklung eines Planeten (Produktionsrate) verbessert oder
 		// die Kampfmoral der FI (FM%) oder TR (TM%) angehoben werden.
 		// Um die PR anzuheben schreibt man auf das Befehlsblatt "x PP für PR
 		// (-Forschung) auf 20 (Crossland)". Mit jedem PP kann die PR des genannten
 		// Planeten um den Betrag 0,016 angehoben werden. Die Wahrscheinlichkeit des
 		// Gelingens beträgt 50%.
-		// Um die Fighter- oder Transporter-Moral anzuheben, notiert man: "x PP für FM%
+		//   Um die Fighter- oder Transporter-Moral anzuheben, notiert man: "x PP für FM%
 		// (bzw TM%)". Mit jedem PP kann FM% (TM%) um den Betrag 0,01 angehoben werden.
 		// Die Wahrscheinlichkeit des Gelingens beträgt 50%.
+		
+		int countSuccess = 0;
+		int countFailure = 0;
+		for (int i = 1; i <= researchCmd.getCount(); i++) {
+			if (fPoliticalPoints > 0) {
+				fPoliticalPoints -= 1;
+				if ((int) (Math.random() * 100 + 1) <= 50) {
+					countSuccess += 1;
+					switch (researchCmd.getImprovement()) {
+						case PRODUCTION_RATE:
+							Planet planet = game.getPlanet(researchCmd.getPlanetNr());
+							if ((planet != null) && (planet.getPlayerNr() == fNumber)) {
+								planet.setProductionRate(planet.getProductionRate() + 16);
+							}
+							break;
+						case FIGHTER_MORALE:
+							setFighterMorale(getFighterMorale() + 1);
+							break;
+						case TRANSPORTER_MORALE:
+							setTransporterMorale(getTransporterMorale() + 1);
+							break;
+						default:
+							break;
+					}
+				}
+			} else {
+				countFailure += 1;
+			}
+		}
+		LOG.debug("Player " + fNumber + " improves " + countSuccess + " x " + researchCmd.getImprovement() + " for " + (countSuccess + countFailure) + " PP");					
 		
 	}
 	
@@ -219,9 +248,9 @@ public class Player implements IJsonSerializable {
 			// 100% chance for spyLevel 1 or higher
 			// 50% chance for spyLevel 2 or higher
 			// 20% chance for spyLevel 3
-			int spyLevel = 3;  // 20%
+			int spyLevel = 3;
   			int spyProb = (int) (Math.random() * 100 + 1);
-  			if (spyProb > 20) {  // 30% 
+  			if (spyProb > 20) { 
   				spyLevel = 2;
   			}
   			if (spyProb > 50) {
@@ -229,7 +258,7 @@ public class Player implements IJsonSerializable {
   			}  			
   			// 50% chance to detect spy for max. pm of 250%
   			// 10% chance to detect spy for min. pm of 50%
-			boolean detected = (int) (Math.random() * 500 + 1) < planet.getPlanetaryMorale();			
+			boolean detected = (int) (Math.random() * 500 + 1) <= planet.getPlanetaryMorale();			
 			getReport().add(planet.createPlanetReport(game, new Message(Topic.INTELLIGENCE), spyLevel));
 			if (detected) {
 				getReport().add(new Message(Topic.INTELLIGENCE).add("Spy has been caught."));
@@ -325,22 +354,22 @@ public class Player implements IJsonSerializable {
 	public void endTurn(Game game) {
 
 		// calculate GNP totals
-		fGnpTotals = GnpCategory.buildEmptyMap();
+		fGnpTotals = Category.buildEmptyMap();
 		for (int i = 1; i <= 40; i++) {
 			Planet planet = game.getPlanet(i);
 			FleetList playerFleets = planet.findFleetsForPlayerNr(fNumber);
-			fGnpTotals.put(GnpCategory.FIGHTERS, fGnpTotals.get(GnpCategory.FIGHTERS) + playerFleets.totalFighters());
-			fGnpTotals.put(GnpCategory.TRANSPORTERS, fGnpTotals.get(GnpCategory.TRANSPORTERS) + playerFleets.totalTransporters());
+			fGnpTotals.put(Category.FIGHTERS, fGnpTotals.get(Category.FIGHTERS) + playerFleets.totalFighters());
+			fGnpTotals.put(Category.TRANSPORTERS, fGnpTotals.get(Category.TRANSPORTERS) + playerFleets.totalTransporters());
 			if (planet.getPlayerNr() == fNumber) {
-				fGnpTotals.put(GnpCategory.PLANETS, fGnpTotals.get(GnpCategory.PLANETS) + 1);
-				fGnpTotals.put(GnpCategory.FUEL_PLANTS, fGnpTotals.get(GnpCategory.FUEL_PLANTS) + planet.getFuelPlants());
-				fGnpTotals.put(GnpCategory.ORE_PLANTS, fGnpTotals.get(GnpCategory.ORE_PLANTS) + planet.getOrePlants());
-				fGnpTotals.put(GnpCategory.RARE_PLANTS, fGnpTotals.get(GnpCategory.RARE_PLANTS) + planet.getRarePlants());
-				fGnpTotals.put(GnpCategory.FIGHTER_YARDS, fGnpTotals.get(GnpCategory.FIGHTER_YARDS) + planet.getFighterYards());
-				fGnpTotals.put(GnpCategory.TRANSPORTER_YARDS, fGnpTotals.get(GnpCategory.TRANSPORTER_YARDS) + planet.getTransporterYards());
-				fGnpTotals.put(GnpCategory.PLANETARY_DEFENSE_UNITS, fGnpTotals.get(GnpCategory.PLANETARY_DEFENSE_UNITS) + planet.getPlanetaryDefenseUnits());
-				fGnpTotals.put(GnpCategory.STOCK_PILES, fGnpTotals.get(GnpCategory.STOCK_PILES) + planet.getStockPiles());
-				fGnpTotals.put(GnpCategory.GROSS_INDUSTRIAL_PRODUCT, fGnpTotals.get(GnpCategory.GROSS_INDUSTRIAL_PRODUCT) + planet.getGrossIndustrialProduct());
+				fGnpTotals.put(Category.PLANETS, fGnpTotals.get(Category.PLANETS) + 1);
+				fGnpTotals.put(Category.FUEL_PLANTS, fGnpTotals.get(Category.FUEL_PLANTS) + planet.getFuelPlants());
+				fGnpTotals.put(Category.ORE_PLANTS, fGnpTotals.get(Category.ORE_PLANTS) + planet.getOrePlants());
+				fGnpTotals.put(Category.RARE_PLANTS, fGnpTotals.get(Category.RARE_PLANTS) + planet.getRarePlants());
+				fGnpTotals.put(Category.FIGHTER_YARDS, fGnpTotals.get(Category.FIGHTER_YARDS) + planet.getFighterYards());
+				fGnpTotals.put(Category.TRANSPORTER_YARDS, fGnpTotals.get(Category.TRANSPORTER_YARDS) + planet.getTransporterYards());
+				fGnpTotals.put(Category.PLANETARY_DEFENSE_UNITS, fGnpTotals.get(Category.PLANETARY_DEFENSE_UNITS) + planet.getPlanetaryDefenseUnits());
+				fGnpTotals.put(Category.STOCK_PILES, fGnpTotals.get(Category.STOCK_PILES) + planet.getStockPiles());
+				fGnpTotals.put(Category.GROSS_INDUSTRIAL_PRODUCT, fGnpTotals.get(Category.GROSS_INDUSTRIAL_PRODUCT) + planet.getGrossIndustrialProduct());
 			}
 		}
 
@@ -351,7 +380,22 @@ public class Player implements IJsonSerializable {
 		// (FM%) und Transporter-Moral (TM%), das GIP und die politischen Punkte (PP),
 		// die nur hier erscheinen (FM% und TM% -> 6.25).
 		
-		// TODO ...
+		Message message = new Message(Topic.STATUS);
+		message.add(" PL " + fGnpTotals.get(Category.PLANETS));
+		message.add(" FP " + fGnpTotals.get(Category.FUEL_PLANTS));
+		message.add(" OP " + fGnpTotals.get(Category.ORE_PLANTS));
+		message.add(" RP " + fGnpTotals.get(Category.RARE_PLANTS));
+		message.add(" FY " + fGnpTotals.get(Category.FIGHTER_YARDS));
+		message.add(" TY " + fGnpTotals.get(Category.TRANSPORTER_YARDS));
+		message.add("PDU " + fGnpTotals.get(Category.PLANETARY_DEFENSE_UNITS));
+		message.add(" SP " + fGnpTotals.get(Category.STOCK_PILES));
+		message.add(" FI " + fGnpTotals.get(Category.FIGHTERS));
+		message.add(" TR " + fGnpTotals.get(Category.TRANSPORTERS));
+		message.add("GIP " + fGnpTotals.get(Category.GROSS_INDUSTRIAL_PRODUCT));
+		message.add(" PP " + fGnpTotals.get(Category.POLITICAL_POINTS));
+		message.add("FM% " + fFighterMorale);
+		message.add("TM% " + fTransporterMorale);
+		getReport().add(message);
 		
 	}	
 	
