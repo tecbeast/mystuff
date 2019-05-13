@@ -1,0 +1,35 @@
+body {
+	background-image: url(../icons/space.png);
+	background-position: center;
+	background-repeat: repeat;
+	background-attachment: fixed;
+	background-color: #00000;
+	font-family: 'Alef';font-size: 20px;
+	color: #ffffff;
+}
+pre {
+	font-family: "Lucida Console", Lucida, monospace;font-size: 18px;
+}
+a:link {
+  color: yellow;
+  background-color: transparent;
+  text-decoration: none;
+}
+a:visited {
+  color: pink;
+  background-color: transparent;
+  text-decoration: none;
+}
+a:hover {
+  color: red;
+  background-color: transparent;
+  text-decoration: underline;
+}
+a:active {
+  color: yellow;
+  background-color: transparent;
+  text-decoration: underline;
+}
+span.pre {
+	font-family: "Lucida Console", Lucida, monospace;font-size: 18px;
+}
