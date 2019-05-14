@@ -33,6 +33,7 @@ public class Player implements IJsonSerializable {
 	private static final String FIGHTER_MORALE = "fighterMorale";
 	private static final String TRANSPORTER_MORALE = "transporterMorale";
 	private static final String POLITICAL_TERMS = "politicalTerms";
+	private static final String TURN_SECRET = "turnSecret";
 
 	private String fUser;
 	private String fName;
@@ -40,8 +41,9 @@ public class Player implements IJsonSerializable {
 	private int fHomePlanetNr;
 	private int fPoliticalPoints;
 	private int fFighterMorale;      // percent (min = 50%, max = 150%)
-	private int fTransporterMorale;  // percent (min = 50%, max = 150%) 
+	private int fTransporterMorale;  // percent (min = 50%, max = 150%)
 	private PoliticalTerm[] fPoliticalTerms;
+	private String fTurnSecret;
 	
 	private transient Report fReport;
 	private transient Map<Category, Integer> fGnpTotals;
@@ -156,6 +158,14 @@ public class Player implements IJsonSerializable {
 		}
 	}
 	
+	public String getTurnSecret() {
+		return fTurnSecret;
+	}
+	
+	public void setTurnSecret(String turnSecret) {
+		fTurnSecret = turnSecret;
+	}
+	
 	public Map<Category, Integer> getGnpTotals() {
 		return fGnpTotals;
 	}
@@ -214,7 +224,7 @@ public class Player implements IJsonSerializable {
 		for (int i = 1; i <= researchCmd.getCount(); i++) {
 			if (fPoliticalPoints > 0) {
 				fPoliticalPoints -= 1;
-				if ((int) (Math.random() * 100 + 1) <= 50) {
+				if ((int) (game.randomDouble() * 100 + 1) <= 50) {
 					countSuccess += 1;
 					switch (researchCmd.getImprovement()) {
 						case PRODUCTION_RATE:
@@ -249,7 +259,7 @@ public class Player implements IJsonSerializable {
 			// 50% chance for spyLevel 2 or higher
 			// 20% chance for spyLevel 3
 			int spyLevel = 3;
-  			int spyProb = (int) (Math.random() * 100 + 1);
+  			int spyProb = (int) (game.randomDouble() * 100 + 1);
   			if (spyProb > 20) { 
   				spyLevel = 2;
   			}
@@ -258,7 +268,7 @@ public class Player implements IJsonSerializable {
   			}  			
   			// 50% chance to detect spy for max. pm of 250%
   			// 10% chance to detect spy for min. pm of 50%
-			boolean detected = (int) (Math.random() * 500 + 1) <= planet.getPlanetaryMorale();			
+			boolean detected = (int) (game.randomDouble() * 500 + 1) <= planet.getPlanetaryMorale();			
 			getReport().add(planet.createPlanetReport(game, new Message(Topic.INTELLIGENCE), spyLevel));
 			if (detected) {
 				getReport().add(new Message(Topic.INTELLIGENCE).add("Spy has been caught."));
@@ -418,6 +428,7 @@ public class Player implements IJsonSerializable {
 			jsonArray.add(fPoliticalTerms[i].toString());
 		}
 		json.add(POLITICAL_TERMS, jsonArray);
+		json.add(TURN_SECRET, getTurnSecret());
 		return json.toJsonObject();
 	}
 	
@@ -435,6 +446,7 @@ public class Player implements IJsonSerializable {
 		for (int i = 0; i < jsonArray.size(); i++) {
 			setPoliticalTerm(i, PoliticalTerm.valueOf(jsonArray.get(i).asString()));
 		}
+		setTurnSecret(json.getString(TURN_SECRET));
 		return this;
 	}
   

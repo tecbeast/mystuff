@@ -43,7 +43,19 @@ public class CmdHomeplanet extends Command {
 	
 	@Override
 	public List<String> validate(Game game) {
-		return new ArrayList<String>();
+		List<String> messages = new ArrayList<String>();
+		if (game != null) {
+			if (fPlanetName != null) {
+				fPlanetNr = CommandValidationUtil.findPlanetNr(game, fPlanetName, messages);
+			}
+			if (fPlanetNr > 0) {
+				fPlanetName = null;
+				if (game.getPlanet(fPlanetNr).getPlayerNr() != getPlayerNr()) {
+					messages.add("You cannot set your home on a planet you do not control.");
+				}
+			}
+		}
+		return messages;
 	}
 	
 	@Override

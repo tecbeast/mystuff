@@ -9,7 +9,9 @@ import com.eclipsesource.json.JsonObject;
 import com.eclipsesource.json.JsonValue;
 
 public class CmdPlayername extends Command {
-	
+
+	public static final int MAX_NAME_LENGTH = 32;
+
 	private static final String NAME = "name";
 	
 	private String fName;
@@ -38,7 +40,13 @@ public class CmdPlayername extends Command {
 	
 	@Override
 	public List<String> validate(Game game) {
-		return new ArrayList<String>();
+		List<String> messages = new ArrayList<String>();
+		if (game != null) {
+			if ((fName != null) && (fName.length() > MAX_NAME_LENGTH)) {
+				messages.add("A player name cannot be longer than " + MAX_NAME_LENGTH + " characters.");
+			}
+		}
+		return messages;
 	}
 	
 	@Override

@@ -1125,7 +1125,7 @@ public class Planet implements IJsonSerializable {
 	 *
 	 */
 	private int revolt(Game game) {
-		int pduLoss = (int) (Math.random() * (fHomeDefense + 1));
+		int pduLoss = (int) (game.randomDouble() * (fHomeDefense + 1));
 		if (pduLoss > fPlanetaryDefenseUnits) {
 			pduLoss = fPlanetaryDefenseUnits;
 		}

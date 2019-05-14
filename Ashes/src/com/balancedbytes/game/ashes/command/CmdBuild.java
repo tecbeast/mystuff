@@ -67,8 +67,14 @@ public class CmdBuild extends Command {
 	public List<String> validate(Game game) {
 		List<String> messages = new ArrayList<String>();
 		if (game != null) {
-			if (game.getPlanet(fPlanetNr).getPlayerNr() != getPlayerNr()) {
-				messages.add("You cannot build on a planet you do not control.");
+			if (fPlanetName != null) {
+				fPlanetNr = CommandValidationUtil.findPlanetNr(game, fPlanetName, messages);
+			}
+			if (fPlanetNr > 0) {
+				fPlanetName = null;
+				if (game.getPlanet(fPlanetNr).getPlayerNr() != getPlayerNr()) {
+					messages.add("You cannot build on a planet you do not control.");
+				}
 			}
 		}
 		return messages;

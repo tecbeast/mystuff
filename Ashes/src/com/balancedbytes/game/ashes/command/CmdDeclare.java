@@ -55,7 +55,19 @@ public class CmdDeclare extends Command {
 	
 	@Override
 	public List<String> validate(Game game) {
-		return new ArrayList<String>();
+		List<String> messages = new ArrayList<String>();
+		if (game != null) {
+			if (fOtherPlayerName != null) {
+				fOtherPlayerNr = CommandValidationUtil.findPlayerNr(game, fOtherPlayerName, messages);
+			}
+			if (fOtherPlayerNr > 0) {
+				fOtherPlayerName = null;
+				if (fOtherPlayerNr == getPlayerNr()) {
+					messages.add("You cannot delare politics on yourself.");
+				}
+			}
+		}
+		return messages;
 	}
 	
 	@Override

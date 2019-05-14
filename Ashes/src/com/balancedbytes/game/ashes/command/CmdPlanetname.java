@@ -10,6 +10,8 @@ import com.eclipsesource.json.JsonValue;
 
 public class CmdPlanetname extends Command {
 	
+	public static final int MAX_NAME_LENGTH = 32;
+	
 	private static final String PLANET_NR = "planetNr";
 	private static final String PLANET_NAME = "planetName";
 	private static final String NAME = "name";
@@ -53,7 +55,22 @@ public class CmdPlanetname extends Command {
 	
 	@Override
 	public List<String> validate(Game game) {
-		return new ArrayList<String>();
+		List<String> messages = new ArrayList<String>();
+		if (game != null) {
+			if (fPlanetName != null) {
+				fPlanetNr = CommandValidationUtil.findPlanetNr(game, fPlanetName, messages);
+			}
+			if (fPlanetNr > 0) {
+				fPlanetName = null;
+				if (game.getPlanet(fPlanetNr).getPlayerNr() != getPlayerNr()) {
+					messages.add("You cannot name a planet you do not control.");
+				}
+				if ((fName != null) && (fName.length() > MAX_NAME_LENGTH)) {
+					messages.add("A planet name cannot be longer than " + MAX_NAME_LENGTH + " characters.");
+				}
+			}
+		}
+		return messages;
 	}
 	
 	@Override

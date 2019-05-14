@@ -145,7 +145,7 @@ public class CommandList implements IJsonSerializable {
 					case SPY:
 						add(new CmdSpy().fromJson(cmdObject));
 						break;
-					case TURNTOKEN:
+					case TURNSECRET:
 						add(new CmdTurnsecret().fromJson(cmdObject));
 						break;
 					default:

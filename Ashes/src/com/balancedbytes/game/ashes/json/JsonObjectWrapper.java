@@ -60,7 +60,7 @@ public class JsonObjectWrapper {
 	}
 
 	public JsonObjectWrapper add(String key, Date value) {
-		if (key != null) {
+		if ((key != null) && (value != null)) {
 			String dateString = (value != null) ? DATE_FORMAT.format(value) : null;
 			fJsonObject.add(key, dateString);
 		}
@@ -68,7 +68,7 @@ public class JsonObjectWrapper {
 	}
 
 	public JsonObjectWrapper add(String key, String value) {
-		if (key != null) {
+		if ((key != null) && (value != null)) {
 			fJsonObject.add(key, value);
 		}
 		return this;
@@ -82,7 +82,7 @@ public class JsonObjectWrapper {
 	}
 	
 	public JsonObjectWrapper add(String key, JsonArray value) {
-		if (key != null) {
+		if ((key != null) && (value != null)) {
 			fJsonObject.add(key, value);
 		}
 		return this;

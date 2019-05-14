@@ -1,11 +1,14 @@
 package com.balancedbytes.game.ashes.model;
 
+import java.security.SecureRandom;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
+import java.util.Random;
 
+import com.balancedbytes.game.ashes.TurnSecretGenerator;
 import com.balancedbytes.game.ashes.command.CommandList;
 
 /**
@@ -60,11 +63,13 @@ public class Game {
   		{1,2,3,2,2,2,3,2,2,2,2,2,2,2,3,2,2,1,1,0,1,1,1,0,1,0,0,0,0,0,1,0,1,1,1,2,2,0,-1,1},  // 39
   		{2,1,1,1,2,3,3,3,3,1,0,1,3,3,3,3,3,1,3,2,0,3,2,1,2,2,3,1,0,1,3,2,1,2,1,3,3,2,1,-1}   // 40
   	};
+  	
+  	private static final Random RANDOM = new SecureRandom();
   
   	private int fNumber;
   	private int fTurn;
   	private Planet[] fPlanets;
-  	private Player[] fPlayers;  	
+  	private Player[] fPlayers;
 
 	/**
 	 * Start a new Game with given planets.
@@ -77,8 +82,7 @@ public class Game {
 		for (int i = 0; i < users.length; i++) {
 			fPlayers[i] = new Player(users[i], i + 1);
 		}
-  
-	  	fTurn = 1;
+	  	fTurn = 0;
 	  	fPlanets = new Planet[NR_PLANETS];
   
 	  	// planet name, planet number, player, WF, HD, PR, FI, TR, PDU
@@ -188,6 +192,13 @@ public class Game {
 			player.getReport().add(message);
 		}
 	}
+	
+	/**
+	 * 
+	 */
+	public double randomDouble() {
+		return RANDOM.nextDouble();
+	}
 
 	/**
 	 * Play a full turn for this game with the given commands.
@@ -200,6 +211,11 @@ public class Game {
 		
 		// increase turn
 		fTurn += 1;
+		
+		// generate turn secrets for next turn
+		for (int i = 1; i <= 8; i++) {
+			getPlayer(i).setTurnSecret(TurnSecretGenerator.generateSecret());
+		}		
 		
 		// execute player commands
 		// (declare, homeplanet, planetname, playername, spy)
@@ -372,7 +388,6 @@ public class Game {
 		}
 		message.add(line.toString());
 	}
-	
 	
 	private List<Integer> sortHighestFirstRemoveDuplicates(List<Integer> values) {
 		List<Integer> result = new ArrayList<Integer>();

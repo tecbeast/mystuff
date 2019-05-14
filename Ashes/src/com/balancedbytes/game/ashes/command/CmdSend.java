@@ -7,7 +7,9 @@ import java.util.Set;
 
 import com.balancedbytes.game.ashes.AshesUtil;
 import com.balancedbytes.game.ashes.json.JsonObjectWrapper;
+import com.balancedbytes.game.ashes.model.FleetList;
 import com.balancedbytes.game.ashes.model.Game;
+import com.balancedbytes.game.ashes.model.Planet;
 import com.balancedbytes.game.ashes.model.Unit;
 import com.eclipsesource.json.JsonObject;
 import com.eclipsesource.json.JsonValue;
@@ -105,8 +107,25 @@ public class CmdSend extends Command {
 	
 	@Override
 	public List<String> validate(Game game) {
-		// TODO: check if player owns planet
-		return new ArrayList<String>();
+		List<String> messages = new ArrayList<String>();
+		if (game != null) {
+			if (fFromPlanetName != null) {
+				fFromPlanetNr = CommandValidationUtil.findPlanetNr(game, fFromPlanetName, messages);
+			}
+			if (fToPlanetName != null) {
+				fToPlanetNr = CommandValidationUtil.findPlanetNr(game, fToPlanetName, messages);
+			}
+			if ((fFromPlanetNr > 0) && (fToPlanetNr > 0)) {
+				fFromPlanetName = null;
+				fToPlanetName = null;
+				Planet fromPlanet = game.getPlanet(fFromPlanetNr);
+				FleetList fleets = fromPlanet.findFleetsForPlayerNr(getPlayerNr());
+				if (fleets.totalShips() == 0) {
+					messages.add("You have no fleet to send from " + fromPlanet.getName() + " (" + fromPlanet.getNumber() + ").");
+				}
+			}
+		}
+		return messages;
 	}
 	
 	@Override

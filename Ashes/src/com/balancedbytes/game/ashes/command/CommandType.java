@@ -11,6 +11,6 @@ public enum CommandType {
 	RESEARCH,
 	SEND,
 	SPY,
-	TURNTOKEN;
+	TURNSECRET;
 	
 }
