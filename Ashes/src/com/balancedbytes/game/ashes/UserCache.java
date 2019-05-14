@@ -1,83 +1,70 @@
 package com.balancedbytes.game.ashes;
 
 import java.io.BufferedReader;
+import java.io.BufferedWriter;
 import java.io.File;
-import java.io.FileReader;
-import java.io.FileWriter;
-import java.io.IOException;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
+import java.io.InputStreamReader;
+import java.io.OutputStreamWriter;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.zip.GZIPInputStream;
+import java.util.zip.GZIPOutputStream;
 
 import com.eclipsesource.json.Json;
+import com.eclipsesource.json.JsonArray;
 import com.eclipsesource.json.WriterConfig;
 
 public class UserCache {
 	
-	private static final String FILE_SUFFIX = ".json";
+	private static final String CHARSET = "UTF-8";
 	
 	private Map<String, User> fUserById;
-	private File fUserDir;
+	private File fUserFile;
 	
 	public UserCache() {
 		fUserById = new HashMap<String, User>();
 	}
 	
-	public UserCache init(File userDir) {
-		if ((userDir == null) || !userDir.exists() || !userDir.isDirectory()) {
-			throw new UserCacheException("Error reading users directory.");
+	public void init(File userFile) {
+		if ((userFile == null) || !userFile.exists() || !userFile.isFile()) {
+			throw new UserCacheException("Error reading users file.");
 		}
-		fUserDir = userDir;
-		return this;
+		fUserFile = userFile;
+		load();
+	}
+
+	public User get(String id) {
+		return (id != null) ? fUserById.get(id) : null;
 	}
 	
-	public User getUser(String id) {
-		if (id == null) {
-			return null;
+	private void add(User user) {
+		if ((user != null) && AshesUtil.isProvided(user.getId())) {
+			fUserById.put(user.getId(), user);
 		}
-		User user = fUserById.get(id);
-		if (user == null) {
-			user = loadUser(id);
-			if (user != null) {
-				fUserById.put(id, user);
+	}
+	
+	private void load() {
+		try (BufferedReader in = new BufferedReader(new InputStreamReader(new GZIPInputStream(new FileInputStream(fUserFile)), CHARSET))) {
+			JsonArray users = Json.parse(in).asArray();
+			for (int i = 0; i < users.size(); i++) {
+				add(new User().fromJson(users.get(i)));
 			}
+		} catch (Exception any) {
+			throw new UserCacheException("Error reading users file.", any);
 		}
-		return user;
 	}
-	
-	public boolean save() {
-		for (String id : fUserById.keySet()) {
-			if (!saveUser(fUserById.get(id))) {
-				return false;
+
+	public void save() {
+		try (BufferedWriter out = new BufferedWriter(new OutputStreamWriter(new GZIPOutputStream(new FileOutputStream(fUserFile)), CHARSET))) {
+			JsonArray users = new JsonArray();
+			for (User user : fUserById.values()) {
+				users.add(user.toJson());
 			}
-		}
-		return true;
-	}
-	
-	private User loadUser(String id) {
-		if (id == null) {
-			return null;
-		}
-		File userFile = new File(fUserDir, id + FILE_SUFFIX);
-		if (!userFile.exists() || !userFile.isFile()) {
-			return null;
-		}
-		try (BufferedReader in = new BufferedReader(new FileReader(userFile))) {
-			return new User().fromJson(Json.parse(in));
-		} catch (IOException ioe) {
-			throw new UserCacheException("Error on loading user \"" + id + "\".", ioe);
-		}
-	}
-	
-	private boolean saveUser(User user) {
-		if ((user == null) || (user.getId() == null)) {
-			return false;
-		}
-		File userFile = new File(fUserDir, user.getId() + FILE_SUFFIX);
-		try (FileWriter out = new FileWriter(userFile)) {
-			user.toJson().writeTo(out, WriterConfig.PRETTY_PRINT);
-			return true;
-		} catch (IOException ioe) {
-			throw new UserCacheException("Error on saving user \"" + user.getId() + "\".", ioe);
+			users.writeTo(out, WriterConfig.PRETTY_PRINT);
+		} catch (Exception any) {
+			throw new UserCacheException("Error writing users file.", any);
 		}
 	}
 

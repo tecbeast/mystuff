@@ -37,7 +37,7 @@ public class AshesOfEmpire {
 			try (BufferedReader in = new BufferedReader(new FileReader(new File(dir, "conf/ashes.properties")))) {
 				fProperties.load(in);
 			}
-			fUserCache.init(new File(dir, "users"));
+			fUserCache.init(new File(dir, "users.json.gz"));
 			return true;
 		} catch (Exception e) {
 			LOG.error("Error while initializing Ashes.", e);
@@ -60,7 +60,7 @@ public class AshesOfEmpire {
 	}
 	
 	public User getUser(String id) {
-		return fUserCache.getUser(id);
+		return fUserCache.get(id);
 	}
 	
 	public static void main(String[] args) throws Exception {
