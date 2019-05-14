@@ -8,26 +8,26 @@ import com.balancedbytes.game.ashes.model.Game;
 import com.eclipsesource.json.JsonObject;
 import com.eclipsesource.json.JsonValue;
 
-public class CmdTurntoken extends Command {
+public class CmdTurnsecret extends Command {
 	
-	private static final String TOKEN = "token";
+	private static final String SECRET = "secret";
 	
 	private String fToken;
 	
-	protected CmdTurntoken() {
+	protected CmdTurnsecret() {
 		super();
 	}
 	
-	public CmdTurntoken(int playerNr, String token) {
+	public CmdTurnsecret(int playerNr, String secret) {
 		setPlayerNr(playerNr);
-		setToken(token);
+		setSecret(secret);
 	}
 	
-	public String getToken() {
+	public String getSecret() {
 		return fToken;
 	}
 	
-	protected void setToken(String token) {
+	protected void setSecret(String token) {
 		fToken = token;
 	}
 	
@@ -44,15 +44,15 @@ public class CmdTurntoken extends Command {
 	@Override
 	public JsonObject toJson() {
 		JsonObjectWrapper json = new JsonObjectWrapper(super.toJson());
-		json.add(TOKEN, getToken());
+		json.add(SECRET, getSecret());
 		return json.toJsonObject();
 	}
 
 	@Override
-	public CmdTurntoken fromJson(JsonValue jsonValue) {
+	public CmdTurnsecret fromJson(JsonValue jsonValue) {
 		super.fromJson(jsonValue);
 		JsonObjectWrapper json = new JsonObjectWrapper(jsonValue.asObject());
-		setToken(json.getString(TOKEN));
+		setSecret(json.getString(SECRET));
 		return this;
 	}
 

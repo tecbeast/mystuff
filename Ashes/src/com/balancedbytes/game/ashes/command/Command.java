@@ -24,7 +24,7 @@ public abstract class Command implements IJsonSerializable {
 		return fPlayerNr;
 	}
 	
-	protected void setPlayerNr(int playerNr) {
+	public void setPlayerNr(int playerNr) {
 		fPlayerNr = playerNr;
 	}
 	

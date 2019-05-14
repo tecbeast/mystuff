@@ -17,7 +17,9 @@ public class CmdSend extends Command {
 	private static final String COUNT = "count";
 	private static final String UNIT = "unit";
 	private static final String FROM_PLANET_NR = "fromPlanetNr";
+	private static final String FROM_PLANET_NAME = "fromPlanetName";
 	private static final String TO_PLANET_NR = "toPlanetNr";
+	private static final String TO_PLANET_NAME = "toPlanetName";
 	
 	private static final Set<Unit> CARGO_UNITS = new HashSet<Unit>();
 	static {
@@ -36,25 +38,19 @@ public class CmdSend extends Command {
 	private int fCount;
 	private Unit fUnit;
 	private int fFromPlanetNr;
+	private String fFromPlanetName;
 	private int fToPlanetNr;
+	private String fToPlanetName;
 	
-	protected CmdSend() {
+	public CmdSend() {
 		super();
-	}
-	
-	public CmdSend(int playerNr, int count, Unit unit, int fromPlanetNr, int toPlanetNr) {
-		setPlayerNr(playerNr);
-		setCount(count);
-		setUnit(unit);
-		setFromPlanetNr(fromPlanetNr);
-		setToPlanetNr(toPlanetNr);
 	}
 	
 	public int getCount() {
 		return fCount;
 	}
 	
-	protected void setCount(int count) {
+	public void setCount(int count) {
 		fCount = count;
 	}
 	
@@ -62,7 +58,7 @@ public class CmdSend extends Command {
 		return fUnit;
 	}
 	
-	protected void setUnit(Unit unit) {
+	public void setUnit(Unit unit) {
 		fUnit = unit;
 	}
 	
@@ -70,17 +66,33 @@ public class CmdSend extends Command {
 		return fFromPlanetNr;
 	}
 	
-	protected void setFromPlanetNr(int fromPlanetNr) {
+	public void setFromPlanetNr(int fromPlanetNr) {
 		fFromPlanetNr = fromPlanetNr;
+	}
+	
+	public String getFromPlanetName() {
+		return fFromPlanetName;
+	}
+	
+	public void setFromPlanetName(String fromPlanetName) {
+		fFromPlanetName = fromPlanetName;
 	}
 	
 	public int getToPlanetNr() {
 		return fToPlanetNr;
 	}
 
-	protected void setToPlanetNr(int toPlanetNr) {
+	public void setToPlanetNr(int toPlanetNr) {
 		fToPlanetNr = toPlanetNr;
-	}	
+	}
+	
+	public String getToPlanetName() {
+		return fToPlanetName;
+	}
+	
+	public void setToPlanetName(String toPlanetName) {
+		fToPlanetName = toPlanetName;
+	}
 	
 	@Override
 	public CommandType getType() {
@@ -103,7 +115,9 @@ public class CmdSend extends Command {
 		json.add(COUNT, getCount());
 		json.add(UNIT, AshesUtil.toString(getUnit()));
 		json.add(FROM_PLANET_NR, getFromPlanetNr());
+		json.add(FROM_PLANET_NAME, getFromPlanetName());
 		json.add(TO_PLANET_NR, getToPlanetNr());
+		json.add(TO_PLANET_NAME, getToPlanetName());
 		return json.toJsonObject();
 	}
 
@@ -115,7 +129,9 @@ public class CmdSend extends Command {
 		String unitString = json.getString(UNIT);
 		setUnit(AshesUtil.isProvided(unitString) ? Unit.valueOf(unitString) : null);
 		setFromPlanetNr(json.getInt(FROM_PLANET_NR));
+		setFromPlanetName(json.getString(FROM_PLANET_NAME));
 		setToPlanetNr(json.getInt(TO_PLANET_NR));
+		setToPlanetName(json.getString(TO_PLANET_NAME));
 		return this;
 	}
 

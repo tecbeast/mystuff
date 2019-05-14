@@ -18,9 +18,9 @@ public class CmdPlayername extends Command {
 		super();
 	}
 	
-	public CmdPlayername(int playerNr, String name) {
+	public CmdPlayername(int playerNr, String newName) {
 		setPlayerNr(playerNr);
-		setName(name);
+		setName(newName);
 	}
 
 	public String getName() {

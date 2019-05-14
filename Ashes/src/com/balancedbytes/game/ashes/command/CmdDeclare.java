@@ -12,35 +12,39 @@ import com.eclipsesource.json.JsonValue;
 
 public class CmdDeclare extends Command {
 	
-	private static final String OPPONENT_PLAYER_NR = "opponentPlayerNr";
+	private static final String OTHER_PLAYER_NR = "otherPlayerNr";
+	private static final String OTHER_PLAYER_NAME = "otherPlayerName";
 	private static final String POLITICAL_TERM = "politicalTerm";
 	
-	private int fOpponentPlayerNr;
+	private int fOtherPlayerNr;
+	private String fOtherPlayerName;
 	private PoliticalTerm fPoliticalTerm;
 	
-	protected CmdDeclare() {
+	public CmdDeclare() {
 		super();
 	}
 	
-	public CmdDeclare(int playerNr, PoliticalTerm politicalTerm, int otherPlayerNr) {
-		setPlayerNr(playerNr);
-		setPoliticalTerm(politicalTerm);
-		setOpponentPlayerNr(otherPlayerNr);
+	public int getOtherPlayerNr() {
+		return fOtherPlayerNr;
 	}
 	
-	public int getOpponentPlayerNr() {
-		return fOpponentPlayerNr;
+	public void setOtherPlayerNr(int otherPlayerNr) {
+		fOtherPlayerNr = otherPlayerNr;
 	}
 	
-	public void setOpponentPlayerNr(int otherPlayerNr) {
-		fOpponentPlayerNr = otherPlayerNr;
+	public String getOtherPlayerName() {
+		return fOtherPlayerName;
+	}
+	
+	public void setOtherPlayerName(String otherPlayerName) {
+		fOtherPlayerName = otherPlayerName;
 	}
 	
 	public PoliticalTerm getPoliticalTerm() {
 		return fPoliticalTerm;
 	}
 	
-	protected void setPoliticalTerm(PoliticalTerm politicalTerm) {
+	public void setPoliticalTerm(PoliticalTerm politicalTerm) {
 		fPoliticalTerm = politicalTerm;
 	}
 	
@@ -57,7 +61,8 @@ public class CmdDeclare extends Command {
 	@Override
 	public JsonObject toJson() {
 		JsonObjectWrapper json = new JsonObjectWrapper(super.toJson());
-		json.add(OPPONENT_PLAYER_NR, getOpponentPlayerNr());
+		json.add(OTHER_PLAYER_NR, getOtherPlayerNr());
+		json.add(OTHER_PLAYER_NAME, getOtherPlayerName());
 		json.add(POLITICAL_TERM, AshesUtil.toString(getPoliticalTerm()));
 		return json.toJsonObject();
 	}
@@ -66,7 +71,8 @@ public class CmdDeclare extends Command {
 	public CmdDeclare fromJson(JsonValue jsonValue) {
 		super.fromJson(jsonValue);
 		JsonObjectWrapper json = new JsonObjectWrapper(jsonValue.asObject());
-		setOpponentPlayerNr(json.getInt(OPPONENT_PLAYER_NR));
+		setOtherPlayerNr(json.getInt(OTHER_PLAYER_NR));
+		setOtherPlayerName(json.getString(OTHER_PLAYER_NAME));
 		String ptString = json.getString(POLITICAL_TERM);
 		setPoliticalTerm(AshesUtil.isProvided(ptString) ? PoliticalTerm.valueOf(ptString) : null);
 		return this;

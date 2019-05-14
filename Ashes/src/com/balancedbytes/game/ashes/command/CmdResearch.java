@@ -15,27 +15,22 @@ public class CmdResearch extends Command {
 	private static final String COUNT = "count";
 	private static final String IMPROVEMENT = "improvement";
 	private static final String PLANET_NR = "planetNr";
+	private static final String PLANET_NAME = "planetName";
 	
 	private int fCount;
 	private Improvement fImprovement;
 	private int fPlanetNr;
+	private String fPlanetName;
 	
-	protected CmdResearch() {
+	public CmdResearch() {
 		super();
 	}
-	
-	public CmdResearch(int playerNr, int count, Improvement improvement, int planetNr) {
-		setPlayerNr(playerNr);
-		setCount(count);
-		setImprovement(improvement);
-		setPlanetNr(planetNr);
-	}
-	
+
 	public int getCount() {
 		return fCount;
 	}
 	
-	protected void setCount(int count) {
+	public void setCount(int count) {
 		fCount = count;
 	}
 
@@ -43,7 +38,7 @@ public class CmdResearch extends Command {
 		return fImprovement;
 	}
 	
-	protected void setImprovement(Improvement improvement) {
+	public void setImprovement(Improvement improvement) {
 		fImprovement = improvement;
 	}
 	
@@ -51,8 +46,16 @@ public class CmdResearch extends Command {
 		return fPlanetNr;
 	}
 	
-	protected void setPlanetNr(int planetNr) {
+	public void setPlanetNr(int planetNr) {
 		fPlanetNr = planetNr;
+	}
+	
+	public String getPlanetName() {
+		return fPlanetName;
+	}
+	
+	public void setPlanetName(String planetName) {
+		fPlanetName = planetName;
 	}
 	
 	@Override
@@ -72,6 +75,7 @@ public class CmdResearch extends Command {
 		json.add(COUNT, getCount());
 		json.add(IMPROVEMENT, AshesUtil.toString(getImprovement()));
 		json.add(PLANET_NR, getPlanetNr());
+		json.add(PLANET_NAME, getPlanetName());
 		return json.toJsonObject();
 	}
 
@@ -83,6 +87,7 @@ public class CmdResearch extends Command {
 		String imprString = json.getString(IMPROVEMENT);
 		setImprovement(AshesUtil.isProvided(imprString) ? Improvement.valueOf(imprString) : null);
 		setPlanetNr(json.getInt(PLANET_NR));
+		setPlanetName(json.getString(PLANET_NAME));
 		return this;
 	}
 

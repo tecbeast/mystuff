@@ -9,7 +9,7 @@ public enum ParserToken {
 	WORD,
 
 	ANNOUNCE,
-	TURNTOKEN,
+	TURNSECRET,
 	ON,
 	DO,
 	DONE,

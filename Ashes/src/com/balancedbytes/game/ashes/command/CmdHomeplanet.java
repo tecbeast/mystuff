@@ -11,23 +11,29 @@ import com.eclipsesource.json.JsonValue;
 public class CmdHomeplanet extends Command {
 	
 	private static final String PLANET_NR = "planetNr";
+	private static final String PLANET_NAME = "planetName";
 	
 	private int fPlanetNr;
+	private String fPlanetName;
 	
-	protected CmdHomeplanet() {
+	public CmdHomeplanet() {
 		super();
 	}
 	
-	public CmdHomeplanet(int playerNr, int planetNr) {
-		setPlayerNr(playerNr);
-	}
-
 	public int getPlanetNr() {
 		return fPlanetNr;
 	}
 	
-	protected void setPlanetNr(int planetNr) {
+	public void setPlanetNr(int planetNr) {
 		fPlanetNr = planetNr;
+	}
+	
+	public String getPlanetName() {
+		return fPlanetName;
+	}
+	
+	public void setPlanetName(String planetName) {
+		fPlanetName = planetName;
 	}
 	
 	@Override
@@ -44,6 +50,7 @@ public class CmdHomeplanet extends Command {
 	public JsonObject toJson() {
 		JsonObjectWrapper json = new JsonObjectWrapper(super.toJson());
 		json.add(PLANET_NR, getPlanetNr());
+		json.add(PLANET_NAME, getPlanetName());
 		return json.toJsonObject();
 	}
 
@@ -52,6 +59,7 @@ public class CmdHomeplanet extends Command {
 		super.fromJson(jsonValue);
 		JsonObjectWrapper json = new JsonObjectWrapper(jsonValue.asObject());
 		setPlanetNr(json.getInt(PLANET_NR));
+		setPlanetName(json.getString(PLANET_NAME));
 		return this;
 	}
 

@@ -161,7 +161,7 @@ public class Player implements IJsonSerializable {
 	}
 	
 	private void executeDeclare(Game game, CmdDeclare declareCmd) {
-		int opponentNr = declareCmd.getOpponentPlayerNr();
+		int opponentNr = declareCmd.getOtherPlayerNr();
 		if ((opponentNr > 0) && (opponentNr != fNumber)) {
 			PoliticalTerm newPt = declareCmd.getPoliticalTerm();
 			PoliticalTerm oldPt = getPoliticalTerm(opponentNr);

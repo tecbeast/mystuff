@@ -14,20 +14,15 @@ public class CmdAnnounce extends Command {
 	
 	private String fText;
 	
-	protected CmdAnnounce() {
+	public CmdAnnounce() {
 		super();
-	}
-	
-	public CmdAnnounce(int playerNr, String text) {
-		setPlayerNr(playerNr);
-		setText(text);
 	}
 
 	public String getText() {
 		return fText;
 	}
 	
-	protected void setText(String text) {
+	public void setText(String text) {
 		fText = text;
 	}
 	

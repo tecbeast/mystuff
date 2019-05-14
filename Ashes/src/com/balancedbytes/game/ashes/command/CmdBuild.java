@@ -15,27 +15,22 @@ public class CmdBuild extends Command {
 	private static final String COUNT = "count";
 	private static final String UNIT = "unit";
 	private static final String PLANET_NR = "planetNr";
+	private static final String PLANET_NAME = "planetName";
 	
 	private int fCount;
 	private Unit fUnit;
 	private int fPlanetNr;
+	private String fPlanetName;
 	
-	protected CmdBuild() {
+	public CmdBuild() {
 		super();
 	}
-	
-	public CmdBuild(int playerNr, int count, Unit unit, int planetNr) {
-		setPlayerNr(playerNr);
-		setCount(count);
-		setUnit(unit);
-		setPlanetNr(planetNr);
-	}
-	
+
 	public int getCount() {
 		return fCount;
 	}
 	
-	protected void setCount(int count) {
+	public void setCount(int count) {
 		fCount = count;
 	}
 	
@@ -43,7 +38,7 @@ public class CmdBuild extends Command {
 		return fUnit;
 	}
 	
-	protected void setUnit(Unit unit) {
+	public void setUnit(Unit unit) {
 		fUnit = unit;
 	}
 	
@@ -51,8 +46,16 @@ public class CmdBuild extends Command {
 		return fPlanetNr;
 	}
 	
-	protected void setPlanetNr(int planetNr) {
+	public void setPlanetNr(int planetNr) {
 		fPlanetNr = planetNr;
+	}
+	
+	public String getPlanetName() {
+		return fPlanetName;
+	}
+	
+	public void setPlanetName(String planetName) {
+		fPlanetName = planetName;
 	}
 	
 	@Override
@@ -77,6 +80,7 @@ public class CmdBuild extends Command {
 		json.add(COUNT, getCount());
 		json.add(UNIT, AshesUtil.toString(getUnit()));
 		json.add(PLANET_NR, getPlanetNr());
+		json.add(PLANET_NAME, getPlanetName());
 		return json.toJsonObject();
 	}
 
@@ -88,6 +92,7 @@ public class CmdBuild extends Command {
 		String unitString = json.getString(UNIT);
 		setUnit(AshesUtil.isProvided(unitString) ? Unit.valueOf(unitString) : null);
 		setPlanetNr(json.getInt(PLANET_NR));
+		setPlanetName(json.getString(PLANET_NAME));
 		return this;
 	}
 

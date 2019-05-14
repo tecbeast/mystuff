@@ -11,34 +11,38 @@ import com.eclipsesource.json.JsonValue;
 public class CmdPlanetname extends Command {
 	
 	private static final String PLANET_NR = "planetNr";
+	private static final String PLANET_NAME = "planetName";
 	private static final String NAME = "name";
 	
 	private int fPlanetNr;
+	private String fPlanetName;
 	private String fName;
 	
-	protected CmdPlanetname() {
+	public CmdPlanetname() {
 		super();
-	}
-	
-	public CmdPlanetname(int playerNr, String name, int planetNr) {
-		setPlayerNr(playerNr);
-		setName(name);
-		setPlanetNr(planetNr);
 	}
 
 	public int getPlanetNr() {
 		return fPlanetNr;
 	}
 	
-	protected void setPlanetNr(int planetNr) {
+	public void setPlanetNr(int planetNr) {
 		fPlanetNr = planetNr;
+	}
+	
+	public String getPlanetName() {
+		return fPlanetName;
+	}
+	
+	public void setPlanetName(String planetName) {
+		fPlanetName = planetName;
 	}
 	
 	public String getName() {
 		return fName;
 	}
 	
-	protected void setName(String name) {
+	public void setName(String name) {
 		fName = name;
 	}
 	
@@ -56,6 +60,7 @@ public class CmdPlanetname extends Command {
 	public JsonObject toJson() {
 		JsonObjectWrapper json = new JsonObjectWrapper(super.toJson());
 		json.add(PLANET_NR, getPlanetNr());
+		json.add(PLANET_NAME, getPlanetName());
 		json.add(NAME, getName());
 		return json.toJsonObject();
 	}
@@ -65,6 +70,7 @@ public class CmdPlanetname extends Command {
 		super.fromJson(jsonValue);
 		JsonObjectWrapper json = new JsonObjectWrapper(jsonValue.asObject());
 		setPlanetNr(json.getInt(PLANET_NR));
+		setPlanetName(json.getString(PLANET_NAME));
 		setName(json.getString(NAME));
 		return this;
 	}
