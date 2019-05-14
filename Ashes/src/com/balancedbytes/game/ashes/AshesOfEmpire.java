@@ -28,7 +28,7 @@ public class AshesOfEmpire {
 		fUserCache = new UserCache();
 	}
 	
-	public boolean init(File dir) {
+	public void init(File dir) {
 		try {
 			try (BufferedInputStream in = new BufferedInputStream(new FileInputStream(new File(dir, "conf/log.properties")))) {
 				LogManager.getLogManager().readConfiguration(in);
@@ -37,11 +37,11 @@ public class AshesOfEmpire {
 			try (BufferedReader in = new BufferedReader(new FileReader(new File(dir, "conf/ashes.properties")))) {
 				fProperties.load(in);
 			}
-			fUserCache.init(new File(dir, "users.json.gz"));
-			return true;
+			boolean userCompression = Boolean.parseBoolean(fProperties.getProperty("user.compression", "false"));
+			File userFile = new File(dir, userCompression ? "user/user.json.gz" : "user/users.json");
+			fUserCache.init(userFile, userCompression);
 		} catch (Exception e) {
 			LOG.error("Error while initializing Ashes.", e);
-			return false;
 		}
 	}
 	

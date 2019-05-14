@@ -61,7 +61,8 @@
 	<target name="buildAll" depends="jar">
 	
     	<copy todir="${build.dir}" >  
-      		<fileset dir="${basedir}" includes="users.json.gz" />
+      		<fileset dir="${basedir}" includes="game/**" />
+      		<fileset dir="${basedir}" includes="user/**" />
     		<fileset dir="${basedir}" includes="lib/*.jar" />
     	</copy>
     	

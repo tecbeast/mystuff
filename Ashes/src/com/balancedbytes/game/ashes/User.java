@@ -13,7 +13,7 @@ public class User implements IJsonSerializable {
 	private static final String NAME = "name"; 
 	private static final String EMAIL = "email"; 
 	private static final String REGISTERED = "registered";
-	private static final String LAST_SEEN = "lastSeen";
+	private static final String LAST_PROCESSED = "lastProcessed";
 	private static final String GAMES_JOINED = "gamesJoined"; 
 	private static final String GAMES_FINISHED = "gamesFinished"; 
 	private static final String GAMES_WON = "gamesWon"; 
@@ -22,7 +22,7 @@ public class User implements IJsonSerializable {
 	private String fName;
 	private String fEmail;
 	private Date fRegistered;
-	private Date fLastSeen;
+	private Date fLastProcessed;
 	private int fGamesJoined;	
 	private int fGamesFinished;	
 	private int fGamesWon;
@@ -59,12 +59,12 @@ public class User implements IJsonSerializable {
 		fRegistered = registered;
 	}
 	
-	public Date getLastSeen() {
-		return fLastSeen;
+	public Date getLastProcessed() {
+		return fLastProcessed;
 	}
 	
-	public void setLastSeen(Date lastSeen) {
-		fLastSeen = lastSeen;
+	public void setLastProcessed(Date lastProcessed) {
+		fLastProcessed = lastProcessed;
 	}
 	
 	public int getGamesJoined() {
@@ -98,7 +98,7 @@ public class User implements IJsonSerializable {
 		json.add(NAME, getName());
 		json.add(EMAIL, getEmail());
 		json.add(REGISTERED, getRegistered());
-		json.add(LAST_SEEN, getLastSeen());
+		json.add(LAST_PROCESSED, getLastProcessed());
 		json.add(GAMES_JOINED, getGamesJoined());
 		json.add(GAMES_FINISHED, getGamesFinished());
 		json.add(GAMES_WON, getGamesWon());
@@ -112,7 +112,7 @@ public class User implements IJsonSerializable {
 		setName(json.getString(NAME));
 		setEmail(json.getString(EMAIL));
 		setRegistered(json.getDate(REGISTERED));
-		setLastSeen(json.getDate(LAST_SEEN));
+		setLastProcessed(json.getDate(LAST_PROCESSED));
 		setGamesJoined(json.getInt(GAMES_JOINED));
 		setGamesFinished(json.getInt(GAMES_FINISHED));
 		setGamesWon(json.getInt(GAMES_WON));
