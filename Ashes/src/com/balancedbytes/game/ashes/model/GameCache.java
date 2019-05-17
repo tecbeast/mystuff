@@ -18,9 +18,7 @@ import java.util.zip.GZIPInputStream;
 import java.util.zip.GZIPOutputStream;
 
 import com.balancedbytes.game.ashes.AshesException;
-import com.balancedbytes.game.ashes.AshesUtil;
 import com.eclipsesource.json.Json;
-import com.eclipsesource.json.JsonArray;
 import com.eclipsesource.json.JsonObject;
 import com.eclipsesource.json.WriterConfig;
 
@@ -74,10 +72,10 @@ public class GameCache {
 		}
 	}
 
-	private void load(File gameFile) {
+	private Game load(File gameFile) {
 		try (Reader in = createReader(gameFile)) {
 			JsonObject gameObject = Json.parse(in).asObject();
-			return new Game(number, users).fromJson(gameObject);
+			return new Game().fromJson(gameObject);
 		} catch (IOException ioe) {
 			throw new AshesException("Error reading users file.", ioe);
 		}
@@ -92,22 +90,24 @@ public class GameCache {
 	}
 
 	public void save() {
-		try (Writer out = createWriter()) {
-			JsonArray users = new JsonArray();
-			for (User user : fUserById.values()) {
-				users.add(user.toJson());
-			}
-			users.writeTo(out, WriterConfig.PRETTY_PRINT);
-		} catch (IOException ioe) {
-			throw new AshesException("Error writing users file.", ioe);
+		for (Game game : fGameByNr.values()) {
+			save(game);
 		}
 	}
 	
-	private Writer createWriter() throws IOException {
+	private void save(Game game) {
+		try (Writer out = createWriter(createFile(game.getNumber()))) {
+			game.toJson().writeTo(out, WriterConfig.PRETTY_PRINT);
+		} catch (IOException ioe) {
+			throw new AshesException("Error writing game file.", ioe);
+		}
+	}
+	
+	private Writer createWriter(File gameFile) throws IOException {
 		if (fCompressed) {
-			return new BufferedWriter(new OutputStreamWriter(new GZIPOutputStream(new FileOutputStream(fUserFile)), CHARSET));
+			return new BufferedWriter(new OutputStreamWriter(new GZIPOutputStream(new FileOutputStream(gameFile)), CHARSET));
 		} else {
-			return new BufferedWriter(new FileWriter(fUserFile));
+			return new BufferedWriter(new FileWriter(gameFile));
 		}
 	}
 

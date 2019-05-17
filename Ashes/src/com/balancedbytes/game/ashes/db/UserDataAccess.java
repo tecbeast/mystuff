@@ -4,97 +4,88 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.util.Date;
+import java.sql.Date;
 
 import com.balancedbytes.game.ashes.model.User;
 
 public class UserDataAccess {
 
+	private DbManager fDbManager;
+	
 	private static final String SQL_FIND_USER_BY_ID =
 		"SELECT * FROM users WHERE id = ?";
 	private static final String SQL_CREATE_USER =
 		"INSERT INTO users"
-		+ " (last_name, first_name, country_code)"
-		+ " VALUES (?, ?, ?)";
+		+ " (id, name, email, registered, last_processed, games_joined, games_finished, games_won)"
+		+ " VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
 	private static final String SQL_UPDATE_USER =
 		"UPDATE users"
-		+ " SET last_name = ?, first_name = ?, country_code = ?"
+		+ " SET name = ?, email = ?, last_processed = ?, games_joined = ?, games_finished = ?, games_won = ?"
 		+ " WHERE id = ?";
 	private static final String SQL_DELETE_USER =
 		"DELETE FROM users WHERE id = ?";
 	
+	protected UserDataAccess(DbManager dbManager) {
+		fDbManager = dbManager;
+	}
+	
 	public User findUserById(String id) throws SQLException {
 		User user = null;
-		try (Connection c = ConnectionHelper.getConnection()) {
+		try (Connection c = fDbManager.getConnection()) {
 			PreparedStatement ps = c.prepareStatement(SQL_FIND_USER_BY_ID);
 			ps.setString(1, id);
 		    ResultSet rs = ps.executeQuery();
 			while (rs.next()) {
 	        	user = processRow(rs);
 	        }
+			c.commit();
 		}
 		return user;
 	}
 
-	public Authors findAuthorsFiltered(AuthorDataFilter filter, RestDataPaging paging) throws SQLException {
-		if ((filter == null) || filter.isEmpty()) {
-			return findAllAuthors(paging);
-		}
-		Authors authors = new Authors();
-		String namePattern = filter.getName().trim().toUpperCase();
-		if (namePattern.length() == 0) {
-			return authors;
-		}
-		namePattern = new StringBuilder().append("%").append(namePattern).append("%").toString();
-		try (Connection c = ConnectionHelper.getConnection()) {
-			PreparedStatement ps = c.prepareStatement(SQL_FIND_AUTHORS_FILTERED);
-			ps.setString(1, namePattern);
-			ps.setString(2, namePattern);
-			processResultSet(ps.executeQuery(), authors, paging);
-		}
-		return authors;
-	}
-
-	public Authors findAuthorsByGameId(String gameId, RestDataPaging paging) throws SQLException {
-		Authors authors = new Authors();
-		try (Connection c = ConnectionHelper.getConnection()) {
-			PreparedStatement ps = c.prepareStatement(SQL_FIND_AUTHORS_BY_GAME_ID);
-			ps.setLong(1, MyStuffUtil.parseLong(gameId));
-			processResultSet(ps.executeQuery(), authors, paging);
-		}
-		return authors;
-	}
-
-	public void createAuthor(Author author) throws SQLException {
-		try (Connection c = ConnectionHelper.getConnection()) {
-			PreparedStatement ps = c.prepareStatement(SQL_CREATE_AUTHOR, new String[] { "id" });
-			ps.setString(1, author.getLastName());
-			ps.setString(2, author.getFirstName());
-			ps.setString(3, author.getCountry().getCode());
-			ps.executeUpdate();
-			ResultSet rs = ps.getGeneratedKeys();
-			while (rs.next()) {
-				author.setId(rs.getString(1));
-			}
+	public boolean createUser(User user) throws SQLException {
+		try (Connection c = fDbManager.getConnection()) {
+			PreparedStatement ps = c.prepareStatement(SQL_CREATE_USER);
+			ps.setString(1, user.getId());
+			ps.setString(2, user.getName());
+			ps.setString(3, user.getEmail());
+			Date registered = (user.getRegistered() != null) ? new Date(user.getRegistered().getTime()) : null;
+			ps.setDate(4, registered);
+			Date lastProcessed = (user.getLastProcessed() != null) ? new Date(user.getLastProcessed().getTime()) : null;
+			ps.setDate(5, lastProcessed);
+			ps.setInt(6, user.getGamesJoined());
+			ps.setInt(7, user.getGamesFinished());
+			ps.setInt(8, user.getGamesWon());
+			boolean success = (ps.executeUpdate() > 0);
+			c.commit();
+			return success;
 		}
 	}
 
-	public boolean updateAuthor(Author author) throws SQLException {
-		try (Connection c = ConnectionHelper.getConnection()) {
-			PreparedStatement ps = c.prepareStatement(SQL_UPDATE_AUTHOR);
-			ps.setString(1, author.getLastName());
-			ps.setString(2, author.getFirstName());
-			ps.setString(3, author.getCountry().getCode());
-			ps.setLong(4, MyStuffUtil.parseLong(author.getId()));
-			return (ps.executeUpdate() == 1);
+	public boolean updateUser(User user) throws SQLException {
+		try (Connection c = fDbManager.getConnection()) {
+			PreparedStatement ps = c.prepareStatement(SQL_UPDATE_USER);
+			ps.setString(1, user.getName());
+			ps.setString(2, user.getEmail());
+			Date lastProcessed = (user.getLastProcessed() != null) ? new Date(user.getLastProcessed().getTime()) : null;
+			ps.setDate(3, lastProcessed);			
+			ps.setInt(4, user.getGamesJoined());
+			ps.setInt(5, user.getGamesFinished());
+			ps.setInt(6, user.getGamesWon());
+			ps.setString(7, user.getId());
+			boolean success = (ps.executeUpdate() > 0);
+			c.commit();
+			return success;
 		}
 	}
 
 	public boolean deleteAuthor(String id) throws SQLException {
-		try (Connection c = ConnectionHelper.getConnection()) {
-			PreparedStatement ps = c.prepareStatement(SQL_DELETE_AUTHOR);
-			ps.setLong(1, MyStuffUtil.parseLong(id));
-			return (ps.executeUpdate() == 1);
+		try (Connection c = fDbManager.getConnection()) {
+			PreparedStatement ps = c.prepareStatement(SQL_DELETE_USER);
+			ps.setString(1, id);
+			boolean success = (ps.executeUpdate() > 0);
+			c.commit();
+			return success;
 		}
 	}
 

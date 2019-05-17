@@ -1,0 +1,78 @@
+package com.balancedbytes.game.ashes.db;
+
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Properties;
+
+import org.h2.tools.Server;
+
+import com.balancedbytes.game.ashes.AshesUtil;
+
+public class DbManager {
+
+	public static final String DB_SERVER_PORT = "db.server.port";
+
+	private static final String DB_URL = "db.url";
+	private static final String DB_USER = "db.user";
+	private static final String DB_PASSWORD = "db.password";
+	private static final String DB_JDBC_DRIVER = "db.jdbc.driver";
+	private static final String DB_SERVER_DIR = "db.server.dir";
+
+	private String fDbUrl;
+	private String fDbUser;
+	private String fDbPassword;
+	private Server fDbServer;
+
+	public DbManager() {
+		super();
+	}
+	
+	public void init(Properties properties) throws SQLException {
+		fDbUrl = properties.getProperty(DB_URL, null);
+		fDbUser = properties.getProperty(DB_USER, null);
+		fDbPassword = properties.getProperty(DB_PASSWORD, null);
+		List<String> dbServerArgs = new ArrayList<String>();
+		String dbServerPort = properties.getProperty(DB_SERVER_PORT, null);
+		if (AshesUtil.isProvided(dbServerPort)) {
+			dbServerArgs.add("-tcpPort");
+			dbServerArgs.add(dbServerPort);
+		}
+		String dbServerDir = properties.getProperty(DB_SERVER_DIR, null);
+		if (AshesUtil.isProvided(dbServerDir)) {
+			dbServerArgs.add("-basedir");
+			dbServerArgs.add(dbServerDir);
+		}
+		try {
+			Class.forName(DB_JDBC_DRIVER);
+		} catch (ClassNotFoundException scnfe) {
+			throw new SQLException("JDBCDriver Class not found");
+		}
+		fDbServer = Server.createTcpServer(dbServerArgs.toArray(new String[dbServerArgs.size()]));
+	}
+	
+	public void startServer() throws SQLException {
+		fDbServer.start();
+	}
+	
+	public void stopServer() {
+		fDbServer.stop();
+	}
+
+	public Connection getConnection() throws SQLException {
+		Connection connection = DriverManager.getConnection(fDbUrl, fDbUser, fDbPassword);
+		connection.setAutoCommit(false);
+		return connection;
+	}
+	
+	public DbInitializer getDbInitializer() {
+		return new DbInitializer(this);
+	}
+	
+	public UserDataAccess getUserDataAccess() {
+		return new UserDataAccess(this);
+	}
+
+}

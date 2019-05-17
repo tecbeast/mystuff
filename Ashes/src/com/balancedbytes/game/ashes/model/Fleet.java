@@ -21,16 +21,6 @@ public class Fleet implements IJsonSerializable {
 	private Cargo fCargo;
 
 	/**
-	 * 
-	 */
-	private Fleet(int playerNr, int fighters, int transporters, Cargo cargo) {
-		setPlayerNr(playerNr);
-		setFighters(fighters);
-		setTransporters(transporters);
-		setCargo((cargo != null) ? cargo : new Cargo());
-	}
-
-	/**
 	 *
 	 */
 	protected Fleet() {
@@ -49,6 +39,16 @@ public class Fleet implements IJsonSerializable {
 	 */
 	public Fleet(Cargo cargo) {
 		this(0, 0, 0, cargo);
+	}
+
+	/**
+	 * 
+	 */
+	private Fleet(int playerNr, int fighters, int transporters, Cargo cargo) {
+		setPlayerNr(playerNr);
+		setFighters(fighters);
+		setTransporters(transporters);
+		setCargo((cargo != null) ? cargo : new Cargo());
 	}
 
 	/**

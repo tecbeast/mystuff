@@ -6,12 +6,14 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileReader;
 import java.io.IOException;
+import java.sql.SQLException;
 import java.util.Properties;
 import java.util.logging.LogManager;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
+import com.balancedbytes.game.ashes.db.DbManager;
 import com.balancedbytes.game.ashes.model.User;
 import com.balancedbytes.game.ashes.model.UserCache;
 
@@ -19,16 +21,11 @@ public class AshesOfEmpire {
 	
 	private static final Log LOG = LogFactory.getLog(AshesOfEmpire.class);
 
-	public static final String MAIL_HOST_IMAP = "mail.host.imap";
-	public static final String MAIL_HOST_SMTP = "mail.host.smtp";
-	public static final String MAIL_USER = "mail.user";
-	public static final String MAIL_PASSWORD = "mail.password";
-
-	private Properties fProperties;
+	private DbManager fDbManager;
 	private UserCache fUserCache;
 
-	public AshesOfEmpire() {
-		fProperties = new Properties();
+	private AshesOfEmpire() {
+		fDbManager = new DbManager();
 		fUserCache = new UserCache();
 	}
 	
@@ -40,15 +37,30 @@ public class AshesOfEmpire {
 		} catch (IOException ioe) {
 			throw new AshesException("Error reading log configuration.", ioe);
 		}
+		Properties mailProperties = new Properties();
 		try {
-			try (BufferedReader in = new BufferedReader(new FileReader(new File(dir, "conf/ashes.properties")))) {
-				fProperties.load(in);
+			try (BufferedReader in = new BufferedReader(new FileReader(new File(dir, "conf/mail.properties")))) {
+				mailProperties.load(in);
 			}
 		} catch (IOException ioe) {
-			throw new AshesException("Error reading ashes properties.", ioe);
+			throw new AshesException("Error reading mail properties.", ioe);
 		}
-		boolean userCompression = Boolean.parseBoolean(fProperties.getProperty("user.compression", "false"));
-		fUserCache.init(new File(dir, "user"), userCompression);
+		Properties dbProperties = new Properties();
+		try {
+			try (BufferedReader in = new BufferedReader(new FileReader(new File(dir, "conf/db.properties")))) {
+				dbProperties.load(in);
+			}
+		} catch (IOException ioe) {
+			throw new AshesException("Error reading db properties.", ioe);
+		}
+		dbProperties.setProperty(DbManager.DB_SERVER_PORT, new File(dir, "db").getAbsolutePath());
+		try {
+			fDbManager.init(dbProperties);
+			fDbManager.startServer();
+		} catch (SQLException sqle) {
+			throw new AshesException("Error starting db server.", sqle);
+		}
+		fUserCache.init(fDbManager.getUserDataAccess());
 	}
 	
 	public boolean save() {
@@ -59,10 +71,6 @@ public class AshesOfEmpire {
 			LOG.error("Error while saving Ashes.", e);
 			return false;
 		}
-	}
-	
-	public String getProperty(String key) {
-		return fProperties.getProperty(key);
 	}
 	
 	public User getUser(String id) {

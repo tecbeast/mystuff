@@ -1,4 +1,4 @@
-package com.balancedbytes.game.ashes;
+package com.balancedbytes.game.ashes.mail;
 
 import java.io.InputStream;
 import java.util.Properties;
@@ -14,9 +14,30 @@ import javax.mail.internet.ContentType;
 import javax.mail.internet.ParseException;
 import javax.mail.search.FlagTerm;
 
-public class FetchMail {
+public class MailManager {
+	
+	private static final String MAIL_HOST_IMAP = "mail.host.imap";
+	private static final String MAIL_HOST_SMTP = "mail.host.smtp";
+	private static final String MAIL_USER = "mail.user";
+	private static final String MAIL_PASSWORD = "mail.password";
 
-	public static void main(String args[]) throws Exception {
+	private String fMailHostImap;
+	private String fMailHostSmtp;
+	private String fMailUser;
+	private String fMailPassword;
+
+	public MailManager() {
+		super();
+	}
+	
+	public void init(Properties properties) {
+		fMailHostImap = properties.getProperty(MAIL_HOST_IMAP, null);
+		fMailHostSmtp = properties.getProperty(MAIL_HOST_SMTP, null);
+		fMailUser = properties.getProperty(MAIL_USER, null);
+		fMailPassword = properties.getProperty(MAIL_PASSWORD, null);
+	}
+	
+	public void fetchMail() throws Exception {
 
 		// mail server info
 		Properties mailProperties = new Properties();
@@ -26,10 +47,7 @@ public class FetchMail {
 		Properties properties = System.getProperties();
 		Session session = Session.getDefaultInstance(properties);
 		Store store = session.getStore("imap");
-		String host = mailProperties.getProperty("mail.host");
-		String user = mailProperties.getProperty("mail.user");
-		String password = mailProperties.getProperty("mail.password");
-		store.connect(host, user, password);
+		store.connect(fMailHostImap, fMailUser, fMailPassword);
 		Folder inbox = store.getFolder("inbox");
 		inbox.open(Folder.READ_ONLY);
 

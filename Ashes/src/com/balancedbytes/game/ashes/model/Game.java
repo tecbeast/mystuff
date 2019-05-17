@@ -81,6 +81,12 @@ public class Game implements IJsonSerializable {
   	private Planet[] fPlanets;
   	private Player[] fPlayers;
 
+  	protected Game() {
+	  	fPlayers = new Player[NR_OF_PLAYERS];
+		fPlanets = new Planet[NR_OF_PLANETS];
+  	}
+  	
+  	
 	/**
 	 * Start a new Game with given planets.
 	 */
@@ -89,12 +95,10 @@ public class Game implements IJsonSerializable {
 		setNumber(number);
 	  	setTurn(0);
 
-	  	fPlayers = new Player[NR_OF_PLAYERS];
-		for (int i = 0; i < users.length; i++) {
+		for (int i = 0; i < Math.min(fPlayers.length, users.length); i++) {
 			fPlayers[i] = new Player(users[i], i + 1);
 		}
 	  	
-		fPlanets = new Planet[NR_OF_PLANETS];
 	  	// planet name, planet number, player, WF, HD, PR, FI, TR, PDU
   		fPlanets[0]  = new Planet("Earth",            1, 1, 240, 6,  683, 15,  4,  6);
   		fPlanets[1]  = new Planet("Crab",             2, 2, 240, 6,  666, 15,  3,  6);

@@ -6,7 +6,7 @@
 #
 # ein erster kleiner Test des neuen Parsers für Ashes
 #
-turntoken a123456789
+turnsecret a123456789
 
 on 1 do          # befehle in einem block ...
   build 3 PDU
@@ -16,9 +16,5 @@ done
 
 build 5 TR on 7  # ... oder auch einzeln
 spy on 5         # das kostet politische Punkte !
-
-# diese Nachricht wird in der galactic media veröffentlicht ...
-announce "dies ist ein kleiner test"
-announce "über mehrere Zeilen hinweg"
 
 playername "Kalimar"  # mir ist nach einem neuen image :-)
