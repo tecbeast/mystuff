@@ -12,7 +12,7 @@ public class JsonObjectWrapper {
 	private static final SimpleDateFormat DATE_FORMAT = new SimpleDateFormat("dd.MM.yyyy");
 	
 	private JsonObject fJsonObject;
-	
+
 	public JsonObjectWrapper(JsonObject jsonObject) {
 		if (jsonObject == null) {
 			throw new NullPointerException("Parameter jsonObject must not be null.");

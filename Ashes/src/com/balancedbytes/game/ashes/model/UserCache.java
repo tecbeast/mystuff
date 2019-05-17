@@ -1,4 +1,4 @@
-package com.balancedbytes.game.ashes;
+package com.balancedbytes.game.ashes.model;
 
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
@@ -17,6 +17,8 @@ import java.util.Map;
 import java.util.zip.GZIPInputStream;
 import java.util.zip.GZIPOutputStream;
 
+import com.balancedbytes.game.ashes.AshesException;
+import com.balancedbytes.game.ashes.AshesUtil;
 import com.eclipsesource.json.Json;
 import com.eclipsesource.json.JsonArray;
 import com.eclipsesource.json.WriterConfig;
@@ -33,17 +35,17 @@ public class UserCache {
 		fUserById = new HashMap<String, User>();
 	}
 	
-	public void init(File userFile, boolean compressed) {
-		if ((userFile == null) || !userFile.exists() || !userFile.isFile()) {
-			throw new UserCacheException("Error locating user file.");
+	public void init(File userDir, boolean compressed) {
+		if ((userDir == null) || !userDir.exists() || !userDir.isDirectory()) {
+			throw new AshesException("Error locating user directory.");
 		}
-		fUserFile = userFile;
 		fCompressed = compressed;
+		fUserFile = new File(userDir, fCompressed ? "users.json.gz" : "users.json");
 		load();
 	}
 
-	public User get(String id) {
-		return (id != null) ? fUserById.get(id) : null;
+	public User get(String userId) {
+		return (userId != null) ? fUserById.get(userId) : null;
 	}
 	
 	private void add(User user) {
@@ -59,7 +61,7 @@ public class UserCache {
 				add(new User().fromJson(users.get(i)));
 			}
 		} catch (IOException ioe) {
-			throw new UserCacheException("Error reading users file.", ioe);
+			throw new AshesException("Error reading users file.", ioe);
 		}
 	}
 	
@@ -79,7 +81,7 @@ public class UserCache {
 			}
 			users.writeTo(out, WriterConfig.PRETTY_PRINT);
 		} catch (IOException ioe) {
-			throw new UserCacheException("Error writing users file.", ioe);
+			throw new AshesException("Error writing users file.", ioe);
 		}
 	}
 	

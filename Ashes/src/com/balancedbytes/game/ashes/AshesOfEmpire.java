@@ -5,11 +5,15 @@ import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileReader;
+import java.io.IOException;
 import java.util.Properties;
 import java.util.logging.LogManager;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+
+import com.balancedbytes.game.ashes.model.User;
+import com.balancedbytes.game.ashes.model.UserCache;
 
 public class AshesOfEmpire {
 	
@@ -33,16 +37,18 @@ public class AshesOfEmpire {
 			try (BufferedInputStream in = new BufferedInputStream(new FileInputStream(new File(dir, "conf/log.properties")))) {
 				LogManager.getLogManager().readConfiguration(in);
 			}
-			LOG.info("Ashes started in directory " + dir.getAbsolutePath());
+		} catch (IOException ioe) {
+			throw new AshesException("Error reading log configuration.", ioe);
+		}
+		try {
 			try (BufferedReader in = new BufferedReader(new FileReader(new File(dir, "conf/ashes.properties")))) {
 				fProperties.load(in);
 			}
-			boolean userCompression = Boolean.parseBoolean(fProperties.getProperty("user.compression", "false"));
-			File userFile = new File(dir, userCompression ? "user/user.json.gz" : "user/users.json");
-			fUserCache.init(userFile, userCompression);
-		} catch (Exception e) {
-			LOG.error("Error while initializing Ashes.", e);
+		} catch (IOException ioe) {
+			throw new AshesException("Error reading ashes properties.", ioe);
 		}
+		boolean userCompression = Boolean.parseBoolean(fProperties.getProperty("user.compression", "false"));
+		fUserCache.init(new File(dir, "user"), userCompression);
 	}
 	
 	public boolean save() {
@@ -71,6 +77,7 @@ public class AshesOfEmpire {
 		} else {
 			dir = new File(AshesOfEmpire.class.getResource("/").toURI());
 		}
+		LOG.info("AshesOfEmpire starting in directory " + dir.getAbsolutePath());
 		ashes.init(dir);
 		User user = ashes.getUser("kalimar");
 		user.setGamesJoined(user.getGamesJoined() + 1);

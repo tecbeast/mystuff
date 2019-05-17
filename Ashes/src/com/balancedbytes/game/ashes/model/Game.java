@@ -10,18 +10,30 @@ import java.util.Random;
 
 import com.balancedbytes.game.ashes.TurnSecretGenerator;
 import com.balancedbytes.game.ashes.command.CommandList;
+import com.balancedbytes.game.ashes.json.IJsonSerializable;
+import com.balancedbytes.game.ashes.json.JsonObjectWrapper;
+import com.eclipsesource.json.JsonArray;
+import com.eclipsesource.json.JsonObject;
+import com.eclipsesource.json.JsonValue;
 
 /**
  * Control class for each individual game.
  * Management on a turn by turn basis.
  */
-public class Game {
+public class Game implements IJsonSerializable {
+	
+	public static final int NR_OF_PLAYERS = 8;
+	public static final int NR_OF_PLANETS = 40;
 
-	public final static int NR_PLAYERS = 8;
-  	public final static int NR_PLANETS = 40;
+	private static final String NUMBER = "number";
+	private static final String TURN = "turn";
+	private static final String PLAYERS = "players";
+	private static final String PLANETS = "planets";
+	
+  	private static final Random RANDOM = new SecureRandom();
 
   	// planetary distances (in D+x)
-  	private final static int[][] DISTANCES = {
+  	private static final int[][] DISTANCES = {
 	  	{-1,1,3,3,3,3,3,2,0,2,3,3,3,3,3,2,1,1,1,1,1,1,1,1,2,2,1,2,2,2,2,2,3,3,3,3,2,2,1,2},  // 01
   		{1,-1,2,2,3,3,3,3,2,0,1,2,3,3,3,3,3,0,2,1,0,3,2,1,3,2,2,2,1,2,3,2,2,3,2,3,3,2,2,1},  // 02
   		{3,2,-1,2,3,3,3,3,3,1,0,1,3,3,3,3,3,2,3,3,2,3,3,2,3,3,3,2,2,2,3,3,2,3,2,3,3,3,3,1},  // 03
@@ -64,8 +76,6 @@ public class Game {
   		{2,1,1,1,2,3,3,3,3,1,0,1,3,3,3,3,3,1,3,2,0,3,2,1,2,2,3,1,0,1,3,2,1,2,1,3,3,2,1,-1}   // 40
   	};
   	
-  	private static final Random RANDOM = new SecureRandom();
-  
   	private int fNumber;
   	private int fTurn;
   	private Planet[] fPlanets;
@@ -76,15 +86,15 @@ public class Game {
 	 */
 	public Game(int number, String[] users) {
 
-		fNumber = number;
-		fPlayers = new Player[NR_PLAYERS];
-		fPlayers[0] = new Player(null, 0);
+		setNumber(number);
+	  	setTurn(0);
+
+	  	fPlayers = new Player[NR_OF_PLAYERS];
 		for (int i = 0; i < users.length; i++) {
 			fPlayers[i] = new Player(users[i], i + 1);
 		}
-	  	fTurn = 0;
-	  	fPlanets = new Planet[NR_PLANETS];
-  
+	  	
+		fPlanets = new Planet[NR_OF_PLANETS];
 	  	// planet name, planet number, player, WF, HD, PR, FI, TR, PDU
   		fPlanets[0]  = new Planet("Earth",            1, 1, 240, 6,  683, 15,  4,  6);
   		fPlanets[1]  = new Planet("Crab",             2, 2, 240, 6,  666, 15,  3,  6);
@@ -142,6 +152,13 @@ public class Game {
 	public int getNumber() {
 		return fNumber;
 	}
+	
+	/**
+	 * 
+	 */
+	protected void setNumber(int number) {
+		fNumber = number;
+	}
 
 	/**
 	 * Planet with given number.
@@ -187,6 +204,13 @@ public class Game {
 	/**
 	 * 
 	 */
+	protected void setTurn(int turn) {
+		fTurn = turn;
+	}
+	
+	/**
+	 * 
+	 */
 	public void addMessageToAllPlayerReports(Message message) {
 		for (Player player : fPlayers) {
 			player.getReport().add(message);
@@ -213,30 +237,30 @@ public class Game {
 		fTurn += 1;
 		
 		// generate turn secrets for next turn
-		for (int i = 1; i <= 8; i++) {
+		for (int i = 1; i <= NR_OF_PLAYERS; i++) {
 			getPlayer(i).setTurnSecret(TurnSecretGenerator.generateSecret());
 		}		
 		
 		// execute player commands
 		// (declare, homeplanet, planetname, playername, spy)
-		for (int i = 1; i <= 8; i++) {
+		for (int i = 1; i <= NR_OF_PLAYERS; i++) {
 			getPlayer(i).executeCommands(this, cmdList);
 		}		
 		
 		// turn start for each player
 		// (update and report political terms, update pp, update fm and tm)
-		for (int i = 1; i <= 8; i++) {
+		for (int i = 1; i <= NR_OF_PLAYERS; i++) {
 			getPlayer(i).startTurn(this);
 		}
 		
 		// play turn for each planet
-		for (int i = 1; i <= 40; i++) {
+		for (int i = 1; i <= NR_OF_PLANETS; i++) {
 			getPlanet(i).playTurn(this, cmdList);
 		}		
   
 		// turn end for each player
 		// (calculate gnp totals, report player status)
-		for (int i = 1; i <= 8; i++) {
+		for (int i = 1; i <= NR_OF_PLAYERS; i++) {
 			getPlayer(i).endTurn(this);
 		}
   
@@ -342,7 +366,7 @@ public class Game {
 
 		StringBuilder line = new StringBuilder();
 		line.append("Player ");
-		for (int i = 1; i <= 8; i++) {
+		for (int i = 1; i <= NR_OF_PLAYERS; i++) {
 			line.append("  (").append(i).append(")  ");
 		}
 		message.add(line.toString());
@@ -411,6 +435,40 @@ public class Game {
 			}
 		}
 		return result;
+	}
+	
+	@Override
+	public JsonObject toJson() {
+		JsonObjectWrapper json = new JsonObjectWrapper(new JsonObject());
+		json.add(NUMBER, getNumber());
+		json.add(TURN, getTurn());
+		JsonArray playerArray = new JsonArray();
+		for (int i = 1; i <= NR_OF_PLAYERS; i++) {
+			playerArray.add(getPlayer(i).toJson());
+		}
+		json.add(PLAYERS, playerArray);
+		JsonArray planetArray = new JsonArray();
+		for (int i = 1; i <= NR_OF_PLANETS; i++) {
+			planetArray.add(getPlanet(i).toJson());
+		}
+		json.add(PLANETS, planetArray);
+		return json.toJsonObject();
+	}
+	
+	@Override
+	public Game fromJson(JsonValue jsonValue) {
+		JsonObjectWrapper json = new JsonObjectWrapper(jsonValue.asObject());
+		setNumber(json.getInt(NUMBER));
+		setTurn(json.getInt(TURN));
+		JsonArray playerArray = json.getArray(PLAYERS);
+		for (int i = 0; i < playerArray.size(); i++) {
+			getPlayer(i + 1).fromJson(playerArray.get(i));
+		}
+		JsonArray planetArray = json.getArray(PLANETS);
+		for (int i = 0; i < planetArray.size(); i++) {
+			getPlanet(i + 1).fromJson(planetArray.get(i));
+		}
+		return this;
 	}
 	
 }
