@@ -9,6 +9,10 @@ public final class AshesUtil {
 	public static boolean isProvided(String str) {
 		return (str != null) && (str.length() > 0);
 	}
+
+	public static boolean isProvided(Object[] array) {
+		return (array != null) && (array.length > 0);
+	}
 	
 	public static String leftpad(String text, int length) {
 	    return String.format("%" + length + "." + length + "s", text);

@@ -13,13 +13,13 @@ import com.balancedbytes.game.ashes.AshesUtil;
 
 public class DbManager {
 
-	public static final String DB_SERVER_PORT = "db.server.port";
+	public static final String DB_SERVER_DIR = "db.server.dir";
 
 	private static final String DB_URL = "db.url";
 	private static final String DB_USER = "db.user";
 	private static final String DB_PASSWORD = "db.password";
 	private static final String DB_JDBC_DRIVER = "db.jdbc.driver";
-	private static final String DB_SERVER_DIR = "db.server.dir";
+	private static final String DB_SERVER_PORT = "db.server.port";
 
 	private String fDbUrl;
 	private String fDbUser;
@@ -31,24 +31,25 @@ public class DbManager {
 	}
 	
 	public void init(Properties properties) throws SQLException {
-		fDbUrl = properties.getProperty(DB_URL, null);
-		fDbUser = properties.getProperty(DB_USER, null);
-		fDbPassword = properties.getProperty(DB_PASSWORD, null);
+		fDbUrl = properties.getProperty(DB_URL);
+		fDbUser = properties.getProperty(DB_USER);
+		fDbPassword = properties.getProperty(DB_PASSWORD);
 		List<String> dbServerArgs = new ArrayList<String>();
-		String dbServerPort = properties.getProperty(DB_SERVER_PORT, null);
+		dbServerArgs.add("-ifNotExists");
+		String dbServerPort = properties.getProperty(DB_SERVER_PORT);
 		if (AshesUtil.isProvided(dbServerPort)) {
 			dbServerArgs.add("-tcpPort");
 			dbServerArgs.add(dbServerPort);
 		}
-		String dbServerDir = properties.getProperty(DB_SERVER_DIR, null);
+		String dbServerDir = properties.getProperty(DB_SERVER_DIR);
 		if (AshesUtil.isProvided(dbServerDir)) {
-			dbServerArgs.add("-basedir");
+			dbServerArgs.add("-baseDir");
 			dbServerArgs.add(dbServerDir);
 		}
 		try {
-			Class.forName(DB_JDBC_DRIVER);
+			Class.forName(properties.getProperty(DB_JDBC_DRIVER));
 		} catch (ClassNotFoundException scnfe) {
-			throw new SQLException("JDBCDriver Class not found");
+			throw new SQLException("JDBCDriver class not found.", scnfe);
 		}
 		fDbServer = Server.createTcpServer(dbServerArgs.toArray(new String[dbServerArgs.size()]));
 	}

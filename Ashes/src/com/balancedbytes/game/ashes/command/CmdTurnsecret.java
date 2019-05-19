@@ -5,7 +5,6 @@ import java.util.List;
 
 import com.balancedbytes.game.ashes.json.JsonObjectWrapper;
 import com.balancedbytes.game.ashes.model.Game;
-import com.balancedbytes.game.ashes.model.Player;
 import com.eclipsesource.json.JsonObject;
 import com.eclipsesource.json.JsonValue;
 
@@ -40,12 +39,12 @@ public class CmdTurnsecret extends Command {
 	@Override
 	public List<String> validate(Game game) {
 		List<String> messages = new ArrayList<String>();
-		if (game != null) {
-			Player player = game.getPlayer(getPlayerNr());
-			if ((player != null) && (fSecret != null) && !fSecret.equals(player.getTurnSecret())) {
-				messages.add("Invalid Turnsecret.");
-			}
-		}
+//		if (game != null) {
+//			Player player = game.getPlayer(getPlayerNr());
+//			if ((player != null) && (fSecret != null) && !fSecret.equals(player.getTurnSecret())) {
+//				messages.add("Invalid Turnsecret.");
+//			}
+//		}
 		return messages;
 	}
 	

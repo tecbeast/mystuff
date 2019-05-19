@@ -33,7 +33,6 @@ public class Player implements IJsonSerializable {
 	private static final String FIGHTER_MORALE = "fighterMorale";
 	private static final String TRANSPORTER_MORALE = "transporterMorale";
 	private static final String POLITICAL_TERMS = "politicalTerms";
-	private static final String TURN_SECRET = "turnSecret";
 
 	private String fUser;
 	private String fName;
@@ -43,7 +42,6 @@ public class Player implements IJsonSerializable {
 	private int fFighterMorale;      // percent (min = 50%, max = 150%)
 	private int fTransporterMorale;  // percent (min = 50%, max = 150%)
 	private PoliticalTerm[] fPoliticalTerms;
-	private String fTurnSecret;
 	
 	private transient Report fReport;
 	private transient Map<Category, Integer> fGnpTotals;
@@ -156,14 +154,6 @@ public class Player implements IJsonSerializable {
 		if ((otherPlayer >= 0) && (otherPlayer < fPoliticalTerms.length)) {
 			fPoliticalTerms[otherPlayer] = politicalTerm;
 		}
-	}
-	
-	public String getTurnSecret() {
-		return fTurnSecret;
-	}
-	
-	public void setTurnSecret(String turnSecret) {
-		fTurnSecret = turnSecret;
 	}
 	
 	public Map<Category, Integer> getGnpTotals() {
@@ -423,12 +413,11 @@ public class Player implements IJsonSerializable {
 		json.add(POLITICAL_POINTS, getPoliticalPoints());
 		json.add(FIGHTER_MORALE, getFighterMorale());
 		json.add(TRANSPORTER_MORALE, getTransporterMorale());
-		JsonArray jsonArray = new JsonArray();
+		JsonArray ptArray = new JsonArray();
 		for (int i = 0; i < fPoliticalTerms.length; i++) {
-			jsonArray.add(fPoliticalTerms[i].toString());
+			ptArray.add(fPoliticalTerms[i].toString());
 		}
-		json.add(POLITICAL_TERMS, jsonArray);
-		json.add(TURN_SECRET, getTurnSecret());
+		json.add(POLITICAL_TERMS, ptArray);
 		return json.toJsonObject();
 	}
 	
@@ -442,11 +431,12 @@ public class Player implements IJsonSerializable {
 		setPoliticalPoints(json.getInt(POLITICAL_POINTS));
 		setFighterMorale(json.getInt(FIGHTER_MORALE));
 		setTransporterMorale(json.getInt(TRANSPORTER_MORALE));
-		JsonArray jsonArray = json.getArray(POLITICAL_TERMS);
-		for (int i = 0; i < jsonArray.size(); i++) {
-			setPoliticalTerm(i, PoliticalTerm.valueOf(jsonArray.get(i).asString()));
+		JsonArray ptArray = json.getArray(POLITICAL_TERMS);
+		if ((ptArray != null) && !ptArray.isNull()) {
+			for (int i = 0; i < ptArray.size(); i++) {
+				setPoliticalTerm(i, PoliticalTerm.valueOf(ptArray.get(i).asString()));
+			}
 		}
-		setTurnSecret(json.getString(TURN_SECRET));
 		return this;
 	}
   

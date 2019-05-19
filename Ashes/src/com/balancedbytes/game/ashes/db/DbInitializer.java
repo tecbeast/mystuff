@@ -7,6 +7,8 @@ import java.sql.Statement;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
+import com.balancedbytes.game.ashes.model.User;
+
 /**
  * Create Tables in HSQLDB and fill with initial test data.
  */
@@ -36,9 +38,24 @@ public class DbInitializer {
 		sql.append("  email VARCHAR(100) NOT NULL,");
 		sql.append("  registered TIMESTAMP NOT NULL,");
 		sql.append("  last_processed TIMESTAMP NOT NULL,");
-		sql.append("  games_joined TIMESTAMP NOT NULL,");
-		sql.append("  games_finished TIMESTAMP NOT NULL,");
-		sql.append("  games_won TIMESTAMP NOT NULL");
+		sql.append("  games_joined INTEGER NOT NULL,");
+		sql.append("  games_finished INTEGER NOT NULL,");
+		sql.append("  games_won INTEGER NOT NULL");
+		sql.append(");");
+		return statement.executeUpdate(sql.toString());
+	}
+	
+	private int createTablePlayerTurns(Statement statement) throws SQLException {
+		LOG.info("create table player_turns");
+		StringBuilder sql = new StringBuilder();
+		sql.append("CREATE TABLE player_turns (");
+		sql.append("  game_number INTEGER NOT NULL,");
+		sql.append("  turn INTEGER NOT NULL,");
+		sql.append("  player_number INTEGER NOT NULL,");
+		sql.append("  deadline TIMESTAMP,");
+		sql.append("  turn_secret VARCHAR(40),");
+		sql.append("  turn_commands CLOB,");
+		sql.append("  PRIMARY KEY(game_number, turn, player_number)");
 		sql.append(");");
 		return statement.executeUpdate(sql.toString());
 	}
@@ -49,10 +66,26 @@ public class DbInitializer {
 		Statement statement = connection.createStatement();
 
 		dropTable(statement, "users");
+		dropTable(statement, "player_turns");
 		connection.commit();
 
 		createTableUsers(statement);
+		createTablePlayerTurns(statement);
 		connection.commit();
+		
+		if (testData) {
+			addTestData();
+		}
+		
+	}
+	
+	private void addTestData() throws SQLException {
+
+		User userTecBeast = new User();
+		userTecBeast.setId("TecBeast");
+		userTecBeast.setName("Georg Seipler");
+		userTecBeast.setEmail(userTecBeast.getName().toLowerCase().replace(' ', '@') + ".de");
+		fDbManager.getUserDataAccess().createUser(userTecBeast);
 		
 	}
 

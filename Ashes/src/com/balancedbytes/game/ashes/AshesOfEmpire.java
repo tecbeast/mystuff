@@ -37,6 +37,7 @@ public class AshesOfEmpire {
 		} catch (IOException ioe) {
 			throw new AshesException("Error reading log configuration.", ioe);
 		}
+		LOG.info("AshesOfEmpire starting in directory " + dir.getAbsolutePath());
 		Properties mailProperties = new Properties();
 		try {
 			try (BufferedReader in = new BufferedReader(new FileReader(new File(dir, "conf/mail.properties")))) {
@@ -53,7 +54,7 @@ public class AshesOfEmpire {
 		} catch (IOException ioe) {
 			throw new AshesException("Error reading db properties.", ioe);
 		}
-		dbProperties.setProperty(DbManager.DB_SERVER_PORT, new File(dir, "db").getAbsolutePath());
+		dbProperties.setProperty(DbManager.DB_SERVER_DIR, new File(dir, "db").getAbsolutePath());
 		try {
 			fDbManager.init(dbProperties);
 			fDbManager.startServer();
@@ -61,6 +62,10 @@ public class AshesOfEmpire {
 			throw new AshesException("Error starting db server.", sqle);
 		}
 		fUserCache.init(fDbManager.getUserDataAccess());
+	}
+	
+	public DbManager getDbManager() {
+		return fDbManager;
 	}
 	
 	public boolean save() {
@@ -79,17 +84,13 @@ public class AshesOfEmpire {
 	
 	public static void main(String[] args) throws Exception {
 		AshesOfEmpire ashes = new AshesOfEmpire();
-		File dir = null;
-		if ((args != null) && (args.length > 0)) {
-			dir = new File(args[0]);
-		} else {
-			dir = new File(AshesOfEmpire.class.getResource("/").toURI());
-		}
-		LOG.info("AshesOfEmpire starting in directory " + dir.getAbsolutePath());
+		String dirname = System.getProperties().getProperty("ashes.dir", null);
+		File dir = (dirname != null) ? new File(dirname) : new File(AshesOfEmpire.class.getResource("/").toURI());
 		ashes.init(dir);
-		User user = ashes.getUser("kalimar");
-		user.setGamesJoined(user.getGamesJoined() + 1);
-		ashes.save();
+		if (AshesUtil.isProvided(args) && "initdb".equalsIgnoreCase(args[0])) {
+			ashes.getDbManager().getDbInitializer().init(true);
+			ashes.getDbManager().stopServer();
+		}
 	}
 
 }

@@ -8,7 +8,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Random;
 
-import com.balancedbytes.game.ashes.TurnSecretGenerator;
 import com.balancedbytes.game.ashes.command.CommandList;
 import com.balancedbytes.game.ashes.json.IJsonSerializable;
 import com.balancedbytes.game.ashes.json.JsonObjectWrapper;
@@ -242,7 +241,7 @@ public class Game implements IJsonSerializable {
 		
 		// generate turn secrets for next turn
 		for (int i = 1; i <= NR_OF_PLAYERS; i++) {
-			getPlayer(i).setTurnSecret(TurnSecretGenerator.generateSecret());
+			// getPlayer(i).setTurnSecret(TurnSecretGenerator.generateSecret());
 		}		
 		
 		// execute player commands

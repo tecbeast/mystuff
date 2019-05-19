@@ -8,7 +8,7 @@ import java.sql.Date;
 
 import com.balancedbytes.game.ashes.model.User;
 
-public class UserDataAccess {
+public class PlayerTurnDataAccess {
 
 	private DbManager fDbManager;
 	
@@ -25,7 +25,7 @@ public class UserDataAccess {
 	private static final String SQL_DELETE_USER =
 		"DELETE FROM users WHERE id = ?";
 	
-	protected UserDataAccess(DbManager dbManager) {
+	protected PlayerTurnDataAccess(DbManager dbManager) {
 		fDbManager = dbManager;
 	}
 	
