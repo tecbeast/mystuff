@@ -8,6 +8,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
 import com.balancedbytes.game.ashes.AshesException;
+import com.balancedbytes.game.ashes.db.DbManager;
 import com.balancedbytes.game.ashes.db.UserDataAccess;
 
 public class UserCache {
@@ -21,16 +22,21 @@ public class UserCache {
 		fUserByName = new HashMap<String, User>();
 	}
 	
-	public void init(UserDataAccess dataAccess) {
-		fDataAccess = dataAccess;		
-	}	
+	public void init(DbManager dbManager) {
+		if (dbManager != null) {
+			fDataAccess = dbManager.getUserDataAccess();
+		}
+	}
 	
 	public User get(String name) {
 		if (name == null) {
 			return null;
 		}
 		User user = fUserByName.get(name);
-		if (user == null) {
+		if (user != null) {
+			return user;
+		}
+		if (fDataAccess != null) {
 			try {
 				user = fDataAccess.findByName(name);
 			} catch (SQLException sqle) {
@@ -42,9 +48,10 @@ public class UserCache {
 	}
 	
 	public void add(User user) {
-		if (user != null) {
-			fUserByName.put(user.getName(), user);
+		if (user == null) {
+			return;
 		}
+		fUserByName.put(user.getName(), user);
 	}
 
 	public boolean save() {
@@ -56,6 +63,9 @@ public class UserCache {
 	}
 	
 	private boolean save(User user) {
+		if ((user == null) || (fDataAccess == null)) {
+			return false;
+		}
 		try {
 			if (user.getId() > 0) {
 				return fDataAccess.update(user);

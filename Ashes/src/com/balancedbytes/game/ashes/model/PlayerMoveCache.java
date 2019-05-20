@@ -5,18 +5,26 @@ import java.util.HashMap;
 import java.util.Map;
 
 import com.balancedbytes.game.ashes.AshesException;
+import com.balancedbytes.game.ashes.db.DbManager;
 import com.balancedbytes.game.ashes.db.PlayerMoveDataAccess;
 
 public class PlayerMoveCache {
 	
 	private Map<String, PlayerMove> fMoveByGamePlayerTurn;
 	private PlayerMoveDataAccess fDataAccess;
+	private UserCache fUserCache;
 	
-	public PlayerMoveCache(PlayerMoveDataAccess dataAccess) {
+	public PlayerMoveCache() {
 		fMoveByGamePlayerTurn = new HashMap<String, PlayerMove>();
-		fDataAccess = dataAccess;
 	}
 	
+	public void init(DbManager dbManager, UserCache userCache) {
+		if (dbManager != null) {
+			fDataAccess = dbManager.getPlayerMoveDataAccess();
+		}
+		fUserCache = userCache;
+	}
+
 	private String createKey(PlayerMove move) {
 		if (move == null) {
 			return null;
@@ -41,9 +49,15 @@ public class PlayerMoveCache {
 	
 	public PlayerMove get(int gameNr, int playerNr, int turn) {
 		PlayerMove move = fMoveByGamePlayerTurn.get(createKey(gameNr, playerNr, turn));
-		if (move == null) {
+		if (move != null) {
+			return move;
+		}
+		if (fDataAccess != null) {
 			try {
 				move = fDataAccess.findByGamePlayerTurn(gameNr, playerNr, turn);
+				if (fUserCache != null) {
+					move.setUser(fUserCache.get(move.getUserName()));
+				}
 			} catch (SQLException sqle) {
 				throw new AshesException("Error finding playerMove(" + gameNr + "," + playerNr + "," + turn + ") in database.", sqle);
 			}
@@ -61,6 +75,9 @@ public class PlayerMoveCache {
 	}
 	
 	private boolean save(PlayerMove move) {
+		if ((move == null) || (fDataAccess == null)) {
+			return false;
+		}
 		try {
 			if (move.getId() > 0) {
 				return fDataAccess.update(move);

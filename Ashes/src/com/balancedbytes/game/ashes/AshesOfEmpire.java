@@ -16,6 +16,7 @@ import org.apache.commons.logging.LogFactory;
 import com.balancedbytes.game.ashes.db.DbManager;
 import com.balancedbytes.game.ashes.model.Game;
 import com.balancedbytes.game.ashes.model.GameCache;
+import com.balancedbytes.game.ashes.model.PlayerMoveCache;
 import com.balancedbytes.game.ashes.model.User;
 import com.balancedbytes.game.ashes.model.UserCache;
 
@@ -25,12 +26,13 @@ public class AshesOfEmpire {
 
 	private DbManager fDbManager;
 	private UserCache fUserCache;
+	private PlayerMoveCache fMoveCache;
 	private GameCache fGameCache;
 
 	private AshesOfEmpire() {
 		fDbManager = new DbManager();
 		fUserCache = new UserCache();
-		fGameCache = new GameCache();
+		fMoveCache = new PlayerMoveCache();
 	}
 	
 	public void init(File dir) {
@@ -65,8 +67,9 @@ public class AshesOfEmpire {
 		} catch (SQLException sqle) {
 			throw new AshesException("Error starting db server.", sqle);
 		}
-		fUserCache.init(fDbManager.getUserDataAccess());
-		fGameCache.init(new File(dir, "games"));
+		fUserCache.init(fDbManager);
+		fMoveCache.init(fDbManager, fUserCache);
+		// fGameCache.init(new File(dir, "games"));
 	}
 	
 	public DbManager getDbManager() {

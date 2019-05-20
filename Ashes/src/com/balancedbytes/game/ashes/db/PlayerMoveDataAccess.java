@@ -28,11 +28,11 @@ public class PlayerMoveDataAccess {
 		"SELECT * FROM player_moves WHERE game_number = ? AND player_number = ? AND turn = ?";
 	private static final String SQL_CREATE =
 		"INSERT INTO player_moves"
-		+ " (game_number, player_number, turn, deadline, received, turn_secret, commands)"
-		+ " VALUES (?, ?, ?, ?, ?, ?, ?)";
+		+ " (game_number, player_number, turn, deadline, received, user_name, turn_secret, command_list)"
+		+ " VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
 	private static final String SQL_UPDATE =
 		"UPDATE player_moves"
-		+ " SET game_number = ?, player_number = ?, turn = ?, deadline = ?, received = ?, turn_secret = ?, commands = ?"
+		+ " SET game_number = ?, player_number = ?, turn = ?, deadline = ?, received = ?, user_name = ?, turn_secret = ?, command_list = ?"
 		+ " WHERE id = ?";
 	private static final String SQL_DELETE =
 		"DELETE FROM player_moves WHERE id = ?";
@@ -70,8 +70,9 @@ public class PlayerMoveDataAccess {
 			ps.setInt(3, move.getTurn());
 			ps.setTimestamp(4, (move.getDeadline() != null) ? new Timestamp(move.getDeadline().getTime()) : null);
 			ps.setTimestamp(5, (move.getReceived() != null) ? new Timestamp(move.getReceived().getTime()) : null);
-			ps.setString(6, move.getTurnSecret());
-			ps.setBlob(7, createCommandsBlob(c, move));
+			ps.setString(6, move.getUserName());
+			ps.setString(7, move.getTurnSecret());
+			ps.setBlob(8, createCommandListBlob(c, move));
 			boolean success = (ps.executeUpdate() > 0);
 			c.commit();
 			return success;
@@ -89,9 +90,10 @@ public class PlayerMoveDataAccess {
 			ps.setInt(3, move.getTurn());
 			ps.setTimestamp(4, (move.getDeadline() != null) ? new Timestamp(move.getDeadline().getTime()) : null);
 			ps.setTimestamp(5, (move.getReceived() != null) ? new Timestamp(move.getReceived().getTime()) : null);
-			ps.setString(6, move.getTurnSecret());
-			ps.setBlob(7, createCommandsBlob(c, move));
-			ps.setLong(8, move.getId());
+			ps.setString(6, move.getUserName());
+			ps.setString(7, move.getTurnSecret());
+			ps.setBlob(8, createCommandListBlob(c, move));
+			ps.setLong(9, move.getId());
 			boolean success = (ps.executeUpdate() > 0);
 			c.commit();
 			return success;
@@ -116,8 +118,9 @@ public class PlayerMoveDataAccess {
 		playerMove.setTurn(rs.getInt("turn"));
 		playerMove.setDeadline(rs.getTimestamp("deadline"));
 		playerMove.setReceived(rs.getTimestamp("received"));
+		playerMove.setUserName(rs.getString("user_name"));
 		playerMove.setTurnSecret(rs.getString("turn_secret"));
-		playerMove.setCommands(readCommands(rs.getBinaryStream("commands")));
+		playerMove.setCommands(readCommands(rs.getBinaryStream("command_list")));
 		return playerMove;
 	}
 	
@@ -132,7 +135,7 @@ public class PlayerMoveDataAccess {
 		}
 	}
 	
-	private Blob createCommandsBlob(Connection connection, PlayerMove move) throws SQLException {
+	private Blob createCommandListBlob(Connection connection, PlayerMove move) throws SQLException {
 		if ((connection == null) || (move == null) || (move.getCommands() == null) || (move.getCommands().size() == 0)) {
 			return null;
 		}

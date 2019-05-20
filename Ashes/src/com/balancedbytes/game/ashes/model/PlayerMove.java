@@ -13,8 +13,11 @@ public class PlayerMove implements IDataObject {
 	private int fPlayerNr;
 	private Date fDeadline;
 	private Date fReceived;
+	private String fUserName;
 	private String fTurnSecret;
-	private transient CommandList fCommands;	
+	private CommandList fCommands;
+	
+	private transient User fUser;
 
 	public PlayerMove() {
 		super();
@@ -68,6 +71,19 @@ public class PlayerMove implements IDataObject {
 		fReceived = received;
 	}
 	
+	public String getUserName() {
+		if (fUser != null) {
+			return fUser.getName();
+		}
+		return fUserName;
+	}
+	
+	public void setUserName(String userName) {
+		if (fUser == null) {
+			fUserName = userName;
+		}
+	}
+	
 	public String getTurnSecret() {
 		return fTurnSecret;
 	}
@@ -84,4 +100,12 @@ public class PlayerMove implements IDataObject {
 		fCommands = commands;
 	}
 	
+	public User getUser() {
+		return fUser;
+	}
+	
+	public void setUser(User user) {
+		fUser = user;
+	}
+		
 }

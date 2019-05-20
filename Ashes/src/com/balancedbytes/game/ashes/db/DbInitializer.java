@@ -10,7 +10,7 @@ import org.apache.commons.logging.LogFactory;
 import com.balancedbytes.game.ashes.model.User;
 
 /**
- * Create Tables in HSQLDB and fill with initial test data.
+ * Create Tables in H2 database and fill with initial test data.
  */
 public class DbInitializer {
 	
@@ -34,8 +34,8 @@ public class DbInitializer {
 		String sql = new StringBuilder()
 			.append("CREATE TABLE users (")
 			.append(" id IDENTITY NOT NULL PRIMARY KEY,")  // identity = auto-incrementing long integer
-			.append(" name VARCHAR(20) NOT NULL,")
-			.append(" real_name VARCHAR(100),")
+			.append(" name VARCHAR(32) NOT NULL,")
+			.append(" real_name VARCHAR(80),")
 			.append(" email VARCHAR(100) NOT NULL,")
 			.append(" registered TIMESTAMP NOT NULL,")
 			.append(" last_processed TIMESTAMP NOT NULL,")
@@ -57,8 +57,24 @@ public class DbInitializer {
 			.append(" turn INTEGER NOT NULL,")
 			.append(" deadline TIMESTAMP,")
 			.append(" received TIMESTAMP,")
-			.append(" turn_secret VARCHAR(40),")
-			.append(" commands BLOB")
+			.append(" user_name VARCHAR(32),")
+			.append(" turn_secret VARCHAR(32),")
+			.append(" command_list BLOB")
+			.append(");")
+			.toString();
+		return statement.executeUpdate(sql);
+	}
+	
+	private int createTableGames(Statement statement) throws SQLException {
+		LOG.info("create table games");
+		String sql = new StringBuilder()
+			.append("CREATE TABLE games (")
+			.append(" id IDENTITY NOT NULL PRIMARY KEY,")  // identity = auto-incrementing long integer
+			.append(" number INTEGER NOT NULL,")
+			.append(" turn INTEGER NOT NULL,")
+			.append(" last_update TIMESTAMP,")
+			.append(" player_list BLOB,")
+			.append(" planet_list BLOB")
 			.append(");")
 			.toString();
 		return statement.executeUpdate(sql);
@@ -69,12 +85,14 @@ public class DbInitializer {
 		Connection connection = fDbManager.getConnection();
 		Statement statement = connection.createStatement();
 
-		dropTable(statement, "users");
+		dropTable(statement, "games");
 		dropTable(statement, "player_moves");
+		dropTable(statement, "users");
 		connection.commit();
 
 		createTableUsers(statement);
 		createTablePlayerMoves(statement);
+		createTableGames(statement);
 		connection.commit();
 		
 		if (testData) {
@@ -86,7 +104,8 @@ public class DbInitializer {
 	private void addTestData() throws SQLException {
 		User userTecBeast = new User();
 		userTecBeast.setName("TecBeast");
-		userTecBeast.setEmail(userTecBeast.getName().toLowerCase().replace(' ', '@') + ".de");
+		userTecBeast.setRealName("Georg Seipler");
+		userTecBeast.setEmail(userTecBeast.getRealName().toLowerCase().replace(' ', '@') + ".de");  // spam protection
 		fDbManager.getUserDataAccess().create(userTecBeast);
 	}
 
