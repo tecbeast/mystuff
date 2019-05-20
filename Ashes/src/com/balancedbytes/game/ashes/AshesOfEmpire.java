@@ -14,6 +14,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
 import com.balancedbytes.game.ashes.db.DbManager;
+import com.balancedbytes.game.ashes.mail.MailManager;
 import com.balancedbytes.game.ashes.model.Game;
 import com.balancedbytes.game.ashes.model.GameCache;
 import com.balancedbytes.game.ashes.model.PlayerMoveCache;
@@ -25,12 +26,14 @@ public class AshesOfEmpire {
 	private static final Log LOG = LogFactory.getLog(AshesOfEmpire.class);
 
 	private DbManager fDbManager;
+	private MailManager fMailManager;
 	private UserCache fUserCache;
 	private PlayerMoveCache fMoveCache;
 	private GameCache fGameCache;
 
 	private AshesOfEmpire() {
 		fDbManager = new DbManager();
+		fMailManager = new MailManager();
 		fUserCache = new UserCache();
 		fMoveCache = new PlayerMoveCache();
 	}
@@ -52,6 +55,7 @@ public class AshesOfEmpire {
 		} catch (IOException ioe) {
 			throw new AshesException("Error reading mail properties.", ioe);
 		}
+		fMailManager.init(mailProperties);
 		Properties dbProperties = new Properties();
 		try {
 			try (BufferedReader in = new BufferedReader(new FileReader(new File(dir, "conf/db.properties")))) {
