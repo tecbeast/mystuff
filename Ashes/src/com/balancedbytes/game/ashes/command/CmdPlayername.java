@@ -16,20 +16,15 @@ public class CmdPlayername extends Command {
 	
 	private String fName;
 	
-	protected CmdPlayername() {
+	public CmdPlayername() {
 		super();
 	}
 	
-	public CmdPlayername(int playerNr, String newName) {
-		setPlayerNr(playerNr);
-		setName(newName);
-	}
-
 	public String getName() {
 		return fName;
 	}
 	
-	protected void setName(String name) {
+	public void setName(String name) {
 		fName = name;
 	}
 	

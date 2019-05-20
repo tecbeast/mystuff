@@ -634,7 +634,7 @@ public class Planet implements IJsonSerializable {
 			@Override
 			public boolean filter(Command cmd) {
 				return (cmd.getType() == CommandType.SEND)
-					&& (cmd.getPlayerNr() == getPlayerNr()) && (((CmdSend) cmd).getFromPlanetNr() == getNumber())
+					&& (((CmdSend) cmd).getFromPlanetNr() == getNumber())
 					&& (((CmdSend) cmd).isCargo() == cargo);
 			}
 		}).toList();
@@ -644,7 +644,8 @@ public class Planet implements IJsonSerializable {
 		return cmdList.filter(new ICommandFilter() {
 			@Override
 			public boolean filter(Command cmd) {
-				return (cmd != null) && (cmd.getType() == CommandType.BUILD) && (cmd.getPlayerNr() == getPlayerNr()) && (((CmdBuild) cmd).getPlanetNr() == getNumber());
+				return (cmd.getType() == CommandType.BUILD)
+					&& (((CmdBuild) cmd).getPlanetNr() == getNumber());
 			}
 		}).sort(new Comparator<Command>() {
 			@Override

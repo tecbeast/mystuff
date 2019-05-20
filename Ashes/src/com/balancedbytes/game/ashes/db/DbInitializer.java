@@ -31,33 +31,37 @@ public class DbInitializer {
 
 	private int createTableUsers(Statement statement) throws SQLException {
 		LOG.info("create table users");
-		StringBuilder sql = new StringBuilder();
-		sql.append("CREATE TABLE users (");
-		sql.append("  id VARCHAR(20) NOT NULL PRIMARY KEY,");
-		sql.append("  name VARCHAR(80) NOT NULL,");
-		sql.append("  email VARCHAR(100) NOT NULL,");
-		sql.append("  registered TIMESTAMP NOT NULL,");
-		sql.append("  last_processed TIMESTAMP NOT NULL,");
-		sql.append("  games_joined INTEGER NOT NULL,");
-		sql.append("  games_finished INTEGER NOT NULL,");
-		sql.append("  games_won INTEGER NOT NULL");
-		sql.append(");");
-		return statement.executeUpdate(sql.toString());
+		String sql = new StringBuilder()
+			.append("CREATE TABLE users (")
+			.append(" id IDENTITY NOT NULL PRIMARY KEY,")  // identity = auto-incrementing long integer
+			.append(" name VARCHAR(20) NOT NULL,")
+			.append(" real_name VARCHAR(100),")
+			.append(" email VARCHAR(100) NOT NULL,")
+			.append(" registered TIMESTAMP NOT NULL,")
+			.append(" last_processed TIMESTAMP NOT NULL,")
+			.append(" games_joined INTEGER NOT NULL,")
+			.append(" games_finished INTEGER NOT NULL,")
+			.append(" games_won INTEGER NOT NULL")
+			.append(");")
+			.toString();
+		return statement.executeUpdate(sql);
 	}
 	
-	private int createTablePlayerTurns(Statement statement) throws SQLException {
-		LOG.info("create table player_turns");
-		StringBuilder sql = new StringBuilder();
-		sql.append("CREATE TABLE player_turns (");
-		sql.append("  game_number INTEGER NOT NULL,");
-		sql.append("  turn INTEGER NOT NULL,");
-		sql.append("  player_number INTEGER NOT NULL,");
-		sql.append("  deadline TIMESTAMP,");
-		sql.append("  turn_secret VARCHAR(40),");
-		sql.append("  turn_commands CLOB,");
-		sql.append("  PRIMARY KEY(game_number, turn, player_number)");
-		sql.append(");");
-		return statement.executeUpdate(sql.toString());
+	private int createTablePlayerMoves(Statement statement) throws SQLException {
+		LOG.info("create table player_moves");
+		String sql = new StringBuilder()
+			.append("CREATE TABLE player_moves (")
+			.append(" id IDENTITY NOT NULL PRIMARY KEY,")  // identity = auto-incrementing long integer
+			.append(" game_number INTEGER NOT NULL,")
+			.append(" player_number INTEGER NOT NULL,")
+			.append(" turn INTEGER NOT NULL,")
+			.append(" deadline TIMESTAMP,")
+			.append(" received TIMESTAMP,")
+			.append(" turn_secret VARCHAR(40),")
+			.append(" commands BLOB")
+			.append(");")
+			.toString();
+		return statement.executeUpdate(sql);
 	}
 
 	public void init(boolean testData) throws SQLException {
@@ -66,11 +70,11 @@ public class DbInitializer {
 		Statement statement = connection.createStatement();
 
 		dropTable(statement, "users");
-		dropTable(statement, "player_turns");
+		dropTable(statement, "player_moves");
 		connection.commit();
 
 		createTableUsers(statement);
-		createTablePlayerTurns(statement);
+		createTablePlayerMoves(statement);
 		connection.commit();
 		
 		if (testData) {
@@ -80,13 +84,10 @@ public class DbInitializer {
 	}
 	
 	private void addTestData() throws SQLException {
-
 		User userTecBeast = new User();
-		userTecBeast.setId("TecBeast");
-		userTecBeast.setName("Georg Seipler");
+		userTecBeast.setName("TecBeast");
 		userTecBeast.setEmail(userTecBeast.getName().toLowerCase().replace(' ', '@') + ".de");
-		fDbManager.getUserDataAccess().createUser(userTecBeast);
-		
+		fDbManager.getUserDataAccess().create(userTecBeast);
 	}
 
 }

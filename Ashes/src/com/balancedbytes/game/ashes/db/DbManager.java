@@ -75,5 +75,9 @@ public class DbManager {
 	public UserDataAccess getUserDataAccess() {
 		return new UserDataAccess(this);
 	}
+	
+	public PlayerMoveDataAccess getPlayerMoveDataAccess() {
+		return new PlayerMoveDataAccess(this);
+	}
 
 }

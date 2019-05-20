@@ -7,34 +7,34 @@ import java.util.Map;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
-import com.balancedbytes.game.ashes.AshesUtil;
+import com.balancedbytes.game.ashes.AshesException;
 import com.balancedbytes.game.ashes.db.UserDataAccess;
 
 public class UserCache {
 	
 	private static final Log LOG = LogFactory.getLog(UserCache.class);
 	
-	private Map<String, User> fUserById;
-	private UserDataAccess fUserDataAccess;
+	private Map<String, User> fUserByName;
+	private UserDataAccess fDataAccess;
 	
 	public UserCache() {
-		fUserById = new HashMap<String, User>();
+		fUserByName = new HashMap<String, User>();
 	}
 	
-	public void init(UserDataAccess userDataAccess) {
-		fUserDataAccess = userDataAccess;		
+	public void init(UserDataAccess dataAccess) {
+		fDataAccess = dataAccess;		
 	}	
 	
-	public User get(String userId) {
-		if (!AshesUtil.isProvided(userId)) {
+	public User get(String name) {
+		if (name == null) {
 			return null;
 		}
-		User user = fUserById.get(userId);
+		User user = fUserByName.get(name);
 		if (user == null) {
 			try {
-				user = fUserDataAccess.findUserById(userId);
+				user = fDataAccess.findByName(name);
 			} catch (SQLException sqle) {
-				LOG.error("Error finding user " + userId + " in database.", sqle);
+				LOG.error("Error finding user(" + name + ") in database.", sqle);
 			}
 			add(user);
 		}
@@ -42,32 +42,29 @@ public class UserCache {
 	}
 	
 	public void add(User user) {
-		if ((user != null) && AshesUtil.isProvided(user.getId())) {
-			fUserById.put(user.getId(), user);
+		if (user != null) {
+			fUserByName.put(user.getName(), user);
 		}
 	}
 
-	public void save() {
-		for (User user : fUserById.values()) {
-			save(user);
+	public boolean save() {
+		boolean success = true;
+		for (User user : fUserByName.values()) {
+			success &= save(user);
 		}
+		return success;
 	}
 	
 	private boolean save(User user) {
-		if (user.getRegistered() != null) {
-			try {
-				return fUserDataAccess.updateUser(user);
-			} catch (SQLException sqle) {
-				LOG.error("Error updating user " + user.getId() + " in database.", sqle);
+		try {
+			if (user.getId() > 0) {
+				return fDataAccess.update(user);
+			} else {
+				return fDataAccess.create(user);
 			}
-		} else {
-			try {
-				return fUserDataAccess.createUser(user);
-			} catch (SQLException sqle) {
-				LOG.error("Error creating user " + user.getId() + " in database.", sqle);
-			}
+		} catch (SQLException sqle) {
+			throw new AshesException("Error saving user(" + user.getName() + ") in database.", sqle);
 		}
-		return false;
 	}
 
 }

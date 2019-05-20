@@ -232,6 +232,8 @@ public class Game implements IJsonSerializable {
 	 */
 	public void playTurn(CommandList cmdList) {
 		
+		// TODO: cmdList from CommandCache (per player)
+		
 		//  7.1 Zuerst werden die neuen PV berechnet. Änderungen werden sofort wirksam,
 		//      noch vor den Flugbewegungen. Das gilt auch für den Wechsel des Heimatplaneten
 		//      und alle Namensänderungen.

@@ -6,8 +6,9 @@ import com.balancedbytes.game.ashes.db.IDataObject;
 
 public class User implements IDataObject {
 	
-	private String fId;
+	private long fId;
 	private String fName;
+	private String fRealName;
 	private String fEmail;
 	private Date fRegistered;
 	private Date fLastProcessed;
@@ -15,11 +16,11 @@ public class User implements IDataObject {
 	private int fGamesFinished;	
 	private int fGamesWon;
 
-	public String getId() {
+	public long getId() {
 		return fId;
 	}
 	
-	public void setId(String id) {
+	public void setId(long id) {
 		fId = id;
 	}
 	
@@ -29,6 +30,14 @@ public class User implements IDataObject {
 	
 	public void setName(String name) {
 		fName = name;
+	}
+	
+	public String getRealName() {
+		return fRealName;
+	}
+	
+	public void setRealName(String realName) {
+		fRealName = realName;
 	}
 	
 	public String getEmail() {

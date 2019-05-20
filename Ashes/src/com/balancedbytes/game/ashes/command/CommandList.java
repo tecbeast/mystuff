@@ -90,7 +90,24 @@ public class CommandList implements IJsonSerializable {
 	/**
 	 * 
 	 */
-	public CommandList forPlayer(int playerNr) {
+	public CommandList extract(CommandType type) {
+		List<Command> newCommands = new ArrayList<Command>();
+		CommandList result = new CommandList();
+		for (Command command : fCommands) {
+			if (command.getType() == type) {
+				result.add(command);
+			} else {
+				newCommands.add(command);
+			}
+		}
+		fCommands = newCommands;
+		return result;
+	}
+	
+	/**
+	 * 
+	 */
+	public CommandList forPlayerNr(int playerNr) {
 		CommandList result = new CommandList();
 		for (Command command : fCommands) {
 			if (command.getPlayerNr() == playerNr) {
@@ -98,6 +115,16 @@ public class CommandList implements IJsonSerializable {
 			}
 		}
 		return result;
+	}
+	
+	/**
+	 * 
+	 */
+	public CommandList setPlayerNr(int playerNr) {
+		for (Command command : fCommands) {
+			command.setPlayerNr(playerNr);
+		}
+		return this;
 	}
 		
 	@Override

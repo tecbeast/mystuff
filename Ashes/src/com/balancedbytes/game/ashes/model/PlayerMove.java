@@ -5,17 +5,27 @@ import java.util.Date;
 import com.balancedbytes.game.ashes.command.CommandList;
 import com.balancedbytes.game.ashes.db.IDataObject;
 
-public class PlayerTurn implements IDataObject {
+public class PlayerMove implements IDataObject {
 	
+	private long fId;
 	private int fGameNr;
 	private int fTurn;
 	private int fPlayerNr;
 	private Date fDeadline;
+	private Date fReceived;
 	private String fTurnSecret;
-	private CommandList fTurnCommands;
+	private transient CommandList fCommands;	
 
-	public PlayerTurn() {
+	public PlayerMove() {
 		super();
+	}
+	
+	public long getId() {
+		return fId;
+	}
+	
+	public void setId(long id) {
+		fId = id;
 	}
 	
 	public int getGameNr() {
@@ -50,6 +60,14 @@ public class PlayerTurn implements IDataObject {
 		fDeadline = deadline;
 	}
 	
+	public Date getReceived() {
+		return fReceived;
+	}
+	
+	public void setReceived(Date received) {
+		fReceived = received;
+	}
+	
 	public String getTurnSecret() {
 		return fTurnSecret;
 	}
@@ -58,12 +76,12 @@ public class PlayerTurn implements IDataObject {
 		fTurnSecret = turnSecret;
 	}
 	
-	public CommandList getTurnCommands() {
-		return fTurnCommands;
+	public CommandList getCommands() {
+		return fCommands;
 	}
 	
-	public void setTurnCommands(CommandList turnCommands) {
-		fTurnCommands = turnCommands;
+	public void setCommands(CommandList commands) {
+		fCommands = commands;
 	}
-
+	
 }

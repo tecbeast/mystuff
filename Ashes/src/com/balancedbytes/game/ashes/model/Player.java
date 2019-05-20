@@ -276,7 +276,7 @@ public class Player implements IJsonSerializable {
 		//      noch vor den Flugbewegungen. Das gilt auch für den Wechsel des Heimatplaneten
 		//      und alle Namensänderungen.
 		
-		for (Command cmd : cmdList.forPlayer(fNumber).toList()) {
+		for (Command cmd : cmdList.toList()) {
 			switch (cmd.getType()) {
 				case DECLARE:
 					executeDeclare(game, (CmdDeclare) cmd);

@@ -12,28 +12,31 @@ public class UserDataAccess {
 
 	private DbManager fDbManager;
 	
-	private static final String SQL_FIND_USER_BY_ID =
-		"SELECT * FROM users WHERE id = ?";
-	private static final String SQL_CREATE_USER =
+	private static final String SQL_FIND_BY_NAME =
+		"SELECT * FROM users WHERE name = ?";
+	private static final String SQL_CREATE =
 		"INSERT INTO users"
-		+ " (id, name, email, registered, last_processed, games_joined, games_finished, games_won)"
+		+ " (name, real_name, email, registered, last_processed, games_joined, games_finished, games_won)"
 		+ " VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
-	private static final String SQL_UPDATE_USER =
+	private static final String SQL_UPDATE =
 		"UPDATE users"
-		+ " SET name = ?, email = ?, last_processed = ?, games_joined = ?, games_finished = ?, games_won = ?"
+		+ " SET name = ?, real_name = ?, email = ?, last_processed = ?, games_joined = ?, games_finished = ?, games_won = ?"
 		+ " WHERE id = ?";
-	private static final String SQL_DELETE_USER =
+	private static final String SQL_DELETE =
 		"DELETE FROM users WHERE id = ?";
 	
 	protected UserDataAccess(DbManager dbManager) {
 		fDbManager = dbManager;
 	}
 	
-	public User findUserById(String id) throws SQLException {
+	public User findByName(String name) throws SQLException {
+		if (name == null) {
+			return null;
+		}
 		User user = null;
 		try (Connection c = fDbManager.getConnection()) {
-			PreparedStatement ps = c.prepareStatement(SQL_FIND_USER_BY_ID);
-			ps.setString(1, id);
+			PreparedStatement ps = c.prepareStatement(SQL_FIND_BY_NAME);
+			ps.setString(1, name);
 		    ResultSet rs = ps.executeQuery();
 			while (rs.next()) {
 	        	user = processRow(rs);
@@ -43,11 +46,11 @@ public class UserDataAccess {
 		return user;
 	}
 
-	public boolean createUser(User user) throws SQLException {
+	public boolean create(User user) throws SQLException {
 		try (Connection c = fDbManager.getConnection()) {
-			PreparedStatement ps = c.prepareStatement(SQL_CREATE_USER);
-			ps.setString(1, user.getId());
-			ps.setString(2, user.getName());
+			PreparedStatement ps = c.prepareStatement(SQL_CREATE);
+			ps.setString(1, user.getName());
+			ps.setString(2, user.getRealName());
 			ps.setString(3, user.getEmail());
 			ps.setDate(4, new Date(System.currentTimeMillis()));
 			ps.setDate(5, new Date(System.currentTimeMillis()));
@@ -60,27 +63,28 @@ public class UserDataAccess {
 		}
 	}
 
-	public boolean updateUser(User user) throws SQLException {
+	public boolean update(User user) throws SQLException {
 		try (Connection c = fDbManager.getConnection()) {
-			PreparedStatement ps = c.prepareStatement(SQL_UPDATE_USER);
+			PreparedStatement ps = c.prepareStatement(SQL_UPDATE);
 			ps.setString(1, user.getName());
-			ps.setString(2, user.getEmail());
+			ps.setString(2, user.getRealName());
+			ps.setString(3, user.getEmail());
 			Date lastProcessed = (user.getLastProcessed() != null) ? new Date(user.getLastProcessed().getTime()) : null;
-			ps.setDate(3, lastProcessed);			
-			ps.setInt(4, user.getGamesJoined());
-			ps.setInt(5, user.getGamesFinished());
-			ps.setInt(6, user.getGamesWon());
-			ps.setString(7, user.getId());
+			ps.setDate(4, lastProcessed);			
+			ps.setInt(5, user.getGamesJoined());
+			ps.setInt(6, user.getGamesFinished());
+			ps.setInt(7, user.getGamesWon());
+			ps.setLong(8, user.getId());
 			boolean success = (ps.executeUpdate() > 0);
 			c.commit();
 			return success;
 		}
 	}
 
-	public boolean deleteAuthor(String id) throws SQLException {
+	public boolean delete(long id) throws SQLException {
 		try (Connection c = fDbManager.getConnection()) {
-			PreparedStatement ps = c.prepareStatement(SQL_DELETE_USER);
-			ps.setString(1, id);
+			PreparedStatement ps = c.prepareStatement(SQL_DELETE);
+			ps.setLong(1, id);
 			boolean success = (ps.executeUpdate() > 0);
 			c.commit();
 			return success;
@@ -89,8 +93,9 @@ public class UserDataAccess {
 
 	protected User processRow(ResultSet rs) throws SQLException {
 		User user = new User();
-		user.setId(rs.getString("id"));
+		user.setId(rs.getLong("id"));
 		user.setName(rs.getString("name"));
+		user.setRealName(rs.getString("real_name"));
 		user.setEmail(rs.getString("email"));
 		user.setRegistered(rs.getDate("registered"));
 		user.setLastProcessed(rs.getDate("last_processed"));

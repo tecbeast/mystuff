@@ -14,20 +14,15 @@ public class CmdTurnsecret extends Command {
 	
 	private String fSecret;
 	
-	protected CmdTurnsecret() {
+	public CmdTurnsecret() {
 		super();
-	}
-	
-	public CmdTurnsecret(int playerNr, String secret) {
-		setPlayerNr(playerNr);
-		setSecret(secret);
 	}
 	
 	public String getSecret() {
 		return fSecret;
 	}
 	
-	protected void setSecret(String secret) {
+	public void setSecret(String secret) {
 		fSecret = secret;
 	}
 	

@@ -22,4 +22,16 @@ public final class AshesUtil {
 	    return String.format("%-" + length + "." + length + "s", text);
 	}
 	
+	public static String toStringWithLeadingZeroes(int number, int length) {
+		String numberString = Integer.toString(number);
+		StringBuilder result = new StringBuilder();
+		for (int i = 0; i < length; i++) {
+			if (i >= numberString.length()) {
+				result.append("0");
+			}
+		}
+		result.append(numberString);
+		return result.toString();
+	}
+	
 }

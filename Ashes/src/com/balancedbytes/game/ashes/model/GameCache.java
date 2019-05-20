@@ -5,8 +5,6 @@ import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
-import java.io.FileReader;
-import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
@@ -18,6 +16,7 @@ import java.util.zip.GZIPInputStream;
 import java.util.zip.GZIPOutputStream;
 
 import com.balancedbytes.game.ashes.AshesException;
+import com.balancedbytes.game.ashes.AshesUtil;
 import com.eclipsesource.json.Json;
 import com.eclipsesource.json.JsonObject;
 import com.eclipsesource.json.WriterConfig;
@@ -25,36 +24,30 @@ import com.eclipsesource.json.WriterConfig;
 public class GameCache {
 	
 	private static final String CHARSET = "UTF-8";
+	private static final String GAME_PREFIX = "game";
+	private static final String EXTENSION = ".json.gz";
 
 	private Map<Integer, Game> fGameByNr;
 	private File fGameDir;
-	private boolean fCompressed;
 	
 	public GameCache() {
 		fGameByNr = new HashMap<Integer, Game>();
 	}
 	
-	public void init(File gameDir, boolean compressed) {
+	public void init(File gameDir) {
 		if ((gameDir == null) || !gameDir.exists() || !gameDir.isDirectory()) {
 			throw new AshesException("Error locating game directory.");
 		}
 		fGameDir = gameDir;
-		fCompressed = compressed;
 	}
 	
 	private File createFile(int gameNr) {
-		StringBuilder filename = new StringBuilder();
-		filename.append("game");
-		String numberString = Integer.toString(gameNr);
-		if (numberString.length() <= 4) {
-			filename.append("0000".substring(0, 5 - numberString.length()));
-		}
-		filename.append(numberString);
-		filename.append(".json");
-		if (fCompressed) {
-			filename.append(".gz");
-		}
-		return new File(fGameDir, filename.toString());
+		String filename = new StringBuilder()
+			.append(GAME_PREFIX)
+			.append(AshesUtil.toStringWithLeadingZeroes(gameNr, 6))
+			.append(EXTENSION)
+			.toString();
+		return new File(fGameDir, filename);
 	}
 	
 	public Game get(int gameNr) {
@@ -73,19 +66,11 @@ public class GameCache {
 	}
 
 	private Game load(File gameFile) {
-		try (Reader in = createReader(gameFile)) {
+		try (Reader in = new BufferedReader(new InputStreamReader(new GZIPInputStream(new FileInputStream(gameFile)), CHARSET))) {
 			JsonObject gameObject = Json.parse(in).asObject();
 			return new Game().fromJson(gameObject);
 		} catch (IOException ioe) {
 			throw new AshesException("Error reading users file.", ioe);
-		}
-	}
-	
-	private Reader createReader(File gameFile) throws IOException {
-		if (fCompressed) {
-			return new BufferedReader(new InputStreamReader(new GZIPInputStream(new FileInputStream(gameFile)), CHARSET));
-		} else {
-			return new BufferedReader(new FileReader(gameFile));
 		}
 	}
 
@@ -96,18 +81,11 @@ public class GameCache {
 	}
 	
 	private void save(Game game) {
-		try (Writer out = createWriter(createFile(game.getNumber()))) {
+		File gameFile = createFile(game.getNumber());
+		try (Writer out = new BufferedWriter(new OutputStreamWriter(new GZIPOutputStream(new FileOutputStream(gameFile)), CHARSET))) {
 			game.toJson().writeTo(out, WriterConfig.PRETTY_PRINT);
 		} catch (IOException ioe) {
 			throw new AshesException("Error writing game file.", ioe);
-		}
-	}
-	
-	private Writer createWriter(File gameFile) throws IOException {
-		if (fCompressed) {
-			return new BufferedWriter(new OutputStreamWriter(new GZIPOutputStream(new FileOutputStream(gameFile)), CHARSET));
-		} else {
-			return new BufferedWriter(new FileWriter(gameFile));
 		}
 	}
 
