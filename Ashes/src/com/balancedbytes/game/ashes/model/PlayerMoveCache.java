@@ -12,17 +12,15 @@ public class PlayerMoveCache {
 	
 	private Map<String, PlayerMove> fMoveByGamePlayerTurn;
 	private PlayerMoveDataAccess fDataAccess;
-	private UserCache fUserCache;
 	
 	public PlayerMoveCache() {
 		fMoveByGamePlayerTurn = new HashMap<String, PlayerMove>();
 	}
 	
-	public void init(DbManager dbManager, UserCache userCache) {
+	public void init(DbManager dbManager) {
 		if (dbManager != null) {
 			fDataAccess = dbManager.getPlayerMoveDataAccess();
 		}
-		fUserCache = userCache;
 	}
 
 	private String createKey(PlayerMove move) {
@@ -55,9 +53,6 @@ public class PlayerMoveCache {
 		if (fDataAccess != null) {
 			try {
 				move = fDataAccess.findByGamePlayerTurn(gameNr, playerNr, turn);
-				if (fUserCache != null) {
-					move.setUser(fUserCache.get(move.getUserName()));
-				}
 			} catch (SQLException sqle) {
 				throw new AshesException("Error finding playerMove(" + gameNr + "," + playerNr + "," + turn + ") in database.", sqle);
 			}

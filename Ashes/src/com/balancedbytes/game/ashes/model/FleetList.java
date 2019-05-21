@@ -2,6 +2,7 @@ package com.balancedbytes.game.ashes.model;
 
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Iterator;
 import java.util.List;
 
 import com.balancedbytes.game.ashes.json.IJsonSerializable;
@@ -11,7 +12,7 @@ import com.eclipsesource.json.JsonValue;
 /**
  *
  */
-public class FleetList implements IJsonSerializable {
+public class FleetList implements IJsonSerializable, Iterable<Fleet> {
 
 	private List<Fleet> fFleets = null;
 
@@ -46,13 +47,11 @@ public class FleetList implements IJsonSerializable {
 		return null;
 	}
 	
-	/**
-	 * 
-	 */
-	public List<Fleet> toList() {
-		return Collections.unmodifiableList(fFleets);
+	@Override
+	public Iterator<Fleet> iterator() {
+		return fFleets.iterator();
 	}
-
+	
 	/**
 	 * Adds a Fleet to this list.
 	 * Checks for player number and adds to according fleet.

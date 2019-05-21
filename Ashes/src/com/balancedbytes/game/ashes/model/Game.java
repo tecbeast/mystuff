@@ -1,6 +1,7 @@
 package com.balancedbytes.game.ashes.model;
 
 import java.security.SecureRandom;
+import java.util.Date;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
@@ -9,26 +10,17 @@ import java.util.Map;
 import java.util.Random;
 
 import com.balancedbytes.game.ashes.command.CommandList;
-import com.balancedbytes.game.ashes.json.IJsonSerializable;
-import com.balancedbytes.game.ashes.json.JsonObjectWrapper;
-import com.eclipsesource.json.JsonArray;
-import com.eclipsesource.json.JsonObject;
-import com.eclipsesource.json.JsonValue;
+import com.balancedbytes.game.ashes.db.IDataObject;
 
 /**
  * Control class for each individual game.
  * Management on a turn by turn basis.
  */
-public class Game implements IJsonSerializable {
+public class Game implements IDataObject {
 	
 	public static final int NR_OF_PLAYERS = 8;
 	public static final int NR_OF_PLANETS = 40;
 
-	private static final String NUMBER = "number";
-	private static final String TURN = "turn";
-	private static final String PLAYERS = "players";
-	private static final String PLANETS = "planets";
-	
   	private static final Random RANDOM = new SecureRandom();
 
   	// planetary distances (in D+x)
@@ -75,73 +67,88 @@ public class Game implements IJsonSerializable {
   		{2,1,1,1,2,3,3,3,3,1,0,1,3,3,3,3,3,1,3,2,0,3,2,1,2,2,3,1,0,1,3,2,1,2,1,3,3,2,1,-1}   // 40
   	};
   	
+  	private long fId;
   	private int fNumber;
   	private int fTurn;
-  	private Planet[] fPlanets;
-  	private Player[] fPlayers;
+  	private Date fLastUpdate;
+  	private PlanetList fPlanets;
+  	private PlayerList fPlayers;
 
-  	protected Game() {
-	  	fPlayers = new Player[NR_OF_PLAYERS];
-		fPlanets = new Planet[NR_OF_PLANETS];
+  	public Game() {
+	  	setPlayers(new PlayerList());
+		setPlanets(new PlanetList());
   	}
-  	
   	
 	/**
 	 * Start a new Game with given planets.
 	 */
 	public Game(int number, String[] users) {
 
+		this();
+		
 		setNumber(number);
 	  	setTurn(0);
 
-		for (int i = 0; i < Math.min(fPlayers.length, users.length); i++) {
-			fPlayers[i] = new Player(users[i], i + 1);
+		for (int i = 0; i < Math.min(NR_OF_PLAYERS, users.length); i++) {
+			fPlayers.add(new Player(users[i], i + 1));
 		}
 	  	
 	  	// planet name, planet number, player, WF, HD, PR, FI, TR, PDU
-  		fPlanets[0]  = new Planet("Earth",            1, 1, 240, 6,  683, 15,  4,  6);
-  		fPlanets[1]  = new Planet("Crab",             2, 2, 240, 6,  666, 15,  3,  6);
-  		fPlanets[2]  = new Planet("Eastside",         3, 3, 240, 6,  833, 15, 10,  6);
-  		fPlanets[3]  = new Planet("Nameless",         4, 4, 240, 6,  650, 15,  3,  6);
-  		fPlanets[4]  = new Planet("Lenin",            5, 5, 240, 6,  616, 15,  1,  6);
-  		fPlanets[5]  = new Planet("Shadow",           6, 6, 240, 6,  700, 15,  5,  6);
-  		fPlanets[6]  = new Planet("Sombrero",         7, 7, 240, 6,  816, 15, 10,  6);
-  		fPlanets[7]  = new Planet("Lone Star",        8, 8, 240, 6,  716, 15,  5,  6);
-  		fPlanets[8]  = new Planet("Barnard's Arrow",  9, 1, 240, 6,  500, 10,  9,  7);
-  		fPlanets[9] =  new Planet("Outpost",         10, 2, 110, 3, 1083, 10,  6, 10);
-  		fPlanets[10] = new Planet("Desert Rock",     11, 3, 180, 5,  666, 10,  7,  6);
-  		fPlanets[11] = new Planet("Mechanica",       12, 4, 180, 2,  500, 10,  5, 11);
-  		fPlanets[12] = new Planet("Last Hope",       13, 5, 205, 6,  583, 10,  1, 12);
-  		fPlanets[13] = new Planet("Wilderness",      14, 6,  90, 3,  333, 10,  6,  8);
-  		fPlanets[14] = new Planet("Tramp",           15, 7, 160, 4,  750, 10,  8,  6);
-  		fPlanets[15] = new Planet("New Nome",        16, 8, 120, 3, 1000, 10,  5,  9);
-  		fPlanets[16] = new Planet("Kalgourlie",      17, 0, 160, 4, 1000,  6,  3,  4);
-  		fPlanets[17] = new Planet("Draken",          18, 0, 180, 5,  833,  6,  3,  5);
-  		fPlanets[18] = new Planet("Rivet",           19, 0, 220, 6,  666,  6,  3,  6);
-  		fPlanets[19] = new Planet("Crossland",       20, 0, 230, 6, 1000,  6,  3,  6);
-  		fPlanets[20] = new Planet("Beyond",          21, 0,  80, 2,  666,  6,  1,  2);
-  		fPlanets[21] = new Planet("New Earth",       22, 0, 110, 3, 1000,  6,  2,  3);
-  		fPlanets[22] = new Planet("Scott's Home",    23, 0, 150, 4,  833,  6,  3,  4);
-  		fPlanets[23] = new Planet("Newton",          24, 0, 120, 3, 1166,  6,  3,  3);
-  		fPlanets[24] = new Planet("Murphy",          25, 0,  85, 3, 1333,  6,  1,  3);
-  		fPlanets[25] = new Planet("Aitchison",       26, 0, 100, 3,  583,  6,  2,  3);
-  		fPlanets[26] = new Planet("Landfall",        27, 0,  90, 3, 1083,  6,  1,  3);
-  		fPlanets[27] = new Planet("Atlas",           28, 0,  80, 2,  833,  6,  1,  2);
-  		fPlanets[28] = new Planet("New Mecca",       29, 0,  80, 2, 1000,  6,  1,  2);
-  		fPlanets[29] = new Planet("Evergreen",       30, 0, 110, 3, 1166,  6,  2,  3);
-  		fPlanets[30] = new Planet("New Jerusalem",   31, 0, 100, 3,  916,  6,  2,  3);
-  		fPlanets[31] = new Planet("Lesser Evil",     32, 0, 160, 4, 1083,  6,  3,  4);
-  		fPlanets[32] = new Planet("Lermontov",       33, 0,  90, 3, 1250,  6,  1,  3);
-  		fPlanets[33] = new Planet("Einstein",        34, 0, 220, 6, 1250,  6,  3,  6);
-  		fPlanets[34] = new Planet("Dunroamin",       35, 0,  80, 5,  750,  6,  3,  5);
-  		fPlanets[35] = new Planet("Strife",          36, 0, 140, 4, 1166,  6,  3,  4);
-  		fPlanets[36] = new Planet("Potter's Bar",    37, 0,  20, 1,  500,  2,  0,  1);
-  		fPlanets[37] = new Planet("Kaironow",        38, 0,  20, 1,  500,  2,  0,  1);
-  		fPlanets[38] = new Planet("Stormbringer",    39, 0,  20, 1,  500,  2,  0,  1);
-  		fPlanets[39] = new Planet("Mike's Dream",    40, 0,  20, 1,  500,  2,  0,  1);
+  		fPlanets.add(new Planet("Earth",            1, 1, 240, 6,  683, 15,  4,  6));
+  		fPlanets.add(new Planet("Crab",             2, 2, 240, 6,  666, 15,  3,  6));
+  		fPlanets.add(new Planet("Eastside",         3, 3, 240, 6,  833, 15, 10,  6));
+  		fPlanets.add(new Planet("Nameless",         4, 4, 240, 6,  650, 15,  3,  6));
+  		fPlanets.add(new Planet("Lenin",            5, 5, 240, 6,  616, 15,  1,  6));
+  		fPlanets.add(new Planet("Shadow",           6, 6, 240, 6,  700, 15,  5,  6));
+  		fPlanets.add(new Planet("Sombrero",         7, 7, 240, 6,  816, 15, 10,  6));
+  		fPlanets.add(new Planet("Lone Star",        8, 8, 240, 6,  716, 15,  5,  6));
+  		fPlanets.add(new Planet("Barnard's Arrow",  9, 1, 240, 6,  500, 10,  9,  7));
+  		fPlanets.add(new Planet("Outpost",         10, 2, 110, 3, 1083, 10,  6, 10));
+  		fPlanets.add(new Planet("Desert Rock",     11, 3, 180, 5,  666, 10,  7,  6));
+  		fPlanets.add(new Planet("Mechanica",       12, 4, 180, 2,  500, 10,  5, 11));
+  		fPlanets.add(new Planet("Last Hope",       13, 5, 205, 6,  583, 10,  1, 12));
+  		fPlanets.add(new Planet("Wilderness",      14, 6,  90, 3,  333, 10,  6,  8));
+  		fPlanets.add(new Planet("Tramp",           15, 7, 160, 4,  750, 10,  8,  6));
+  		fPlanets.add(new Planet("New Nome",        16, 8, 120, 3, 1000, 10,  5,  9));
+  		fPlanets.add(new Planet("Kalgourlie",      17, 0, 160, 4, 1000,  6,  3,  4));
+  		fPlanets.add(new Planet("Draken",          18, 0, 180, 5,  833,  6,  3,  5));
+  		fPlanets.add(new Planet("Rivet",           19, 0, 220, 6,  666,  6,  3,  6));
+  		fPlanets.add(new Planet("Crossland",       20, 0, 230, 6, 1000,  6,  3,  6));
+  		fPlanets.add(new Planet("Beyond",          21, 0,  80, 2,  666,  6,  1,  2));
+  		fPlanets.add(new Planet("New Earth",       22, 0, 110, 3, 1000,  6,  2,  3));
+  		fPlanets.add(new Planet("Scott's Home",    23, 0, 150, 4,  833,  6,  3,  4));
+  		fPlanets.add(new Planet("Newton",          24, 0, 120, 3, 1166,  6,  3,  3));
+  		fPlanets.add(new Planet("Murphy",          25, 0,  85, 3, 1333,  6,  1,  3));
+  		fPlanets.add(new Planet("Aitchison",       26, 0, 100, 3,  583,  6,  2,  3));
+  		fPlanets.add(new Planet("Landfall",        27, 0,  90, 3, 1083,  6,  1,  3));
+  		fPlanets.add(new Planet("Atlas",           28, 0,  80, 2,  833,  6,  1,  2));
+  		fPlanets.add(new Planet("New Mecca",       29, 0,  80, 2, 1000,  6,  1,  2));
+  		fPlanets.add(new Planet("Evergreen",       30, 0, 110, 3, 1166,  6,  2,  3));
+  		fPlanets.add(new Planet("New Jerusalem",   31, 0, 100, 3,  916,  6,  2,  3));
+  		fPlanets.add(new Planet("Lesser Evil",     32, 0, 160, 4, 1083,  6,  3,  4));
+  		fPlanets.add(new Planet("Lermontov",       33, 0,  90, 3, 1250,  6,  1,  3));
+  		fPlanets.add(new Planet("Einstein",        34, 0, 220, 6, 1250,  6,  3,  6));
+  		fPlanets.add(new Planet("Dunroamin",       35, 0,  80, 5,  750,  6,  3,  5));
+  		fPlanets.add(new Planet("Strife",          36, 0, 140, 4, 1166,  6,  3,  4));
+  		fPlanets.add(new Planet("Potter's Bar",    37, 0,  20, 1,  500,  2,  0,  1));
+  		fPlanets.add(new Planet("Kaironow",        38, 0,  20, 1,  500,  2,  0,  1));
+  		fPlanets.add(new Planet("Stormbringer",    39, 0,  20, 1,  500,  2,  0,  1));
+  		fPlanets.add(new Planet("Mike's Dream",    40, 0,  20, 1,  500,  2,  0,  1));
   		
   	}
 	
+	@Override
+	public long getId() {
+		return fId;
+	}
+	
+	public void setId(long id) {
+		fId = id;
+	}
+
+	/**
+	 * 
+	 */
 	public static int getDistance(int fromPlanetNr, int toPlanetNr) {
 		if ((fromPlanetNr < 1) || (fromPlanetNr > 40) || (toPlanetNr < 1) || (toPlanetNr > 40)) {
 			return -1;
@@ -149,66 +156,70 @@ public class Game implements IJsonSerializable {
 		return DISTANCES[fromPlanetNr - 1][toPlanetNr - 1];
 	}	
 
-	/**
-	 * Game number.
-	 */
 	public int getNumber() {
 		return fNumber;
 	}
 	
-	/**
-	 * 
-	 */
-	protected void setNumber(int number) {
+	public void setNumber(int number) {
 		fNumber = number;
+	}
+	
+	public PlayerList getPlayers() {
+		return fPlayers;
+	}
+	
+	public void setPlayers(PlayerList players) {
+		fPlayers = players;
+	}	
+	
+	public PlanetList getPlanets() {
+		return fPlanets;
+	}
+	
+	public void setPlanets(PlanetList planets) {
+		fPlanets = planets;
 	}
 
 	/**
 	 * Planet with given number.
 	 */
 	public Planet getPlanet(int nr) {
-		if ((nr <= 0) || (nr > fPlanets.length)) {
-			return null;
-		} else {
-			return fPlanets[nr - 1];
-		}
+		return fPlanets.get(nr - 1);
 	}
 
 	/**
 	 * Player with given number
 	 */
 	public Player getPlayer(int nr) {
-		if ((nr <= 0) || (nr > fPlayers.length)) {
-			return null;
-		} else {
-			return fPlayers[nr - 1];
-		}
+		return fPlayers.get(nr - 1);
 	}
 
 	/**
 	 * Number of player with given username or 0 if no player with that name.
 	 */
 	public int getPlayerNrOfUser(String userName) {
-		for (int i = 0; i < fPlayers.length; i++) {
-			if (fPlayers[i].getUser().equals(userName)) {
-				return i + 1;
+		for (Player player : fPlayers) {
+			if (player.getUser().equals(userName)) {
+				return player.getNumber();
 			}
 		}
 		return 0;
 	}
 
-	/**
-	 * Turn number.
-	 */
 	public int getTurn() {
 		return fTurn;
 	}
 	
-	/**
-	 * 
-	 */
-	protected void setTurn(int turn) {
+	public void setTurn(int turn) {
 		fTurn = turn;
+	}
+	
+	public Date getLastUpdate() {
+		return fLastUpdate;
+	}
+	
+	public void setLastUpdate(Date lastUpdate) {
+		fLastUpdate = lastUpdate;
 	}
 	
 	/**
@@ -440,40 +451,6 @@ public class Game implements IJsonSerializable {
 			}
 		}
 		return result;
-	}
-	
-	@Override
-	public JsonObject toJson() {
-		JsonObjectWrapper json = new JsonObjectWrapper(new JsonObject());
-		json.add(NUMBER, getNumber());
-		json.add(TURN, getTurn());
-		JsonArray playerArray = new JsonArray();
-		for (int i = 1; i <= NR_OF_PLAYERS; i++) {
-			playerArray.add(getPlayer(i).toJson());
-		}
-		json.add(PLAYERS, playerArray);
-		JsonArray planetArray = new JsonArray();
-		for (int i = 1; i <= NR_OF_PLANETS; i++) {
-			planetArray.add(getPlanet(i).toJson());
-		}
-		json.add(PLANETS, planetArray);
-		return json.toJsonObject();
-	}
-	
-	@Override
-	public Game fromJson(JsonValue jsonValue) {
-		JsonObjectWrapper json = new JsonObjectWrapper(jsonValue.asObject());
-		setNumber(json.getInt(NUMBER));
-		setTurn(json.getInt(TURN));
-		JsonArray playerArray = json.getArray(PLAYERS);
-		for (int i = 0; i < playerArray.size(); i++) {
-			getPlayer(i + 1).fromJson(playerArray.get(i));
-		}
-		JsonArray planetArray = json.getArray(PLANETS);
-		for (int i = 0; i < planetArray.size(); i++) {
-			getPlanet(i + 1).fromJson(planetArray.get(i));
-		}
-		return this;
 	}
 	
 }

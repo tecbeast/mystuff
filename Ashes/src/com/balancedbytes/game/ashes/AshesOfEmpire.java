@@ -36,6 +36,7 @@ public class AshesOfEmpire {
 		fMailManager = new MailManager();
 		fUserCache = new UserCache();
 		fMoveCache = new PlayerMoveCache();
+		fGameCache = new GameCache();
 	}
 	
 	public void init(File dir) {
@@ -72,8 +73,8 @@ public class AshesOfEmpire {
 			throw new AshesException("Error starting db server.", sqle);
 		}
 		fUserCache.init(fDbManager);
-		fMoveCache.init(fDbManager, fUserCache);
-		// fGameCache.init(new File(dir, "games"));
+		fMoveCache.init(fDbManager);
+		fGameCache.init(fDbManager);
 	}
 	
 	public DbManager getDbManager() {

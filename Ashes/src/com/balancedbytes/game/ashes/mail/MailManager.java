@@ -46,44 +46,41 @@ public class MailManager {
 
 		List<Mail> mails = new ArrayList<Mail>();
 		
-		Store store = null;
-		Folder inbox = null;
-		
-		try {
-		
-			// connect to my IMAP inbox in read-only mode
-			Properties properties = System.getProperties();
-			Session session = Session.getDefaultInstance(properties);
-			store = session.getStore("imap");
-			store.connect(fMailHostImap, fMailUser, fMailPassword);
-			inbox = store.getFolder("inbox");
-			inbox.open(Folder.READ_ONLY);
-	
-			// search for all "unseen" messages
-			Flags seen = new Flags(Flags.Flag.SEEN);
-			FlagTerm unseenFlagTerm = new FlagTerm(seen, false);
-			Message messages[] = inbox.search(unseenFlagTerm);
-	
-			if (AshesUtil.isProvided(messages)) {
-				for (int i = 0; i < messages.length; i++) {
-					Mail mail = new Mail();
-					mail.setSubject(messages[i].getSubject());
-					mail.setFrom(messages[i].getFrom()[0]);
-					StringBuilder body = new StringBuilder();
-					addBodyPart(messages[i], body);
-					mail.setBody(body.toString());
-				}
-			}
-			
-			// TODO: delete processed mails
+		// connect to my IMAP inbox in read-only mode
+		Properties properties = System.getProperties();
+		Session session = Session.getDefaultInstance(properties);
+		try (Store store = session.getStore("imap")) {
 
-			inbox.close(true);
-			store.close();
+			store.connect(fMailHostImap, fMailUser, fMailPassword);
+		
+			try (Folder inbox = store.getFolder("inbox")) {
+
+				inbox.open(Folder.READ_ONLY);
+	
+				// search for all "unseen" messages
+				Flags seen = new Flags(Flags.Flag.SEEN);
+				FlagTerm unseenFlagTerm = new FlagTerm(seen, false);
+				Message messages[] = inbox.search(unseenFlagTerm);
+	
+				if (AshesUtil.isProvided(messages)) {
+					for (int i = 0; i < messages.length; i++) {
+						Mail mail = new Mail();
+						mail.setSubject(messages[i].getSubject());
+						mail.setFrom(messages[i].getFrom()[0]);
+						StringBuilder body = new StringBuilder();
+						addBodyPart(messages[i], body);
+						mail.setBody(body.toString());
+					}
+				}
+
+				// TODO: delete processed mails
+
+			}
 			
 		} catch (Exception any) {
 			throw new AshesException("Error fetching mail.", any);
 		}
-		
+			
 		return mails;
 
 	}

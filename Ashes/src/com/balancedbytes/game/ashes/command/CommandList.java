@@ -1,8 +1,8 @@
 package com.balancedbytes.game.ashes.command;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.Comparator;
+import java.util.Iterator;
 import java.util.List;
 
 import com.balancedbytes.game.ashes.AshesUtil;
@@ -14,7 +14,7 @@ import com.eclipsesource.json.JsonValue;
 /**
  * A list of Ashes Commands. Allows manipulation of contained Commands.
  */
-public class CommandList implements IJsonSerializable {
+public class CommandList implements IJsonSerializable, Iterable<Command> {
 	
 	private List<Command> fCommands;
 
@@ -38,7 +38,17 @@ public class CommandList implements IJsonSerializable {
 	public int size() {
 		return fCommands.size();
 	}
-
+	
+	/**
+	 * 
+	 */
+	public Command get(int index) {
+		if ((index >= 0) && (index < fCommands.size())) { 
+			return fCommands.get(index);
+		}
+		return null;
+	}
+	
 	/**
 	 * Adds a Command to this list.
 	 */
@@ -67,13 +77,11 @@ public class CommandList implements IJsonSerializable {
 		return this;
 	}
 	
-	/**
-	 * Returns all commands as an unmodifiable List.
-	 */
-	public List<Command> toList() {
-		return Collections.unmodifiableList(fCommands);
+	@Override
+	public Iterator<Command> iterator() {
+		return fCommands.iterator();
 	}
-
+	
 	/**
 	 * 
 	 */

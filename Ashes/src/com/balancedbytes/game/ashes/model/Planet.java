@@ -1,7 +1,6 @@
 package com.balancedbytes.game.ashes.model;
 
 import java.util.Comparator;
-import java.util.List;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -75,6 +74,10 @@ public class Planet implements IJsonSerializable {
 
 	private static final Log LOG = LogFactory.getLog(Planet.class);
 
+	protected Planet() {
+		super();
+	}
+	
 	/**
 	 * Create a Planet with the given default settings.
 	 */
@@ -89,6 +92,8 @@ public class Planet implements IJsonSerializable {
 		int transporters,
 		int planetaryDefenseUnits
 	) {
+		
+		this();
 
 		fName = name;
 		fNumber = number;
@@ -629,7 +634,7 @@ public class Planet implements IJsonSerializable {
 
   	}
 
-	private List<Command> getSendCommands(CommandList cmdList, boolean cargo) {
+	private CommandList getSendCommands(CommandList cmdList, boolean cargo) {
 		return cmdList.filter(new ICommandFilter() {
 			@Override
 			public boolean filter(Command cmd) {
@@ -637,10 +642,10 @@ public class Planet implements IJsonSerializable {
 					&& (((CmdSend) cmd).getFromPlanetNr() == getNumber())
 					&& (((CmdSend) cmd).isCargo() == cargo);
 			}
-		}).toList();
+		});
 	}
 
-	private List<Command> getOrderedBuildCommands(CommandList cmdList) {
+	private CommandList getOrderedBuildCommands(CommandList cmdList) {
 		return cmdList.filter(new ICommandFilter() {
 			@Override
 			public boolean filter(Command cmd) {
@@ -660,7 +665,7 @@ public class Planet implements IJsonSerializable {
 					return 0;
 				}
 			}
-		}).toList();
+		});
 	}
 
 	/**
@@ -668,7 +673,7 @@ public class Planet implements IJsonSerializable {
 	 */
 	private void unloadCargo() {
 		int transporters = 0;  // nr of transporter gained
-		for (Fleet fleet : fFlightQueue[0].toList()) {
+		for (Fleet fleet : fFlightQueue[0]) {
 			Cargo cargo = fleet.getCargo();
 			if (cargo.get(0) > 0) {
 				fWorkforce += cargo.get(0) * 8;

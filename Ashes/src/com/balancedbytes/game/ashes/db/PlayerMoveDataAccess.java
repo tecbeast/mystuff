@@ -32,7 +32,7 @@ public class PlayerMoveDataAccess {
 		+ " VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
 	private static final String SQL_UPDATE =
 		"UPDATE player_moves"
-		+ " SET game_number = ?, player_number = ?, turn = ?, deadline = ?, received = ?, user_name = ?, turn_secret = ?, command_list = ?"
+		+ " SET deadline = ?, received = ?, user_name = ?, turn_secret = ?, command_list = ?"
 		+ " WHERE id = ?";
 	private static final String SQL_DELETE =
 		"DELETE FROM player_moves WHERE id = ?";
@@ -70,7 +70,7 @@ public class PlayerMoveDataAccess {
 			ps.setInt(3, move.getTurn());
 			ps.setTimestamp(4, (move.getDeadline() != null) ? new Timestamp(move.getDeadline().getTime()) : null);
 			ps.setTimestamp(5, (move.getReceived() != null) ? new Timestamp(move.getReceived().getTime()) : null);
-			ps.setString(6, move.getUserName());
+			ps.setString(6, move.getUser());
 			ps.setString(7, move.getTurnSecret());
 			ps.setBlob(8, createCommandListBlob(c, move));
 			boolean success = (ps.executeUpdate() > 0);
@@ -85,15 +85,12 @@ public class PlayerMoveDataAccess {
 		}
 		try (Connection c = fDbManager.getConnection()) {
 			PreparedStatement ps = c.prepareStatement(SQL_UPDATE);
-			ps.setInt(1, move.getGameNr());
-			ps.setInt(2, move.getPlayerNr());
-			ps.setInt(3, move.getTurn());
-			ps.setTimestamp(4, (move.getDeadline() != null) ? new Timestamp(move.getDeadline().getTime()) : null);
-			ps.setTimestamp(5, (move.getReceived() != null) ? new Timestamp(move.getReceived().getTime()) : null);
-			ps.setString(6, move.getUserName());
-			ps.setString(7, move.getTurnSecret());
-			ps.setBlob(8, createCommandListBlob(c, move));
-			ps.setLong(9, move.getId());
+			ps.setTimestamp(1, (move.getDeadline() != null) ? new Timestamp(move.getDeadline().getTime()) : null);
+			ps.setTimestamp(2, (move.getReceived() != null) ? new Timestamp(move.getReceived().getTime()) : null);
+			ps.setString(3, move.getUser());
+			ps.setString(4, move.getTurnSecret());
+			ps.setBlob(5, createCommandListBlob(c, move));
+			ps.setLong(6, move.getId());
 			boolean success = (ps.executeUpdate() > 0);
 			c.commit();
 			return success;
@@ -118,20 +115,20 @@ public class PlayerMoveDataAccess {
 		playerMove.setTurn(rs.getInt("turn"));
 		playerMove.setDeadline(rs.getTimestamp("deadline"));
 		playerMove.setReceived(rs.getTimestamp("received"));
-		playerMove.setUserName(rs.getString("user_name"));
+		playerMove.setUser(rs.getString("user_name"));
 		playerMove.setTurnSecret(rs.getString("turn_secret"));
-		playerMove.setCommands(readCommands(rs.getBinaryStream("command_list")));
+		playerMove.setCommands(readCommandList(rs.getBinaryStream("command_list")));
 		return playerMove;
 	}
 	
-	private CommandList readCommands(InputStream binaryStream) throws SQLException {
+	private CommandList readCommandList(InputStream binaryStream) throws SQLException {
 		if (binaryStream == null) {
 			return null;
 		}
 		try (Reader in = new InputStreamReader(new GZIPInputStream(binaryStream), CHARSET)) {
 			return new CommandList().fromJson(Json.parse(in).asArray());
 		} catch (IOException ioe) {
-			throw new SQLException("Error on reading commands from binary stream.", ioe);
+			throw new SQLException("Error on reading commandList from binary stream.", ioe);
 		}
 	}
 	
@@ -146,7 +143,7 @@ public class PlayerMoveDataAccess {
 			blob.setBytes(0, byteArrayOut.toByteArray());
 			return blob;
 		} catch (IOException ioe) {
-			throw new SQLException("Error on writing commands to binary stream.", ioe);
+			throw new SQLException("Error on writing commandList to binary stream.", ioe);
 		}
 	}
 

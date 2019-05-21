@@ -48,7 +48,14 @@ public class Player implements IJsonSerializable {
 	
 	private static Log LOG = LogFactory.getLog(Player.class);
 
+	protected Player() {
+		fReport = new Report();
+		fGnpTotals = Category.buildEmptyMap();
+	}
+	
 	public Player(String user, int number) {
+		
+		this();
 
 		fNumber = number;
 
@@ -59,8 +66,6 @@ public class Player implements IJsonSerializable {
 		setPoliticalPoints(0);
 		setFighterMorale(100);
 		setTransporterMorale(100);
-		fReport = new Report();
-		fGnpTotals = Category.buildEmptyMap();
 		
 		// you start at WAR with neutral,
 		// at PEACE with yourself and at NEUTRAL with anyone else
@@ -276,7 +281,7 @@ public class Player implements IJsonSerializable {
 		//      noch vor den Flugbewegungen. Das gilt auch für den Wechsel des Heimatplaneten
 		//      und alle Namensänderungen.
 		
-		for (Command cmd : cmdList.toList()) {
+		for (Command cmd : cmdList) {
 			switch (cmd.getType()) {
 				case DECLARE:
 					executeDeclare(game, (CmdDeclare) cmd);

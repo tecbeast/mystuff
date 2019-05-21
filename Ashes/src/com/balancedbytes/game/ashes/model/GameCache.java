@@ -1,91 +1,71 @@
 package com.balancedbytes.game.ashes.model;
 
-import java.io.BufferedReader;
-import java.io.BufferedWriter;
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.InputStreamReader;
-import java.io.OutputStreamWriter;
-import java.io.Reader;
-import java.io.Writer;
+import java.sql.SQLException;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.zip.GZIPInputStream;
-import java.util.zip.GZIPOutputStream;
 
 import com.balancedbytes.game.ashes.AshesException;
-import com.balancedbytes.game.ashes.AshesUtil;
-import com.eclipsesource.json.Json;
-import com.eclipsesource.json.JsonObject;
-import com.eclipsesource.json.WriterConfig;
+import com.balancedbytes.game.ashes.db.DbManager;
+import com.balancedbytes.game.ashes.db.GameDataAccess;
 
 public class GameCache {
 	
-	private static final String CHARSET = "UTF-8";
-	private static final String GAME_PREFIX = "game";
-	private static final String EXTENSION = ".json.gz";
-
-	private Map<Integer, Game> fGameByNr;
-	private File fGameDir;
+	private Map<Integer, Game> fGameByNumber;
+	private GameDataAccess fDataAccess;
 	
 	public GameCache() {
-		fGameByNr = new HashMap<Integer, Game>();
+		fGameByNumber = new HashMap<Integer, Game>();
 	}
 	
-	public void init(File gameDir) {
-		if ((gameDir == null) || !gameDir.exists() || !gameDir.isDirectory()) {
-			throw new AshesException("Error locating game directory.");
+	public void init(DbManager dbManager) {
+		if (dbManager != null) {
+			fDataAccess = dbManager.getGameDataAccess();
 		}
-		fGameDir = gameDir;
 	}
 	
-	private File createFile(int gameNr) {
-		String filename = new StringBuilder()
-			.append(GAME_PREFIX)
-			.append(AshesUtil.toStringWithLeadingZeroes(gameNr, 6))
-			.append(EXTENSION)
-			.toString();
-		return new File(fGameDir, filename);
+	public void add(Game game) {
+		if (game == null) {
+			return;
+		}
+		fGameByNumber.put(game.getNumber(), game);
 	}
 	
 	public Game get(int gameNr) {
-		Game game = fGameByNr.get(gameNr);
-		if (game == null) {
-			game = load(createFile(gameNr));
+		Game game = fGameByNumber.get(gameNr);
+		if (game != null) {
+			return game;
+		}
+		if (fDataAccess != null) {
+			try {
+				game = fDataAccess.findByNumber(gameNr);
+			} catch (SQLException sqle) {
+				throw new AshesException("Error finding game(" + gameNr + ") in database.", sqle);
+			}
 			add(game);
 		}
 		return game;
 	}
 	
-	private void add(Game game) {
-		if ((game != null) && (game.getNumber() > 0)) {
-			fGameByNr.put(game.getNumber(), game);
+	public boolean save() {
+		boolean success = true;
+		for (Game game : fGameByNumber.values()) {
+			success &= save(game);
 		}
-	}
-
-	private Game load(File gameFile) {
-		try (Reader in = new BufferedReader(new InputStreamReader(new GZIPInputStream(new FileInputStream(gameFile)), CHARSET))) {
-			JsonObject gameObject = Json.parse(in).asObject();
-			return new Game().fromJson(gameObject);
-		} catch (IOException ioe) {
-			throw new AshesException("Error reading users file.", ioe);
-		}
-	}
-
-	public void save() {
-		for (Game game : fGameByNr.values()) {
-			save(game);
-		}
+		return success;
 	}
 	
-	private void save(Game game) {
-		File gameFile = createFile(game.getNumber());
-		try (Writer out = new BufferedWriter(new OutputStreamWriter(new GZIPOutputStream(new FileOutputStream(gameFile)), CHARSET))) {
-			game.toJson().writeTo(out, WriterConfig.PRETTY_PRINT);
-		} catch (IOException ioe) {
-			throw new AshesException("Error writing game file.", ioe);
+	private boolean save(Game game) {
+		if ((game == null) || (fDataAccess == null)) {
+			return false;
+		}
+		try {
+			if (game.getId() > 0) {
+				return fDataAccess.update(game);
+			} else {
+				return fDataAccess.create(game);
+			}
+		} catch (SQLException sqle) {
+			throw new AshesException("Error saving game(" + game.getNumber() + ") in database.", sqle);
 		}
 	}
 
