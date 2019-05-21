@@ -7,6 +7,8 @@ import com.balancedbytes.game.ashes.db.IDataObject;
 public class User implements IDataObject {
 	
 	private long fId;
+	private boolean fModified;
+	
 	private String fName;
 	private String fRealName;
 	private String fEmail;
@@ -16,12 +18,22 @@ public class User implements IDataObject {
 	private int fGamesFinished;	
 	private int fGamesWon;
 
+	@Override
 	public long getId() {
 		return fId;
 	}
 	
 	public void setId(long id) {
 		fId = id;
+	}
+	
+	@Override
+	public boolean isModified() {
+		return fModified;
+	}
+	
+	public void setModified(boolean modified) {
+		fModified = modified;
 	}
 	
 	public String getName() {

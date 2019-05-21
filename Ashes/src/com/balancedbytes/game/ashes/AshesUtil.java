@@ -1,5 +1,7 @@
 package com.balancedbytes.game.ashes;
 
+import java.util.Collection;
+
 public final class AshesUtil {
 
 	public static String toString(Object obj) {
@@ -12,6 +14,10 @@ public final class AshesUtil {
 
 	public static boolean isProvided(Object[] array) {
 		return (array != null) && (array.length > 0);
+	}
+	
+	public static boolean isProvided(Collection<?> collection) {
+		return (collection != null) && (collection.size() > 0);
 	}
 	
 	public static String leftpad(String text, int length) {

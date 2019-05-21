@@ -1,8 +1,6 @@
 package com.balancedbytes.game.ashes.command;
 
-import java.util.ArrayList;
 import java.util.HashSet;
-import java.util.List;
 import java.util.Set;
 
 import com.balancedbytes.game.ashes.AshesUtil;
@@ -106,26 +104,39 @@ public class CmdSend extends Command {
 	}
 	
 	@Override
-	public List<String> validate(Game game) {
-		List<String> messages = new ArrayList<String>();
-		if (game != null) {
-			if (fFromPlanetName != null) {
-				fFromPlanetNr = CommandValidationUtil.findPlanetNr(game, fFromPlanetName, messages);
-			}
-			if (fToPlanetName != null) {
-				fToPlanetNr = CommandValidationUtil.findPlanetNr(game, fToPlanetName, messages);
-			}
-			if ((fFromPlanetNr > 0) && (fToPlanetNr > 0)) {
-				fFromPlanetName = null;
-				fToPlanetName = null;
-				Planet fromPlanet = game.getPlanet(fFromPlanetNr);
-				FleetList fleets = fromPlanet.findFleetsForPlayerNr(getPlayerNr());
-				if (fleets.totalShips() == 0) {
-					messages.add("You have no fleet to send from " + fromPlanet.getName() + " (" + fromPlanet.getNumber() + ").");
-				}
+	public void validate(Game game, ValidationResult result) {
+		if ((game == null) || (result == null)) {
+			return;
+		}
+		if (fFromPlanetName != null) {
+			fFromPlanetNr = ValidationUtil.findPlanetNr(game, fFromPlanetName);
+			if (fFromPlanetNr == 0) {
+				result.add("Unknown planet \"" + fFromPlanetNr + "\".");
+				return;
 			}
 		}
-		return messages;
+		fFromPlanetName = null;
+		if ((fFromPlanetNr < 1) || (fFromPlanetNr > Game.NR_OF_PLANETS)) {
+			result.add("Unknown planet \"" + fFromPlanetNr + "\".");
+			return;
+		}
+		if (fToPlanetName != null) {
+			fToPlanetNr = ValidationUtil.findPlanetNr(game, fToPlanetName);
+			if (fToPlanetNr == 0) {
+				result.add("Unknown planet \"" + fToPlanetNr + "\".");
+				return;
+			}
+		}
+		fToPlanetName = null;
+		if ((fToPlanetNr < 1) || (fToPlanetNr > Game.NR_OF_PLANETS)) {
+			result.add("Unknown planet \"" + fToPlanetNr + "\".");
+			return;
+		}
+		Planet fromPlanet = game.getPlanet(fFromPlanetNr);
+		FleetList fleets = fromPlanet.findFleetsForPlayerNr(getPlayerNr());
+		if (fleets.totalShips() == 0) {
+			result.add("You have no fleet to send from " + fromPlanet.getName() + " (" + fromPlanet.getNumber() + ").");
+		}
 	}
 	
 	@Override
@@ -152,6 +163,16 @@ public class CmdSend extends Command {
 		setToPlanetNr(json.getInt(TO_PLANET_NR));
 		setToPlanetName(json.getString(TO_PLANET_NAME));
 		return this;
+	}
+	
+	@Override
+	public String toString() {
+		return new StringBuilder()
+			.append("send ").append(getCount()).append(" ")
+			.append((getUnit() != null) ? getUnit().getShorthand() : "?")
+			.append(" from ").append(getFromPlanetNr())
+			.append(" to ").append(getToPlanetNr())
+			.toString();
 	}
 
 }

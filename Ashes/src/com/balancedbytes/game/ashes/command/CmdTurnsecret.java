@@ -1,10 +1,6 @@
 package com.balancedbytes.game.ashes.command;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import com.balancedbytes.game.ashes.json.JsonObjectWrapper;
-import com.balancedbytes.game.ashes.model.Game;
 import com.eclipsesource.json.JsonObject;
 import com.eclipsesource.json.JsonValue;
 
@@ -32,18 +28,6 @@ public class CmdTurnsecret extends Command {
 	}
 	
 	@Override
-	public List<String> validate(Game game) {
-		List<String> messages = new ArrayList<String>();
-//		if (game != null) {
-//			Player player = game.getPlayer(getPlayerNr());
-//			if ((player != null) && (fSecret != null) && !fSecret.equals(player.getTurnSecret())) {
-//				messages.add("Invalid Turnsecret.");
-//			}
-//		}
-		return messages;
-	}
-	
-	@Override
 	public JsonObject toJson() {
 		JsonObjectWrapper json = new JsonObjectWrapper(super.toJson());
 		json.add(SECRET, getSecret());
@@ -56,6 +40,13 @@ public class CmdTurnsecret extends Command {
 		JsonObjectWrapper json = new JsonObjectWrapper(jsonValue.asObject());
 		setSecret(json.getString(SECRET));
 		return this;
+	}
+	
+	@Override
+	public String toString() {
+		return new StringBuilder()
+			.append("turnsecret ").append(getSecret())
+			.toString();
 	}
 
 }

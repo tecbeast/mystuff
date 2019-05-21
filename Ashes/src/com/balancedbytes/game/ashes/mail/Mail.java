@@ -1,12 +1,11 @@
 package com.balancedbytes.game.ashes.mail;
 
-import javax.mail.Address;
-
 public class Mail {
 	
 	private String fSubject;
 	private String fBody;
-	private Address fFrom;
+	private String fFrom;
+	private String fTo;
 
 	public Mail() {
 		super();
@@ -28,12 +27,20 @@ public class Mail {
 		fBody = body;
 	}
 	
-	public Address getFrom() {
+	public String getFrom() {
 		return fFrom;
 	}
 	
-	public void setFrom(Address from) {
+	public void setFrom(String from) {
 		fFrom = from;
+	}
+	
+	public String getTo() {
+		return fTo;
+	}
+	
+	public void setTo(String to) {
+		fTo = to;
 	}
 
 }

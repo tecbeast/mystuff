@@ -15,16 +15,15 @@ import org.apache.commons.logging.LogFactory;
 
 import com.balancedbytes.game.ashes.db.DbManager;
 import com.balancedbytes.game.ashes.mail.MailManager;
-import com.balancedbytes.game.ashes.model.Game;
 import com.balancedbytes.game.ashes.model.GameCache;
 import com.balancedbytes.game.ashes.model.PlayerMoveCache;
-import com.balancedbytes.game.ashes.model.User;
 import com.balancedbytes.game.ashes.model.UserCache;
 
 public class AshesOfEmpire {
 	
 	private static final Log LOG = LogFactory.getLog(AshesOfEmpire.class);
-
+	private static final AshesOfEmpire INSTANCE = new AshesOfEmpire();
+	
 	private DbManager fDbManager;
 	private MailManager fMailManager;
 	private UserCache fUserCache;
@@ -39,7 +38,11 @@ public class AshesOfEmpire {
 		fGameCache = new GameCache();
 	}
 	
-	public void init(File dir) {
+	public static AshesOfEmpire getInstance() {
+		return INSTANCE;
+	}
+	
+	private void init(File dir) {
 		try {
 			try (BufferedInputStream in = new BufferedInputStream(new FileInputStream(new File(dir, "conf/log.properties")))) {
 				LogManager.getLogManager().readConfiguration(in);
@@ -80,33 +83,35 @@ public class AshesOfEmpire {
 	public DbManager getDbManager() {
 		return fDbManager;
 	}
-		
-	public boolean save() {
+	
+	public MailManager getMailManager() {
+		return fMailManager;
+	}
+	
+	public UserCache getUserCache() {
+		return fUserCache;
+	}
+	
+	public GameCache getGameCache() {
+		return fGameCache;
+	}
+	
+	public PlayerMoveCache getMoveCache() {
+		return fMoveCache;
+	}
+
+	public static void main(String[] args) {
 		try {
-			fUserCache.save();
-			return true;
-		} catch (Exception e) {
-			LOG.error("Error while saving Ashes.", e);
-			return false;
-		}
-	}
-	
-	public User getUser(String userId) {
-		return fUserCache.get(userId);
-	}
-	
-	public Game getGame(int gameNr) {
-		return fGameCache.get(gameNr);
-	}
-	
-	public static void main(String[] args) throws Exception {
-		AshesOfEmpire ashes = new AshesOfEmpire();
-		String dirname = System.getProperties().getProperty("ashes.dir", null);
-		File dir = (dirname != null) ? new File(dirname) : new File(AshesOfEmpire.class.getResource("/").toURI());
-		ashes.init(dir);
-		if (AshesUtil.isProvided(args) && "initdb".equalsIgnoreCase(args[0])) {
-			ashes.getDbManager().getDbInitializer().init(true);
-			ashes.getDbManager().stopServer();
+			String dirname = System.getProperties().getProperty("ashes.dir", null);
+			File dir = (dirname != null) ? new File(dirname) : new File(AshesOfEmpire.class.getResource("/").toURI());
+			getInstance().init(dir);
+			if (AshesUtil.isProvided(args) && "initdb".equalsIgnoreCase(args[0])) {
+				getInstance().getDbManager().getDbInitializer().init(true);
+			}
+		} catch (Exception any) {
+			LOG.error(any);
+		} finally {
+			getInstance().getDbManager().stopServer();
 		}
 	}
 

@@ -68,6 +68,8 @@ public class Game implements IDataObject {
   	};
   	
   	private long fId;
+  	private boolean fModified;
+  	
   	private int fNumber;
   	private int fTurn;
   	private Date fLastUpdate;
@@ -144,6 +146,15 @@ public class Game implements IDataObject {
 	
 	public void setId(long id) {
 		fId = id;
+	}
+	
+	@Override
+	public boolean isModified() {
+		return fModified;
+	}
+	
+	public void setModified(boolean modified) {
+		fModified = modified;
 	}
 
 	/**

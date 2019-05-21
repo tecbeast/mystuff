@@ -1,10 +1,8 @@
 package com.balancedbytes.game.ashes.command;
 
-import java.util.List;
-
 import com.balancedbytes.game.ashes.json.IJsonSerializable;
-import com.balancedbytes.game.ashes.json.JsonSerializationException;
 import com.balancedbytes.game.ashes.json.JsonObjectWrapper;
+import com.balancedbytes.game.ashes.json.JsonSerializationException;
 import com.balancedbytes.game.ashes.model.Game;
 import com.eclipsesource.json.JsonObject;
 import com.eclipsesource.json.JsonValue;
@@ -30,7 +28,9 @@ public abstract class Command implements IJsonSerializable {
 	
 	public abstract CommandType getType();
 	
-	public abstract List<String> validate(Game game);
+	public void validate(Game game, ValidationResult result) {
+		// do nothing by default - this needs to be implemented in subclasses
+	}
 	
 	@Override
 	public JsonObject toJson() {

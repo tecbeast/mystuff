@@ -1,8 +1,6 @@
 package com.balancedbytes.game.ashes.command;
 
-import java.util.ArrayList;
-import java.util.List;
-
+import com.balancedbytes.game.ashes.AshesUtil;
 import com.balancedbytes.game.ashes.json.JsonObjectWrapper;
 import com.balancedbytes.game.ashes.model.Game;
 import com.eclipsesource.json.JsonObject;
@@ -12,7 +10,7 @@ public class CmdPlayername extends Command {
 
 	public static final int MAX_NAME_LENGTH = 32;
 
-	private static final String NAME = "name";
+	private static final String PLAYER_NAME = "playerName";
 	
 	private String fName;
 	
@@ -20,11 +18,11 @@ public class CmdPlayername extends Command {
 		super();
 	}
 	
-	public String getName() {
+	public String getPlayerName() {
 		return fName;
 	}
 	
-	public void setName(String name) {
+	public void setPlayerName(String name) {
 		fName = name;
 	}
 	
@@ -34,20 +32,19 @@ public class CmdPlayername extends Command {
 	}
 	
 	@Override
-	public List<String> validate(Game game) {
-		List<String> messages = new ArrayList<String>();
-		if (game != null) {
-			if ((fName != null) && (fName.length() > MAX_NAME_LENGTH)) {
-				messages.add("A player name cannot be longer than " + MAX_NAME_LENGTH + " characters.");
-			}
+	public void validate(Game game, ValidationResult result) {
+		if ((game == null) || (result == null)) {
+			return;
 		}
-		return messages;
+		if ((fName != null) && (fName.length() > MAX_NAME_LENGTH)) {
+			result.add("A playername cannot be longer than " + MAX_NAME_LENGTH + " characters.");
+		}
 	}
 	
 	@Override
 	public JsonObject toJson() {
 		JsonObjectWrapper json = new JsonObjectWrapper(super.toJson());
-		json.add(NAME, getName());
+		json.add(PLAYER_NAME, getPlayerName());
 		return json.toJsonObject();
 	}
 
@@ -55,8 +52,16 @@ public class CmdPlayername extends Command {
 	public CmdPlayername fromJson(JsonValue jsonValue) {
 		super.fromJson(jsonValue);
 		JsonObjectWrapper json = new JsonObjectWrapper(jsonValue.asObject());
-		setName(json.getString(NAME));
+		setPlayerName(json.getString(PLAYER_NAME));
 		return this;
+	}
+	
+	@Override
+	public String toString() {
+		return new StringBuilder()
+			.append("playername ")
+			.append('"').append(AshesUtil.toString(getPlayerName())).append('"')
+			.toString();
 	}
 
 }

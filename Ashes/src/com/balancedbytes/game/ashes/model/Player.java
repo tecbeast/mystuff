@@ -196,7 +196,7 @@ public class Player implements IJsonSerializable {
 	}
 
 	private void executePlayername(Game game, CmdPlayername playernameCmd) {
-		setName(playernameCmd.getName());
+		setName(playernameCmd.getPlayerName());
 		LOG.debug("Player " + fNumber + " renames his/herself to " + fName);
 	}
 	

@@ -57,21 +57,23 @@ public class UserCache {
 	public boolean save() {
 		boolean success = true;
 		for (User user : fUserByName.values()) {
-			success &= save(user);
+			if (user.isModified()) {
+				success &= save(user);
+			}
 		}
 		return success;
 	}
 	
-	private boolean save(User user) {
+	public boolean save(User user) {
 		if ((user == null) || (fDataAccess == null)) {
 			return false;
 		}
 		try {
-			if (user.getId() > 0) {
-				return fDataAccess.update(user);
-			} else {
-				return fDataAccess.create(user);
+			boolean success = (user.getId() > 0) ? fDataAccess.update(user) : fDataAccess.create(user);
+			if (success) {
+				user.setModified(false);
 			}
+			return success;
 		} catch (SQLException sqle) {
 			throw new AshesException("Error saving user(" + user.getName() + ") in database.", sqle);
 		}

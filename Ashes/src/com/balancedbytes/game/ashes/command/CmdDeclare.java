@@ -1,8 +1,5 @@
 package com.balancedbytes.game.ashes.command;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import com.balancedbytes.game.ashes.AshesUtil;
 import com.balancedbytes.game.ashes.json.JsonObjectWrapper;
 import com.balancedbytes.game.ashes.model.Game;
@@ -54,20 +51,25 @@ public class CmdDeclare extends Command {
 	}
 	
 	@Override
-	public List<String> validate(Game game) {
-		List<String> messages = new ArrayList<String>();
-		if (game != null) {
-			if (fOtherPlayerName != null) {
-				fOtherPlayerNr = CommandValidationUtil.findPlayerNr(game, fOtherPlayerName, messages);
-			}
-			if (fOtherPlayerNr > 0) {
-				fOtherPlayerName = null;
-				if (fOtherPlayerNr == getPlayerNr()) {
-					messages.add("You cannot delare politics on yourself.");
-				}
+	public void validate(Game game, ValidationResult result) {
+		if ((game == null) || (result == null)) {
+			return;
+		}
+		if (fOtherPlayerName != null) {
+			fOtherPlayerNr = ValidationUtil.findPlayerNr(game, fOtherPlayerName);
+			if (fOtherPlayerNr == 0) {
+				result.add("Unknown player \"" + fOtherPlayerName + "\".");
+				return;
 			}
 		}
-		return messages;
+		fOtherPlayerName = null;
+		if ((fOtherPlayerNr < 1) || (fOtherPlayerNr > Game.NR_OF_PLAYERS)) {
+			result.add("Unknown player \"" + fOtherPlayerNr + "\".");
+			return;
+		}
+		if (fOtherPlayerNr == getPlayerNr()) {
+			result.add("You cannot delare politics on yourself.");
+		}
 	}
 	
 	@Override
@@ -88,6 +90,15 @@ public class CmdDeclare extends Command {
 		String ptString = json.getString(POLITICAL_TERM);
 		setPoliticalTerm(AshesUtil.isProvided(ptString) ? PoliticalTerm.valueOf(ptString) : null);
 		return this;
+	}
+	
+	@Override
+	public String toString() {
+		return new StringBuilder()
+			.append("declare ")
+			.append((getPoliticalTerm() != null) ? getPoliticalTerm() : "?")
+			.append(" on ").append(getOtherPlayerNr())
+			.toString();
 	}
 
 }

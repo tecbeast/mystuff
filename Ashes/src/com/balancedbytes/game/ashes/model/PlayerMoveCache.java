@@ -64,21 +64,23 @@ public class PlayerMoveCache {
 	public boolean save() {
 		boolean success = true;
 		for (PlayerMove move : fMoveByGamePlayerTurn.values()) {
-			success &= save(move);
+			if (move.isModified()) {
+				success &= save(move);
+			}
 		}
 		return success;
 	}
 	
-	private boolean save(PlayerMove move) {
+	public boolean save(PlayerMove move) {
 		if ((move == null) || (fDataAccess == null)) {
 			return false;
 		}
 		try {
-			if (move.getId() > 0) {
-				return fDataAccess.update(move);
-			} else {
-				return fDataAccess.create(move);
+			boolean success = (move.getId() > 0)  ? fDataAccess.update(move) : fDataAccess.create(move);
+			if (success) {
+				move.setModified(false);
 			}
+			return success;
 		} catch (SQLException sqle) {
 			throw new AshesException("Error saving playerMove(" + move.getGameNr() + "," + move.getPlayerNr() + "," + move.getTurn() + ") in database.", sqle);
 		}

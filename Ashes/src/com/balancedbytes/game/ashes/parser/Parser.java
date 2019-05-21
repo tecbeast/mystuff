@@ -3,6 +3,7 @@ package com.balancedbytes.game.ashes.parser;
 import java.io.BufferedReader;
 import java.io.FileReader;
 import java.io.IOException;
+import java.io.Reader;
 import java.io.StreamTokenizer;
 import java.util.ArrayList;
 import java.util.HashSet;
@@ -45,9 +46,9 @@ import com.eclipsesource.json.WriterConfig;
  *  politicalTerm -> WAR | PEACE | NEUTRAL
  *     homeplanet -> HOMEPLANET
  *     planetName -> PLANETNAME WORD
- *         planet -> NUMBER [1-40] | WORD
+ *         planet -> NUMBER | WORD
  *     playerName -> PLAYERNAME WORD
- *         player -> NUMBER [1-8] | WORD
+ *         player -> NUMBER | WORD
  *       research -> RESEARCH NUMBER improvement
  *    improvement -> PR | FM | TM
  *           send -> SEND NUMBER sendUnit TO planetNumber
@@ -105,7 +106,7 @@ public class Parser {
 	/**
 	 * Starts a parserun.
 	 */
-	public CommandList parse(BufferedReader in, int playerNr) {
+	public CommandList parse(Reader in, int playerNr) {
 		
 		LOG.trace("parse()");
 		
@@ -157,7 +158,7 @@ public class Parser {
 		try {
 			match(ParserToken.BUILD);
 			CmdBuild cmd = new CmdBuild();
-			cmd.setCount(number(1, 9999));
+			cmd.setCount(number());
 			cmd.setUnit(buildUnit());
 			Planet onPlanet = planet;
 			if (onPlanet == null) {
@@ -386,16 +387,14 @@ public class Parser {
 	/**
 	 *
 	 */
-	private int number(int min, int max) {
-		LOG.trace("number(" + min + "," + max + ")");
+	private int number() {
+		LOG.trace("number()");
 		if (fLookAhead == ParserToken.NUMBER) {
 			int aNumber = fNumber;
 			match(ParserToken.NUMBER);
-			if ((aNumber >= min) && (aNumber <= max)) {
-				return aNumber;
-			}
+			return aNumber;
 		}
-		throw new ParserException("number between " + min + " and " + max + " expected");
+		throw new ParserException("number expected");
 	}
 	
 	/**
@@ -442,7 +441,7 @@ public class Parser {
 		try {
 			match(ParserToken.PLAYERNAME);
 			CmdPlayername cmd = new CmdPlayername();
-			cmd.setName(word());
+			cmd.setPlayerName(word());
 			return cmd;
 		} catch (ParserException pe) {
 			throw new ParserException("PLAYERNAME: " + pe.getMessage());
@@ -451,7 +450,7 @@ public class Parser {
 	
 	private Planet planet() {
 		if (fLookAhead == ParserToken.NUMBER) {
-			return new Planet(number(1, 40));
+			return new Planet(number());
 		} else {
 			return new Planet(word());
 		}
@@ -459,7 +458,7 @@ public class Parser {
 
 	private Player player() {
 		if (fLookAhead == ParserToken.NUMBER) {
-			return new Player(number(1, 8));
+			return new Player(number());
 		} else {
 			return new Player(word());
 		}
@@ -473,7 +472,7 @@ public class Parser {
 		try {
 			match(ParserToken.RESEARCH);
 			CmdResearch cmd = new CmdResearch();
-			cmd.setCount(number(1, 999));
+			cmd.setCount(number());
 			cmd.setImprovement(improvement());
 			Planet onPlanet = planet;
 			if (onPlanet == null) {
@@ -563,7 +562,7 @@ public class Parser {
 		try {
 			match(ParserToken.SEND);
 			CmdSend cmd = new CmdSend();
-			cmd.setCount(number(1, 9999));
+			cmd.setCount(number());
 			cmd.setUnit(sendUnit());
 			match(ParserToken.TO);
 			Planet toPlanet = planet();

@@ -1,8 +1,6 @@
 package com.balancedbytes.game.ashes.command;
 
-import java.util.ArrayList;
-import java.util.List;
-
+import com.balancedbytes.game.ashes.AshesUtil;
 import com.balancedbytes.game.ashes.json.JsonObjectWrapper;
 import com.balancedbytes.game.ashes.model.Game;
 import com.eclipsesource.json.JsonObject;
@@ -54,23 +52,27 @@ public class CmdPlanetname extends Command {
 	}
 	
 	@Override
-	public List<String> validate(Game game) {
-		List<String> messages = new ArrayList<String>();
-		if (game != null) {
-			if (fPlanetName != null) {
-				fPlanetNr = CommandValidationUtil.findPlanetNr(game, fPlanetName, messages);
-			}
-			if (fPlanetNr > 0) {
-				fPlanetName = null;
-				if (game.getPlanet(fPlanetNr).getPlayerNr() != getPlayerNr()) {
-					messages.add("You cannot name a planet you do not control.");
-				}
-				if ((fName != null) && (fName.length() > MAX_NAME_LENGTH)) {
-					messages.add("A planet name cannot be longer than " + MAX_NAME_LENGTH + " characters.");
-				}
+	public void validate(Game game, ValidationResult result) {
+		if ((game == null) || (result == null)) {
+			return;
+		}
+		if (fPlanetName != null) {
+			fPlanetNr = ValidationUtil.findPlanetNr(game, fPlanetName);
+			if (fPlanetNr == 0) {
+				result.add("Unknown planet \"" + fPlanetName + "\".");
 			}
 		}
-		return messages;
+		fPlanetName = null;
+		if ((fPlanetNr < 1) || (fPlanetNr > Game.NR_OF_PLANETS)) {
+			result.add("Unknown planet \"" + fPlanetNr + "\".");
+			return;
+		}
+		if (game.getPlanet(fPlanetNr).getPlayerNr() != getPlayerNr()) {
+			result.add("You cannot name a planet you do not control.");
+		}
+		if ((fName != null) && (fName.length() > MAX_NAME_LENGTH)) {
+			result.add("A planetname cannot be longer than " + MAX_NAME_LENGTH + " characters.");
+		}
 	}
 	
 	@Override
@@ -90,6 +92,15 @@ public class CmdPlanetname extends Command {
 		setPlanetName(json.getString(PLANET_NAME));
 		setName(json.getString(NAME));
 		return this;
+	}
+	
+	@Override
+	public String toString() {
+		return new StringBuilder()
+			.append("planetname ")
+			.append('"').append(AshesUtil.toString(getPlanetName())).append('"')
+			.append(" on ").append(getPlanetNr())
+			.toString();
 	}
 
 }

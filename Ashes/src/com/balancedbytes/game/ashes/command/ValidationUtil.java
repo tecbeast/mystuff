@@ -1,14 +1,12 @@
 package com.balancedbytes.game.ashes.command;
 
-import java.util.List;
-
 import com.balancedbytes.game.ashes.model.Game;
 import com.balancedbytes.game.ashes.model.Planet;
 import com.balancedbytes.game.ashes.model.Player;
 
-public final class CommandValidationUtil {
+public final class ValidationUtil {
 
-	public static int findPlayerNr(Game game, String playerName, List<String> messages) {
+	public static int findPlayerNr(Game game, String playerName) {
 		if ((game == null) || (playerName == null)) {
 			return 0;
 		}
@@ -18,13 +16,10 @@ public final class CommandValidationUtil {
 				return i;
 			}
 		}
-		if (messages != null) {
-			messages.add("Unknown player " + playerName);
-		}
 		return 0;
 	}
 	
-	public static int findPlanetNr(Game game, String planetName, List<String> messages) {
+	public static int findPlanetNr(Game game, String planetName) {
 		if ((game == null) || (planetName == null)) {
 			return 0;
 		}
@@ -33,9 +28,6 @@ public final class CommandValidationUtil {
 			if ((planet != null) && (planet.getName() != null) && planet.getName().equalsIgnoreCase(planetName)) {
 				return i;
 			}
-		}
-		if (messages != null) {
-			messages.add("Unknown planet " + planetName);
 		}
 		return 0;
 	}

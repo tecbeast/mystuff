@@ -3,30 +3,46 @@ package com.balancedbytes.game.ashes.model;
 import java.util.Date;
 
 import com.balancedbytes.game.ashes.command.CommandList;
+import com.balancedbytes.game.ashes.command.ValidationResult;
 import com.balancedbytes.game.ashes.db.IDataObject;
 
 public class PlayerMove implements IDataObject {
 	
 	private long fId;
+	private boolean fModified;
+	
 	private int fGameNr;
 	private int fTurn;
 	private int fPlayerNr;
 	private Date fDeadline;
 	private Date fReceived;
-	private String fUser;
+	private String fUserName;
 	private String fTurnSecret;
 	private CommandList fCommands;
-
+	
+	private transient User fUser;
+	private transient ValidationResult fValidationResult;
+	
 	public PlayerMove() {
 		super();
 	}
 	
+	@Override
 	public long getId() {
 		return fId;
 	}
 	
 	public void setId(long id) {
 		fId = id;
+	}
+	
+	@Override
+	public boolean isModified() {
+		return fModified;
+	}
+	
+	public void setModified(boolean modified) {
+		fModified = modified;
 	}
 	
 	public int getGameNr() {
@@ -69,12 +85,12 @@ public class PlayerMove implements IDataObject {
 		fReceived = received;
 	}
 	
-	public String getUser() {
-		return fUser;
+	public String getUserName() {
+		return fUserName;
 	}
 	
-	public void setUser(String userName) {
-		fUser = userName;
+	public void setUserName(String userName) {
+		fUserName = userName;
 	}
 	
 	public String getTurnSecret() {
@@ -91,6 +107,22 @@ public class PlayerMove implements IDataObject {
 	
 	public void setCommands(CommandList commands) {
 		fCommands = commands;
+	}
+	
+	public User getUser() {
+		return fUser;
+	}
+	
+	public void setUser(User user) {
+		fUser = user;
+	}
+	
+	public ValidationResult getValidationResult() {
+		return fValidationResult;
+	}
+	
+	public void setValidationResult(ValidationResult validationResult) {
+		fValidationResult = validationResult;
 	}
 		
 }

@@ -1,8 +1,5 @@
 package com.balancedbytes.game.ashes.command;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import com.balancedbytes.game.ashes.AshesUtil;
 import com.balancedbytes.game.ashes.json.JsonObjectWrapper;
 import com.balancedbytes.game.ashes.model.Game;
@@ -64,20 +61,24 @@ public class CmdResearch extends Command {
 	}
 	
 	@Override
-	public List<String> validate(Game game) {
-		List<String> messages = new ArrayList<String>();
-		if (game != null) {
-			if (fPlanetName != null) {
-				fPlanetNr = CommandValidationUtil.findPlanetNr(game, fPlanetName, messages);
-			}
-			if (fPlanetNr > 0) {
-				fPlanetName = null;
-				if (game.getPlanet(fPlanetNr).getPlayerNr() != getPlayerNr()) {
-					messages.add("You cannot research on a planet you do not control.");
-				}
+	public void validate(Game game, ValidationResult result) {
+		if ((game == null) || (result == null)) {
+			return;
+		}
+		if (fPlanetName != null) {
+			fPlanetNr = ValidationUtil.findPlanetNr(game, fPlanetName);
+			if (fPlanetNr == 0) {
+				result.add("Unknown planet \"" + fPlanetName + "\".");
 			}
 		}
-		return messages;
+		fPlanetName = null;
+		if ((fPlanetNr < 1) || (fPlanetNr > Game.NR_OF_PLANETS)) {
+			result.add("Unknown planet \"" + fPlanetNr + "\".");
+			return;
+		}
+		if (game.getPlanet(fPlanetNr).getPlayerNr() != getPlayerNr()) {
+			result.add("You cannot research on a planet you do not control.");
+		}
 	}
 	
 	@Override
@@ -100,6 +101,15 @@ public class CmdResearch extends Command {
 		setPlanetNr(json.getInt(PLANET_NR));
 		setPlanetName(json.getString(PLANET_NAME));
 		return this;
+	}
+	
+	@Override
+	public String toString() {
+		return new StringBuilder()
+			.append("research ")
+			.append((getImprovement() != null) ? getImprovement().getShorthand() : "?")
+			.append(" on ").append(getPlanetNr())
+			.toString();
 	}
 
 }

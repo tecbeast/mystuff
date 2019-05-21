@@ -7,6 +7,7 @@ import java.util.List;
 
 import com.balancedbytes.game.ashes.AshesUtil;
 import com.balancedbytes.game.ashes.json.IJsonSerializable;
+import com.balancedbytes.game.ashes.model.Game;
 import com.eclipsesource.json.JsonArray;
 import com.eclipsesource.json.JsonObject;
 import com.eclipsesource.json.JsonValue;
@@ -128,13 +129,27 @@ public class CommandList implements IJsonSerializable, Iterable<Command> {
 	/**
 	 * 
 	 */
+	public ValidationResult validate(Game game) {
+		if (game == null) {
+			return null;
+		}
+		ValidationResult result = new ValidationResult();
+		for (int i = 0; i < fCommands.size(); i++) {
+			fCommands.get(i).validate(game, result.setLineNr(i + 1));
+		}
+		return result;
+	}
+	
+	/**
+	 * 
+	 */
 	public CommandList setPlayerNr(int playerNr) {
 		for (Command command : fCommands) {
 			command.setPlayerNr(playerNr);
 		}
 		return this;
 	}
-		
+			
 	@Override
 	public JsonArray toJson() {
 		JsonArray jsonArray = new JsonArray();
@@ -187,6 +202,17 @@ public class CommandList implements IJsonSerializable, Iterable<Command> {
 			}
 		}
 		return this;
+	}
+	
+	@Override
+	public String toString() {
+		StringBuilder result = new StringBuilder();
+		for (int i = 0; i < fCommands.size(); i++) {
+			result.append(AshesUtil.leftpad(Integer.toString(i + 1), 3)).append(":  ");
+			result.append(fCommands.get(i));
+			result.append(System.lineSeparator());
+		}
+		return result.toString();
 	}
 
 }

@@ -14,20 +14,33 @@ import javax.mail.Multipart;
 import javax.mail.Part;
 import javax.mail.Session;
 import javax.mail.Store;
+import javax.mail.Transport;
+import javax.mail.internet.InternetAddress;
+import javax.mail.internet.MimeMessage;
 import javax.mail.search.FlagTerm;
+
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 
 import com.balancedbytes.game.ashes.AshesException;
 import com.balancedbytes.game.ashes.AshesUtil;
 
+/**
+ * 
+ */
 public class MailManager {
 	
-	private static final String MAIL_HOST_IMAP = "mail.host.imap";
-	private static final String MAIL_HOST_SMTP = "mail.host.smtp";
+	private static final Log LOG = LogFactory.getLog(MailManager.class);
+	
+	private static final String MAIL_IMAP_HOST = "mail.imap.host";
+	private static final String MAIL_SMTP_HOST = "mail.smtp.host";
+	private static final String MAIL_FROM = "mail.from";
 	private static final String MAIL_USER = "mail.user";
 	private static final String MAIL_PASSWORD = "mail.password";
 
-	private String fMailHostImap;
+	private String fMailImapHost;
 	private String fMailHostSmtp;
+	private String fMailFrom;
 	private String fMailUser;
 	private String fMailPassword;
 
@@ -35,27 +48,44 @@ public class MailManager {
 		super();
 	}
 	
+	/**
+	 * 
+	 */
 	public void init(Properties properties) {
-		fMailHostImap = properties.getProperty(MAIL_HOST_IMAP, null);
-		fMailHostSmtp = properties.getProperty(MAIL_HOST_SMTP, null);
+		fMailImapHost = properties.getProperty(MAIL_IMAP_HOST, null);
+		fMailHostSmtp = properties.getProperty(MAIL_SMTP_HOST, null);
+		fMailFrom = properties.getProperty(MAIL_FROM, null);
 		fMailUser = properties.getProperty(MAIL_USER, null);
 		fMailPassword = properties.getProperty(MAIL_PASSWORD, null);
 	}
 	
+	/**
+	 * 
+	 */
+	public void processMails() {
+		MailProcessor mailProcessor = new MailProcessor();
+		for (Mail mail : fetchMail()) {
+			mailProcessor.process(mail);
+		}
+	}
+	
+	/**
+	 * 
+	 */
 	public List<Mail> fetchMail() {
 
 		List<Mail> mails = new ArrayList<Mail>();
 		
-		// connect to my IMAP inbox in read-only mode
 		Properties properties = System.getProperties();
 		Session session = Session.getDefaultInstance(properties);
 		try (Store store = session.getStore("imap")) {
+			
+			store.connect(fMailImapHost, fMailUser, fMailPassword);
+			Folder inbox = store.getFolder("inbox");
 
-			store.connect(fMailHostImap, fMailUser, fMailPassword);
-		
-			try (Folder inbox = store.getFolder("inbox")) {
-
-				inbox.open(Folder.READ_ONLY);
+			try {
+				
+				inbox.open(Folder.READ_WRITE);
 	
 				// search for all "unseen" messages
 				Flags seen = new Flags(Flags.Flag.SEEN);
@@ -66,15 +96,19 @@ public class MailManager {
 					for (int i = 0; i < messages.length; i++) {
 						Mail mail = new Mail();
 						mail.setSubject(messages[i].getSubject());
-						mail.setFrom(messages[i].getFrom()[0]);
+						mail.setFrom(messages[i].getFrom()[0].toString());
 						StringBuilder body = new StringBuilder();
 						addBodyPart(messages[i], body);
 						mail.setBody(body.toString());
+						mails.add(mail);
+						messages[i].setFlag(Flags.Flag.SEEN, true);
+						// TODO: change to this after testing
+						// messages[i].setFlag(Flags.Flag.DELETED, true);
 					}
 				}
 
-				// TODO: delete processed mails
-
+			} finally {
+				inbox.close(true);  // delete all mails marked for deletion
 			}
 			
 		} catch (Exception any) {
@@ -84,7 +118,42 @@ public class MailManager {
 		return mails;
 
 	}
+	
+	/**
+	 * 
+	 */
+	public void sendMail(Mail mail) {
+		
+		if (mail == null) {
+			return;
+		}
+		
+		Properties properties = System.getProperties();
+		properties.setProperty(MAIL_SMTP_HOST, fMailHostSmtp);
+		properties.setProperty(MAIL_USER, fMailUser);
+		properties.setProperty(MAIL_PASSWORD, fMailPassword);
+		Session session = Session.getDefaultInstance(properties);
 
+		try {
+		
+			MimeMessage message = new MimeMessage(session);
+			message.setFrom(new InternetAddress(fMailFrom));
+			message.addRecipient(Message.RecipientType.TO, new InternetAddress(mail.getTo()));
+			message.setSubject(mail.getSubject());
+			message.setContent(mail.getBody(), "text/plain");
+			Transport.send(message);
+		
+			LOG.info("Mail sent to " + mail.getTo() + ": " + mail.getSubject());
+			
+		} catch (MessagingException me) {
+			throw new AshesException("Error sending mail.", me);
+		}
+
+	}
+
+	/**
+	 * 
+	 */
 	private void addBodyPart(Part part, StringBuilder body) throws MessagingException, IOException {
 		if (part.isMimeType("text/plain")) {
 			body.append((String) part.getContent());

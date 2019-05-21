@@ -1,12 +1,25 @@
 package com.balancedbytes.game.ashes.mail;
 
+import java.io.StringReader;
+import java.util.Date;
 import java.util.Scanner;
 
+import com.balancedbytes.game.ashes.AshesOfEmpire;
+import com.balancedbytes.game.ashes.command.CmdTurnsecret;
+import com.balancedbytes.game.ashes.command.CommandList;
+import com.balancedbytes.game.ashes.command.CommandType;
+import com.balancedbytes.game.ashes.command.ValidationResult;
 import com.balancedbytes.game.ashes.model.Game;
+import com.balancedbytes.game.ashes.model.PlayerMove;
+import com.balancedbytes.game.ashes.model.PlayerMoveCache;
+import com.balancedbytes.game.ashes.model.User;
+import com.balancedbytes.game.ashes.model.UserCache;
+import com.balancedbytes.game.ashes.parser.Parser;
+import com.balancedbytes.game.ashes.parser.ParserException;
 
 public class MailProcessor {
 	
-	public MailProcessor() {
+	protected MailProcessor() {
 		super();
 	}
 	
@@ -19,7 +32,7 @@ public class MailProcessor {
 			} else if ("user".equalsIgnoreCase(token)) {
 				handleUserSubject(mail, scanner);
 			} else {
-				
+				// TODO ...
 			}
 		}
 	}
@@ -28,46 +41,100 @@ public class MailProcessor {
 	// game 1 player 2 turn 3 message 5
 	// game 1 player 2 turn 3 message gm
 	// game 1 player 2 turn 3 message all
-	private boolean handleGameSubject(Mail mail, Scanner scanner) {
+	private void handleGameSubject(Mail mail, Scanner scanner) {
 		int gameNr = scanner.hasNextInt() ? scanner.nextInt() : 0;
 		if (gameNr <= 0) {
-			return false;
+			return;
 		}
 		int playerNr = 0;
 		if ("player".equalsIgnoreCase(scanner.hasNext() ? scanner.next() : null)) {
 			playerNr = scanner.hasNextInt() ? scanner.nextInt() : 0;
 		}
 		if (playerNr <= 0) {
-			return false;
+			return;
 		}
-		int turnNr = 0;
+		int turn = 0;
 		if ("turn".equalsIgnoreCase(scanner.hasNext() ? scanner.next() : null)) {
-			turnNr = scanner.hasNextInt() ? scanner.nextInt() : 0;
+			turn = scanner.hasNextInt() ? scanner.nextInt() : 0;
 		}
-		if (turnNr <= 0) {
-			return false;
+		if (turn <= 0) {
+			return;
 		}
 		String action = scanner.hasNext() ? scanner.next() : null;
 		if ("move".equalsIgnoreCase(action)) {
-			return processGameMove(null, mail);
+			processGameMove(gameNr, playerNr, turn, mail.getBody());
 		} else if ("message".equalsIgnoreCase(action)) {
-			return processGameMessage(null, mail);
+			String receiver = scanner.hasNext() ? scanner.next() : null;		
+			processGameMessage(gameNr, playerNr, turn, receiver, mail.getBody());
 		} else {
-			return false;
+			// TODO ...
 		}
 	}
 	
-	private boolean handleUserSubject(Mail mail, Scanner scanner) {
-		return false;
+	private void handleUserSubject(Mail mail, Scanner scanner) {
+		// TODO ...
 	}
 	
-	
-	private boolean processGameMove(Game game, Mail mail) {
-		return true;
+	private void processGameMove(int gameNr, int playerNr, int turn, String mailBody) {
+		
+		PlayerMoveCache moveCache = AshesOfEmpire.getInstance().getMoveCache();
+		PlayerMove move = moveCache.get(gameNr, playerNr, turn);
+		
+		UserCache userCache = AshesOfEmpire.getInstance().getUserCache();
+		User user = userCache.get(move.getUserName());
+		move.setUser(user);
+		user.setLastProcessed(new Date());
+		user.setModified(true);
+		
+		Mail moveReceipt = null;
+		CommandList allCommands = null;
+		Parser parser = new Parser();
+		try (StringReader in = new StringReader(mailBody)) {
+			try {
+				allCommands = parser.parse(in, move.getPlayerNr());
+			} catch (ParserException pe) {
+				moveReceipt = MailCreator.createMoveRejected(move, pe.getMessage());
+			}
+		}
+		
+		if (allCommands != null) {
+			CommandList turnSecretCmds = allCommands.extract(CommandType.TURNSECRET);
+			if (turnSecretCmds.size() == 0) {
+				moveReceipt = MailCreator.createMoveRejected(move, "No turnsecret provided.");
+
+			} else {
+				CmdTurnsecret turnSecretCmd = (CmdTurnsecret) turnSecretCmds.get(0);
+				if (!turnSecretCmd.getSecret().equals(move.getTurnSecret())) {
+					moveReceipt = MailCreator.createMoveRejected(move, "Invalid turnsecret provided.");
+				
+				} else { 
+					Game game = AshesOfEmpire.getInstance().getGameCache().get(move.getGameNr());
+					if ((game == null) || (game.getTurn() != move.getTurn())) {
+						moveReceipt = MailCreator.createMoveRejected(move, "Unknown game or wrong turn.");
+					
+					} else {
+						move.setCommands(allCommands);
+						move.setReceived(new Date());
+						move.setModified(true);
+						
+						ValidationResult validationResult = allCommands.validate(game);
+						if (validationResult.isValid()) {
+							moveReceipt = MailCreator.createMoveAccepted(move);
+						} else {
+							moveReceipt = MailCreator.createMoveRejected(move, validationResult.toString());
+							move.setCommands(null);
+						}
+					}
+				}
+			}
+		}
+
+		AshesOfEmpire.getInstance().getMailManager().sendMail(moveReceipt);
+
 	}
-	
-	private boolean processGameMessage(Game game, Mail mail) {
-		return true;
+
+	private void processGameMessage(int gameNr, int playerNr, int turn, String receiver, String mailBody) {
+		// TODO ...
 	}
 
 }

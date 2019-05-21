@@ -70,7 +70,7 @@ public class PlayerMoveDataAccess {
 			ps.setInt(3, move.getTurn());
 			ps.setTimestamp(4, (move.getDeadline() != null) ? new Timestamp(move.getDeadline().getTime()) : null);
 			ps.setTimestamp(5, (move.getReceived() != null) ? new Timestamp(move.getReceived().getTime()) : null);
-			ps.setString(6, move.getUser());
+			ps.setString(6, move.getUserName());
 			ps.setString(7, move.getTurnSecret());
 			ps.setBlob(8, createCommandListBlob(c, move));
 			boolean success = (ps.executeUpdate() > 0);
@@ -87,7 +87,7 @@ public class PlayerMoveDataAccess {
 			PreparedStatement ps = c.prepareStatement(SQL_UPDATE);
 			ps.setTimestamp(1, (move.getDeadline() != null) ? new Timestamp(move.getDeadline().getTime()) : null);
 			ps.setTimestamp(2, (move.getReceived() != null) ? new Timestamp(move.getReceived().getTime()) : null);
-			ps.setString(3, move.getUser());
+			ps.setString(3, move.getUserName());
 			ps.setString(4, move.getTurnSecret());
 			ps.setBlob(5, createCommandListBlob(c, move));
 			ps.setLong(6, move.getId());
@@ -115,7 +115,7 @@ public class PlayerMoveDataAccess {
 		playerMove.setTurn(rs.getInt("turn"));
 		playerMove.setDeadline(rs.getTimestamp("deadline"));
 		playerMove.setReceived(rs.getTimestamp("received"));
-		playerMove.setUser(rs.getString("user_name"));
+		playerMove.setUserName(rs.getString("user_name"));
 		playerMove.setTurnSecret(rs.getString("turn_secret"));
 		playerMove.setCommands(readCommandList(rs.getBinaryStream("command_list")));
 		return playerMove;

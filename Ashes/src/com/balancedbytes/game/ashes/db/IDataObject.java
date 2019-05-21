@@ -4,4 +4,6 @@ public interface IDataObject {
 
 	public long getId();
 	
+	public boolean isModified();
+	
 }
