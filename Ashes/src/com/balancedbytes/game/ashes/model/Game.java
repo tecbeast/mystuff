@@ -210,8 +210,8 @@ public class Game implements IDataObject {
 	 */
 	public int getPlayerNrOfUser(String userName) {
 		for (Player player : fPlayers) {
-			if (player.getUser().equals(userName)) {
-				return player.getNumber();
+			if (player.getUserName().equals(userName)) {
+				return player.getPlayerNr();
 			}
 		}
 		return 0;

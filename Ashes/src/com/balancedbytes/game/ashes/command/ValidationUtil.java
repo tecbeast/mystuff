@@ -12,7 +12,7 @@ public final class ValidationUtil {
 		}
 		for (int i = 1; i <= 8; i++) {
 			Player player = game.getPlayer(i);
-			if ((player != null) && (player.getName() != null) && player.getName().equalsIgnoreCase(playerName)) {
+			if ((player != null) && (player.getPlayerName() != null) && player.getPlayerName().equalsIgnoreCase(playerName)) {
 				return i;
 			}
 		}

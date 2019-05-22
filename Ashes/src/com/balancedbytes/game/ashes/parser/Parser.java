@@ -13,6 +13,7 @@ import java.util.Set;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
+import com.balancedbytes.game.ashes.command.CmdAnnounce;
 import com.balancedbytes.game.ashes.command.CmdBuild;
 import com.balancedbytes.game.ashes.command.CmdDeclare;
 import com.balancedbytes.game.ashes.command.CmdHomeplanet;
@@ -36,7 +37,7 @@ import com.eclipsesource.json.WriterConfig;
  * <pre>
  *          parse -> statements
  *     statements -> statement statements | onBlock statements | (0)
- *      statement -> onBlockStmt ON planet | declare | playerName | turnsecret
+ *      statement -> onBlockStmt ON planet | declare | playerName | announce | turnsecret
  *        onBlock -> ON planet DO onBlockStmts DONE
  *   onBlockStmts -> onBlockStmt onBlockStmts | (0)
  *    onBlockStmt -> build | homeplanet | planetName | research | send | spy
@@ -48,6 +49,7 @@ import com.eclipsesource.json.WriterConfig;
  *     planetName -> PLANETNAME WORD
  *         planet -> NUMBER | WORD
  *     playerName -> PLAYERNAME WORD
+ *       announce -> ANNOUNCE WORD
  *         player -> NUMBER | WORD
  *       research -> RESEARCH NUMBER improvement
  *    improvement -> PR | FM | TM
@@ -205,6 +207,21 @@ public class Parser {
 				return Unit.TRANSPORTER;
 			default:
 				throw new ParserException("build unit expected");
+		}
+	}
+	
+	/**
+	 * 
+	 */
+	private CmdAnnounce announce() {
+		LOG.trace("announce()");
+		try {
+			match(ParserToken.ANNOUNCE);
+			CmdAnnounce cmd = new CmdAnnounce();
+			cmd.setText(word());
+			return cmd;
+		} catch (ParserException pe) {
+			throw new ParserException("ANNOUNCE: " + pe.getMessage());
 		}
 	}
 
@@ -657,6 +674,8 @@ public class Parser {
 	private Command statement() {
 		LOG.trace("statement()");
 		switch (fLookAhead) {
+			case ANNOUNCE:
+				return announce();
 			case DECLARE:
 				return declare();
 			case PLAYERNAME:

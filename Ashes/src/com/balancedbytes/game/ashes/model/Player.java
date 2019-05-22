@@ -25,18 +25,18 @@ import com.eclipsesource.json.JsonValue;
  */
 public class Player implements IJsonSerializable {
 	
-	private static final String USER = "user";
-	private static final String NAME = "name";
-	private static final String NUMBER = "number";
+	private static final String USER_NAME = "userName";
+	private static final String PLAYER_NAME = "playerName";
+	private static final String PLAYER_NR = "playerNr";
 	private static final String HOME_PLANET_NR = "homePlanetNr";
 	private static final String POLITICAL_POINTS = "politicalPoints";
 	private static final String FIGHTER_MORALE = "fighterMorale";
 	private static final String TRANSPORTER_MORALE = "transporterMorale";
 	private static final String POLITICAL_TERMS = "politicalTerms";
 
-	private String fUser;
-	private String fName;
-	private int fNumber;
+	private String fUserName;
+	private String fPlayerName;
+	private int fPlayerNr;
 	private int fHomePlanetNr;
 	private int fPoliticalPoints;
 	private int fFighterMorale;      // percent (min = 50%, max = 150%)
@@ -53,15 +53,15 @@ public class Player implements IJsonSerializable {
 		fGnpTotals = Category.buildEmptyMap();
 	}
 	
-	public Player(String user, int number) {
+	public Player(String userName, int number) {
 		
 		this();
 
-		fNumber = number;
+		fPlayerNr = number;
 
-		setUser(user);
-		setHomePlanetNr(fNumber);
-		setName("player" + fNumber);
+		setUserName(userName);
+		setHomePlanetNr(fPlayerNr);
+		setPlayerName("Player" + fPlayerNr);
 		
 		setPoliticalPoints(0);
 		setFighterMorale(100);
@@ -73,7 +73,7 @@ public class Player implements IJsonSerializable {
 		for (int i = 0; i < fPoliticalTerms.length; i++) {
 			if (i == 0) {
 				setPoliticalTerm(i, PoliticalTerm.WAR);
-			} else if (i == fNumber) {
+			} else if (i == fPlayerNr) {
 				setPoliticalTerm(i, PoliticalTerm.PEACE);
 			} else {
 				setPoliticalTerm(i, PoliticalTerm.NEUTRAL);
@@ -82,12 +82,12 @@ public class Player implements IJsonSerializable {
 		
 	}  
   
-	public String getUser() {
-		return fUser;
+	public String getUserName() {
+		return fUserName;
 	}
 	
-	public void setUser(String user) {
-		fUser = user;
+	public void setUserName(String userName) {
+		fUserName = userName;
 	}
 	
 	public int getHomePlanetNr() {
@@ -100,16 +100,16 @@ public class Player implements IJsonSerializable {
 		}
 	}
 
-	public String getName() {
-		return fName;
+	public String getPlayerName() {
+		return fPlayerName;
 	}
 	
-	public void setName(String name) {
-		fName = name;
+	public void setPlayerName(String name) {
+		fPlayerName = name;
 	}
 
-	public int getNumber() {
-		return fNumber;
+	public int getPlayerNr() {
+		return fPlayerNr;
 	}
 	
 	public int getPoliticalPoints() {
@@ -167,7 +167,7 @@ public class Player implements IJsonSerializable {
 	
 	private void executeDeclare(Game game, CmdDeclare declareCmd) {
 		int opponentNr = declareCmd.getOtherPlayerNr();
-		if ((opponentNr > 0) && (opponentNr != fNumber)) {
+		if ((opponentNr > 0) && (opponentNr != fPlayerNr)) {
 			PoliticalTerm newPt = declareCmd.getPoliticalTerm();
 			PoliticalTerm oldPt = getPoliticalTerm(opponentNr);
 			if (((newPt == PoliticalTerm.WAR) && (oldPt == PoliticalTerm.PEACE))
@@ -175,29 +175,29 @@ public class Player implements IJsonSerializable {
 				newPt = PoliticalTerm.NEUTRAL;
 			}
 			setPoliticalTerm(opponentNr, newPt);
-			LOG.debug("Player " + fNumber + " declares " + newPt + " with player " + opponentNr);
+			LOG.debug("Player " + fPlayerNr + " declares " + newPt + " with player " + opponentNr);
 		}
 	}
 	
 	private void executeHomeplanet(Game game, CmdHomeplanet homeplanetCmd) {
 		Planet homePlanet = game.getPlanet(homeplanetCmd.getPlanetNr());
-		if ((homePlanet != null) && (homePlanet.getPlayerNr() == fNumber)) {
+		if ((homePlanet != null) && (homePlanet.getPlayerNr() == fPlayerNr)) {
 			fHomePlanetNr = homePlanet.getNumber();
-			LOG.debug("Player " + fNumber + " sets homeplanet on " + homePlanet.getNumber());
+			LOG.debug("Player " + fPlayerNr + " sets homeplanet on " + homePlanet.getNumber());
 		}					
 	}
 	
 	private void executePlanetname(Game game, CmdPlanetname planetnameCmd) {
 		Planet namedPlanet = game.getPlanet(planetnameCmd.getPlanetNr());
-		if ((namedPlanet != null) && (namedPlanet.getPlayerNr() == fNumber)) {
+		if ((namedPlanet != null) && (namedPlanet.getPlayerNr() == fPlayerNr)) {
 			namedPlanet.setName(planetnameCmd.getName());
-			LOG.debug("Player " + fNumber + " renames planet " + namedPlanet.getNumber() +  " to " + namedPlanet.getName());
+			LOG.debug("Player " + fPlayerNr + " renames planet " + namedPlanet.getNumber() +  " to " + namedPlanet.getName());
 		}
 	}
 
 	private void executePlayername(Game game, CmdPlayername playernameCmd) {
-		setName(playernameCmd.getPlayerName());
-		LOG.debug("Player " + fNumber + " renames his/herself to " + fName);
+		setPlayerName(playernameCmd.getPlayerName());
+		LOG.debug("Player " + fPlayerNr + " renames his/herself to " + fPlayerName);
 	}
 	
 	private void executeResearch(Game game, CmdResearch researchCmd) {
@@ -224,7 +224,7 @@ public class Player implements IJsonSerializable {
 					switch (researchCmd.getImprovement()) {
 						case PRODUCTION_RATE:
 							Planet planet = game.getPlanet(researchCmd.getPlanetNr());
-							if ((planet != null) && (planet.getPlayerNr() == fNumber)) {
+							if ((planet != null) && (planet.getPlayerNr() == fPlayerNr)) {
 								planet.setProductionRate(planet.getProductionRate() + 16);
 							}
 							break;
@@ -242,13 +242,13 @@ public class Player implements IJsonSerializable {
 				countFailure += 1;
 			}
 		}
-		LOG.debug("Player " + fNumber + " improves " + countSuccess + " x " + researchCmd.getImprovement() + " for " + (countSuccess + countFailure) + " PP");					
+		LOG.debug("Player " + fPlayerNr + " improves " + countSuccess + " x " + researchCmd.getImprovement() + " for " + (countSuccess + countFailure) + " PP");					
 		
 	}
 	
 	private void executeSpy(Game game, CmdSpy spyCmd) {
 		Planet planet = game.getPlanet(spyCmd.getPlanetNr());
-		if ((planet != null) && (planet.getPlayerNr() != fNumber) && (fPoliticalPoints >= 7)) {
+		if ((planet != null) && (planet.getPlayerNr() != fPlayerNr) && (fPoliticalPoints >= 7)) {
 			fPoliticalPoints -= 7;
 			// 100% chance for spyLevel 1 or higher
 			// 50% chance for spyLevel 2 or higher
@@ -268,10 +268,10 @@ public class Player implements IJsonSerializable {
 			if (detected) {
 				getReport().add(new Message(Topic.INTELLIGENCE).add("Spy has been caught."));
 	  			Player planetOwner = game.getPlayer(planet.getPlayerNr());
-	  			planetOwner.getReport().add(new Message(Topic.INTELLIGENCE).add("A spy from " + fName + " (" + fNumber + ") has been caught"
+	  			planetOwner.getReport().add(new Message(Topic.INTELLIGENCE).add("A spy from " + fPlayerName + " (" + fPlayerNr + ") has been caught"
 	  				+ " on " + planet.getName() + " ("+ planet.getNumber() + ")"));
 			}
-			LOG.debug("Player " + fNumber + " uses level " + spyLevel + " spy on " + planet.getNumber() + (detected ? " - caught" : " - not caught"));			
+			LOG.debug("Player " + fPlayerNr + " uses level " + spyLevel + " spy on " + planet.getNumber() + (detected ? " - caught" : " - not caught"));			
 		}		
 	}
 		
@@ -312,7 +312,7 @@ public class Player implements IJsonSerializable {
 		// correct my political terms (after all players have executed their declare commands) 
 		for (int i = 1; i <= 8; i++) {
 			PoliticalTerm myPt = getPoliticalTerm(i);
-			PoliticalTerm otherPt = game.getPlayer(i).getPoliticalTerm(fNumber);
+			PoliticalTerm otherPt = game.getPlayer(i).getPoliticalTerm(fPlayerNr);
 			if ((myPt == PoliticalTerm.PEACE) && (otherPt != PoliticalTerm.PEACE)) {
 				setPoliticalTerm(i, PoliticalTerm.NEUTRAL);
 			}
@@ -326,11 +326,11 @@ public class Player implements IJsonSerializable {
 		// report political terms and calculate pp modifier
 		Message message = new Message(Topic.POLITICS);
 		for (int i = 1; i <= 8; i++) {
-			if (i != fNumber) {
+			if (i != fPlayerNr) {
 				Player otherPlayer = game.getPlayer(i);
 				StringBuilder line = new StringBuilder();
 				line.append("(").append(i).append(") ");
-				line.append(AshesUtil.rightpad(otherPlayer.getName(), 20));
+				line.append(AshesUtil.rightpad(otherPlayer.getPlayerName(), 20));
 				line.append(" ").append(getPoliticalTerm(i).name());
 				message.add(line.toString());
 				if (getPoliticalTerm(i) == PoliticalTerm.PEACE) {
@@ -362,10 +362,10 @@ public class Player implements IJsonSerializable {
 		fGnpTotals = Category.buildEmptyMap();
 		for (int i = 1; i <= 40; i++) {
 			Planet planet = game.getPlanet(i);
-			FleetList playerFleets = planet.findFleetsForPlayerNr(fNumber);
+			FleetList playerFleets = planet.findFleetsForPlayerNr(fPlayerNr);
 			fGnpTotals.put(Category.FIGHTERS, fGnpTotals.get(Category.FIGHTERS) + playerFleets.totalFighters());
 			fGnpTotals.put(Category.TRANSPORTERS, fGnpTotals.get(Category.TRANSPORTERS) + playerFleets.totalTransporters());
-			if (planet.getPlayerNr() == fNumber) {
+			if (planet.getPlayerNr() == fPlayerNr) {
 				fGnpTotals.put(Category.PLANETS, fGnpTotals.get(Category.PLANETS) + 1);
 				fGnpTotals.put(Category.FUEL_PLANTS, fGnpTotals.get(Category.FUEL_PLANTS) + planet.getFuelPlants());
 				fGnpTotals.put(Category.ORE_PLANTS, fGnpTotals.get(Category.ORE_PLANTS) + planet.getOrePlants());
@@ -411,9 +411,9 @@ public class Player implements IJsonSerializable {
 	@Override
 	public JsonValue toJson() {
 		JsonObjectWrapper json = new JsonObjectWrapper(new JsonObject());
-		json.add(NUMBER, getNumber());
-		json.add(USER, getUser());
-		json.add(NAME, getName());
+		json.add(PLAYER_NR, getPlayerNr());
+		json.add(USER_NAME, getUserName());
+		json.add(PLAYER_NAME, getPlayerName());
 		json.add(HOME_PLANET_NR, getHomePlanetNr());
 		json.add(POLITICAL_POINTS, getPoliticalPoints());
 		json.add(FIGHTER_MORALE, getFighterMorale());
@@ -429,9 +429,9 @@ public class Player implements IJsonSerializable {
 	@Override
 	public Player fromJson(JsonValue jsonValue) {
 		JsonObjectWrapper json = new JsonObjectWrapper(jsonValue.asObject());
-		fNumber = json.getInt(NUMBER);
-		setUser(json.getString(USER));
-		setName(json.getString(NAME));
+		fPlayerNr = json.getInt(PLAYER_NR);
+		setUserName(json.getString(USER_NAME));
+		setPlayerName(json.getString(PLAYER_NAME));
 		setHomePlanetNr(json.getInt(HOME_PLANET_NR));
 		setPoliticalPoints(json.getInt(POLITICAL_POINTS));
 		setFighterMorale(json.getInt(FIGHTER_MORALE));

@@ -762,7 +762,7 @@ public class Planet implements IJsonSerializable {
 			Fleet fleet = involved.get(i);
 			Player player = game.getPlayer(fleet.getPlayerNr());
 			
-			if (player.getNumber() == getPlayerNr()) {
+			if (player.getPlayerNr() == getPlayerNr()) {
 				defender.add(fleet);
 				df += fleet.getFighters();
 				ds += (int) (fleet.getFighters() * (double) player.getFighterMorale() / 100 * fPlanetaryMorale);
@@ -796,7 +796,7 @@ public class Planet implements IJsonSerializable {
 	  	if (as > 0) {
   
 	  		Player owner = game.getPlayer(fPlayerNr);
-	  		report.add("Battle at " + fName + " (" + fNumber + ") Owner: " + owner.getName() + " (" + owner.getNumber() + ")");
+	  		report.add("Battle at " + fName + " (" + fNumber + ") Owner: " + owner.getPlayerName() + " (" + owner.getPlayerNr() + ")");
   
 	  		if (ds > 0) {
 	  			
@@ -844,7 +844,7 @@ public class Planet implements IJsonSerializable {
 	  				Player atkPlayer = game.getPlayer(atkFleet.getPlayerNr());
   
 	  				StringBuilder line = new StringBuilder();
-	  				line.append(atkPlayer.getName()).append(" (").append(atkPlayer.getNumber()).append(") attacks with ");
+	  				line.append(atkPlayer.getPlayerName()).append(" (").append(atkPlayer.getPlayerNr()).append(") attacks with ");
 	  				line.append(atkFleet.getFighters()).append(" FI (-");
 	  				if (atkLoss[i] < atkFleet.getFighters()) {
 	  					line.append(atkLoss[i]);
@@ -865,7 +865,7 @@ public class Planet implements IJsonSerializable {
 	  				Player defPlayer = game.getPlayer(defFleet.getPlayerNr());
   
 	  				StringBuilder line = new StringBuilder();
-	  				line.append(defPlayer.getName()).append(" (").append(defPlayer.getNumber()).append(")  defends with ");
+	  				line.append(defPlayer.getPlayerName()).append(" (").append(defPlayer.getPlayerNr()).append(")  defends with ");
 	  				line.append(defFleet.getFighters()).append(" FI (-");
 	  				if (defLoss[j] < defFleet.getFighters()) {
 	  					line.append(defLoss[j]);
@@ -885,7 +885,7 @@ public class Planet implements IJsonSerializable {
 	  			for (int i = 0; i < attacker.size(); i++) {
 	  				Fleet atkFleet = attacker.get(i);
 	  				Player atkPlayer = game.getPlayer(atkFleet.getPlayerNr());
-	  				report.add(atkPlayer.getName() + " (" + atkPlayer.getNumber() + ") attacks with " + atkFleet.getFighters() + " FI");
+	  				report.add(atkPlayer.getPlayerName() + " (" + atkPlayer.getPlayerNr() + ") attacks with " + atkFleet.getFighters() + " FI");
 	  			}
 	  			
 	  			report.add("no resistance");
@@ -948,7 +948,7 @@ public class Planet implements IJsonSerializable {
 	  			Fleet atkFleet = attacker.get(i);
 	  			Player atkPlayer = game.getPlayer(atkFleet.getPlayerNr());
 	  			if (atkFleet.getTransporters() > 0) {
-	  				report.add(atkPlayer.getName() + " (" + atkPlayer.getNumber() + ") attempts landing with " + atkFleet.getTransporters() + " TR (-" + atkLoss[i] + " TR)");
+	  				report.add(atkPlayer.getPlayerName() + " (" + atkPlayer.getPlayerNr() + ") attempts landing with " + atkFleet.getTransporters() + " TR (-" + atkLoss[i] + " TR)");
 	  				atkPlayer.setTransporterMorale(atkPlayer.getTransporterMorale() + atkWin[i] - atkLoss[i] + atkBonus);
 	  				atkFleet.setTransporters(atkFleet.getTransporters() - atkLoss[i]);
 	  			}
@@ -985,8 +985,8 @@ public class Planet implements IJsonSerializable {
 	  			
 	  			if (trMax > 0) {
 	  				Player newOwner = game.getPlayer(attacker.get(conquerer).getPlayerNr());
-	  				changeOwner(newOwner.getNumber());
-	  				report.add(newOwner.getName() + " (" + newOwner.getNumber() + ")  conquers the planet.");
+	  				changeOwner(newOwner.getPlayerNr());
+	  				report.add(newOwner.getPlayerName() + " (" + newOwner.getPlayerNr() + ")  conquers the planet.");
 	  			}
   
 	  		// revolution attempt
@@ -1084,10 +1084,10 @@ public class Planet implements IJsonSerializable {
   	  		Player player = game.getPlayer(j);
   	  		if (player.getPoliticalTerm(fPlayerNr) == PoliticalTerm.PEACE) {
 		
-  	  			Message message = new Message((player.getNumber() == fPlayerNr) ? Topic.FLEET : Topic.INTELLIGENCE);
+  	  			Message message = new Message((player.getPlayerNr() == fPlayerNr) ? Topic.FLEET : Topic.INTELLIGENCE);
 
   	  			int limit = 0;
-  	  			if (player.getNumber() != fPlayerNr) {
+  	  			if (player.getPlayerNr() != fPlayerNr) {
   	  				limit = game.getTurn() * 2 + 9;
   	  			}
 
@@ -1156,8 +1156,8 @@ public class Planet implements IJsonSerializable {
 		StringBuilder line = new StringBuilder();
 		line.append("Planet: ").append(fName);
 		line.append(" (").append(fNumber).append(")");
-		line.append(" Owner: ").append(owner.getName());
-		line.append(" (").append(owner.getNumber()).append(")");
+		line.append(" Owner: ").append(owner.getPlayerName());
+		line.append(" (").append(owner.getPlayerNr()).append(")");
 		message.add(line.toString());
 
 		// spy level 3 on neutral

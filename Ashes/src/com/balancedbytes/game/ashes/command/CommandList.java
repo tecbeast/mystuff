@@ -168,6 +168,9 @@ public class CommandList implements IJsonSerializable, Iterable<Command> {
 			String typeString = cmdObject.getString(Command.TYPE, null);
 			if (AshesUtil.isProvided(typeString)) {
 				switch (CommandType.valueOf(typeString)) {
+					case ANNOUNCE:
+						add(new CmdAnnounce().fromJson(cmdObject));
+						break;
 					case BUILD:
 						add(new CmdBuild().fromJson(cmdObject));
 						break;
