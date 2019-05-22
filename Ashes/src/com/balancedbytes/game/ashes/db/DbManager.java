@@ -10,16 +10,9 @@ import java.util.Properties;
 import org.h2.tools.Server;
 
 import com.balancedbytes.game.ashes.AshesUtil;
+import com.balancedbytes.game.ashes.IAshesPropertyKey;
 
-public class DbManager {
-
-	public static final String DB_SERVER_DIR = "db.server.dir";
-
-	private static final String DB_URL = "db.url";
-	private static final String DB_USER = "db.user";
-	private static final String DB_PASSWORD = "db.password";
-	private static final String DB_JDBC_DRIVER = "db.jdbc.driver";
-	private static final String DB_SERVER_PORT = "db.server.port";
+public class DbManager implements IAshesPropertyKey {
 
 	private String fDbUrl;
 	private String fDbUser;

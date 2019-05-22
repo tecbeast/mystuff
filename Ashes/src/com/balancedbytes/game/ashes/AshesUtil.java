@@ -40,4 +40,18 @@ public final class AshesUtil {
 		return result.toString();
 	}
 	
+	public static String stripLeadingZeroes(String numberString) {
+		if (!isProvided(numberString)) {
+			return numberString;
+		}
+		int start = 0;
+		for (int i = 0; i < numberString.length(); i++) {
+			if (numberString.charAt(i) != '0') {
+				start = i;
+				break;
+			}
+		}
+		return numberString.substring(start);
+	}
+	
 }

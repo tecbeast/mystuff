@@ -24,27 +24,22 @@ import org.apache.commons.logging.LogFactory;
 
 import com.balancedbytes.game.ashes.AshesException;
 import com.balancedbytes.game.ashes.AshesUtil;
+import com.balancedbytes.game.ashes.IAshesPropertyKey;
 
 /**
  * 
  */
-public class MailManager {
+public class MailManagerImap implements IMailManager, IAshesPropertyKey {
 	
-	private static final Log LOG = LogFactory.getLog(MailManager.class);
+	private static final Log LOG = LogFactory.getLog(MailManagerImap.class);
 	
-	private static final String MAIL_IMAP_HOST = "mail.imap.host";
-	private static final String MAIL_SMTP_HOST = "mail.smtp.host";
-	private static final String MAIL_FROM = "mail.from";
-	private static final String MAIL_USER = "mail.user";
-	private static final String MAIL_PASSWORD = "mail.password";
-
 	private String fMailImapHost;
 	private String fMailHostSmtp;
 	private String fMailFrom;
 	private String fMailUser;
 	private String fMailPassword;
 
-	public MailManager() {
+	public MailManagerImap() {
 		super();
 	}
 	
@@ -72,7 +67,7 @@ public class MailManager {
 	/**
 	 * 
 	 */
-	public List<Mail> fetchMail() {
+	private List<Mail> fetchMail() {
 
 		List<Mail> mails = new ArrayList<Mail>();
 		

@@ -14,28 +14,30 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
 import com.balancedbytes.game.ashes.db.DbManager;
-import com.balancedbytes.game.ashes.mail.MailManager;
+import com.balancedbytes.game.ashes.mail.IMailManager;
+import com.balancedbytes.game.ashes.mail.MailManagerFiles;
+import com.balancedbytes.game.ashes.mail.MailManagerImap;
 import com.balancedbytes.game.ashes.model.GameCache;
 import com.balancedbytes.game.ashes.model.PlayerMoveCache;
 import com.balancedbytes.game.ashes.model.UserCache;
 
-public class AshesOfEmpire {
+public class AshesOfEmpire implements IAshesPropertyKey {
 	
 	private static final Log LOG = LogFactory.getLog(AshesOfEmpire.class);
 	private static final AshesOfEmpire INSTANCE = new AshesOfEmpire();
 	
 	private DbManager fDbManager;
-	private MailManager fMailManager;
+	private IMailManager fMailManager;
 	private UserCache fUserCache;
 	private PlayerMoveCache fMoveCache;
 	private GameCache fGameCache;
 
 	private AshesOfEmpire() {
 		fDbManager = new DbManager();
-		fMailManager = new MailManager();
 		fUserCache = new UserCache();
 		fMoveCache = new PlayerMoveCache();
 		fGameCache = new GameCache();
+		fMailManager = new MailManagerImap();
 	}
 	
 	public static AshesOfEmpire getInstance() {
@@ -59,6 +61,10 @@ public class AshesOfEmpire {
 		} catch (IOException ioe) {
 			throw new AshesException("Error reading mail properties.", ioe);
 		}
+		if (IMailManager.MAIL_MODE_FILES.equals(mailProperties.getProperty(MAIL_MODE, ""))) {
+			fMailManager = new MailManagerFiles();
+			mailProperties.setProperty(ASHES_DIR, dir.getAbsolutePath());
+		}
 		fMailManager.init(mailProperties);
 		Properties dbProperties = new Properties();
 		try {
@@ -68,7 +74,7 @@ public class AshesOfEmpire {
 		} catch (IOException ioe) {
 			throw new AshesException("Error reading db properties.", ioe);
 		}
-		dbProperties.setProperty(DbManager.DB_SERVER_DIR, new File(dir, "db").getAbsolutePath());
+		dbProperties.setProperty(DB_SERVER_DIR, new File(dir, "db").getAbsolutePath());
 		try {
 			fDbManager.init(dbProperties);
 			fDbManager.startServer();
@@ -84,7 +90,7 @@ public class AshesOfEmpire {
 		return fDbManager;
 	}
 	
-	public MailManager getMailManager() {
+	public IMailManager getMailManager() {
 		return fMailManager;
 	}
 	
@@ -102,7 +108,7 @@ public class AshesOfEmpire {
 
 	public static void main(String[] args) {
 		try {
-			String dirname = System.getProperties().getProperty("ashes.dir", null);
+			String dirname = System.getProperties().getProperty(ASHES_DIR, null);
 			File dir = (dirname != null) ? new File(dirname) : new File(AshesOfEmpire.class.getResource("/").toURI());
 			getInstance().init(dir);
 			if (AshesUtil.isProvided(args) && "initdb".equalsIgnoreCase(args[0])) {
