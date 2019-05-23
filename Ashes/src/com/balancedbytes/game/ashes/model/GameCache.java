@@ -27,7 +27,7 @@ public class GameCache {
 		if (game == null) {
 			return;
 		}
-		fGameByNumber.put(game.getNumber(), game);
+		fGameByNumber.put(game.getGameNr(), game);
 	}
 	
 	public Game get(int gameNr) {
@@ -37,7 +37,7 @@ public class GameCache {
 		}
 		if (fDataAccess != null) {
 			try {
-				game = fDataAccess.findByNumber(gameNr);
+				game = fDataAccess.findByGameNr(gameNr);
 			} catch (SQLException sqle) {
 				throw new AshesException("Error finding game(" + gameNr + ") in database.", sqle);
 			}
@@ -65,7 +65,7 @@ public class GameCache {
 				return fDataAccess.create(game);
 			}
 		} catch (SQLException sqle) {
-			throw new AshesException("Error saving game(" + game.getNumber() + ") in database.", sqle);
+			throw new AshesException("Error saving game(" + game.getGameNr() + ") in database.", sqle);
 		}
 	}
 

@@ -24,11 +24,11 @@ public class PlayerMoveDataAccess {
 
 	private static final String CHARSET = "UTF-8";
 	
-	private static final String SQL_FIND_BY_GAME_PLAYER_TURN =
-		"SELECT * FROM player_moves WHERE game_number = ? AND player_number = ? AND turn = ?";
+	private static final String SQL_FIND_BY_GAME_NR_PLAYER_NR_TURN =
+		"SELECT * FROM player_moves WHERE game_nr = ? AND player_nr = ? AND turn = ?";
 	private static final String SQL_CREATE =
 		"INSERT INTO player_moves"
-		+ " (game_number, player_number, turn, deadline, received, user_name, turn_secret, command_list)"
+		+ " (game_nr, player_nr, turn, deadline, received, user_name, turn_secret, command_list)"
 		+ " VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
 	private static final String SQL_UPDATE =
 		"UPDATE player_moves"
@@ -43,10 +43,10 @@ public class PlayerMoveDataAccess {
 		fDbManager = dbManager;
 	}
 	
-	public PlayerMove findByGamePlayerTurn(int gameNr, int playerNr, int turn) throws SQLException {
+	public PlayerMove findByGameNrPlayerNrTurn(int gameNr, int playerNr, int turn) throws SQLException {
 		PlayerMove playerMove = null;
 		try (Connection c = fDbManager.getConnection()) {
-			PreparedStatement ps = c.prepareStatement(SQL_FIND_BY_GAME_PLAYER_TURN);
+			PreparedStatement ps = c.prepareStatement(SQL_FIND_BY_GAME_NR_PLAYER_NR_TURN);
 			ps.setInt(1, gameNr);
 			ps.setInt(2, playerNr);
 			ps.setInt(3, turn);
@@ -110,8 +110,8 @@ public class PlayerMoveDataAccess {
 	protected PlayerMove processRow(ResultSet rs) throws SQLException {
 		PlayerMove playerMove = new PlayerMove();
 		playerMove.setId(rs.getLong("id"));
-		playerMove.setGameNr(rs.getInt("game_number"));
-		playerMove.setPlayerNr(rs.getInt("player_number"));
+		playerMove.setGameNr(rs.getInt("game_nr"));
+		playerMove.setPlayerNr(rs.getInt("player_nr"));
 		playerMove.setTurn(rs.getInt("turn"));
 		playerMove.setDeadline(rs.getTimestamp("deadline"));
 		playerMove.setReceived(rs.getTimestamp("received"));

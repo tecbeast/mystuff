@@ -6,6 +6,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
 import com.balancedbytes.game.ashes.AshesUtil;
+import com.balancedbytes.game.ashes.command.CmdAnnounce;
 import com.balancedbytes.game.ashes.command.CmdDeclare;
 import com.balancedbytes.game.ashes.command.CmdHomeplanet;
 import com.balancedbytes.game.ashes.command.CmdPlanetname;
@@ -165,6 +166,15 @@ public class Player implements IJsonSerializable {
 		return fGnpTotals;
 	}
 	
+	private void executeAnnounce(Game game, CmdAnnounce announceCmd) {
+		if (announceCmd.getText() != null) {
+			Message msg = new Message(Topic.GALACTIC_MEDIA);
+			msg.add(announceCmd.getText());
+			game.addMessageToAllPlayerReports(msg);		
+			LOG.debug("Player " + fPlayerNr + " announces \"" + announceCmd.getText() + "\"");
+		}
+	}
+
 	private void executeDeclare(Game game, CmdDeclare declareCmd) {
 		int opponentNr = declareCmd.getOtherPlayerNr();
 		if ((opponentNr > 0) && (opponentNr != fPlayerNr)) {
@@ -283,6 +293,9 @@ public class Player implements IJsonSerializable {
 		
 		for (Command cmd : cmdList) {
 			switch (cmd.getType()) {
+				case ANNOUNCE:
+					executeAnnounce(game, (CmdAnnounce) cmd);
+					break;
 				case DECLARE:
 					executeDeclare(game, (CmdDeclare) cmd);
 					break;

@@ -25,11 +25,11 @@ public class GameDataAccess {
 
 	private static final String CHARSET = "UTF-8";
 	
-	private static final String SQL_FIND_BY_NUMBER =
-		"SELECT * FROM games WHERE number = ?";
+	private static final String SQL_FIND_BY_GAME_NR =
+		"SELECT * FROM games WHERE game_nr = ?";
 	private static final String SQL_CREATE =
 		"INSERT INTO games"
-		+ " (number, turn, last_update, player_list, planet_list)"
+		+ " (game_nr, turn, last_update, player_list, planet_list)"
 		+ " VALUES (?, ?, ?, ?, ?)";
 	private static final String SQL_UPDATE =
 		"UPDATE games"
@@ -44,10 +44,10 @@ public class GameDataAccess {
 		fDbManager = dbManager;
 	}
 
-	public Game findByNumber(int gameNr) throws SQLException {
+	public Game findByGameNr(int gameNr) throws SQLException {
 		Game game = null;
 		try (Connection c = fDbManager.getConnection()) {
-			PreparedStatement ps = c.prepareStatement(SQL_FIND_BY_NUMBER);
+			PreparedStatement ps = c.prepareStatement(SQL_FIND_BY_GAME_NR);
 			ps.setInt(1, gameNr);
 		    ResultSet rs = ps.executeQuery();
 			while (rs.next()) {
@@ -84,7 +84,7 @@ public class GameDataAccess {
 		}
 		try (Connection c = fDbManager.getConnection()) {
 			PreparedStatement ps = c.prepareStatement(SQL_UPDATE);
-			ps.setInt(1, game.getNumber());
+			ps.setInt(1, game.getGameNr());
 			ps.setInt(2, game.getTurn());
 			ps.setTimestamp(3, (game.getLastUpdate() != null) ? new Timestamp(game.getLastUpdate().getTime()) : null);
 			ps.setBlob(4, createPlayerListBlob(c, game));
@@ -108,7 +108,7 @@ public class GameDataAccess {
 	protected Game processRow(ResultSet rs) throws SQLException {
 		Game game = new Game();
 		game.setId(rs.getLong("id"));
-		game.setNumber(rs.getInt("number"));
+		game.setGameNr(rs.getInt("game_nr"));
 		game.setTurn(rs.getInt("turn"));
 		game.setLastUpdate(rs.getTime("last_update"));
 		game.setPlayers(readPlayerList(rs.getBinaryStream("player_list")));

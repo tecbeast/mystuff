@@ -17,4 +17,7 @@ done
 build 5 TR on 7  # ... oder auch einzeln
 spy on 5         # das kostet politische Punkte !
 
+announce "Nachricht an alle:"
+announce "Heute Bratwurst in der Kantine!"
+
 playername "Kalimar"  # mir ist nach einem neuen image :-)

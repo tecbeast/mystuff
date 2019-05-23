@@ -52,8 +52,8 @@ public class DbInitializer {
 		String sql = new StringBuilder()
 			.append("CREATE TABLE player_moves (")
 			.append(" id IDENTITY NOT NULL PRIMARY KEY,")  // identity = auto-incrementing long integer
-			.append(" game_number INTEGER NOT NULL,")
-			.append(" player_number INTEGER NOT NULL,")
+			.append(" game_nr INTEGER NOT NULL,")
+			.append(" player_nr INTEGER NOT NULL,")
 			.append(" turn INTEGER NOT NULL,")
 			.append(" deadline TIMESTAMP,")
 			.append(" received TIMESTAMP,")
@@ -70,7 +70,7 @@ public class DbInitializer {
 		String sql = new StringBuilder()
 			.append("CREATE TABLE games (")
 			.append(" id IDENTITY NOT NULL PRIMARY KEY,")  // identity = auto-incrementing long integer
-			.append(" number INTEGER NOT NULL,")
+			.append(" game_nr INTEGER NOT NULL,")
 			.append(" turn INTEGER NOT NULL,")
 			.append(" last_update TIMESTAMP,")
 			.append(" player_list BLOB,")

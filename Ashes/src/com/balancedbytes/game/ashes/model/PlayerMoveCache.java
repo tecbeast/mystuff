@@ -52,7 +52,7 @@ public class PlayerMoveCache {
 		}
 		if (fDataAccess != null) {
 			try {
-				move = fDataAccess.findByGamePlayerTurn(gameNr, playerNr, turn);
+				move = fDataAccess.findByGameNrPlayerNrTurn(gameNr, playerNr, turn);
 			} catch (SQLException sqle) {
 				throw new AshesException("Error finding playerMove(" + gameNr + "," + playerNr + "," + turn + ") in database.", sqle);
 			}

@@ -1,14 +1,16 @@
 package com.balancedbytes.game.ashes.model;
 
 import java.security.SecureRandom;
-import java.util.Date;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
+import java.util.Date;
 import java.util.List;
 import java.util.Map;
 import java.util.Random;
 
+import com.balancedbytes.game.ashes.AshesOfEmpire;
+import com.balancedbytes.game.ashes.TurnSecretGenerator;
 import com.balancedbytes.game.ashes.command.CommandList;
 import com.balancedbytes.game.ashes.db.IDataObject;
 
@@ -70,7 +72,7 @@ public class Game implements IDataObject {
   	private long fId;
   	private boolean fModified;
   	
-  	private int fNumber;
+  	private int fGameNr;
   	private int fTurn;
   	private Date fLastUpdate;
   	private PlanetList fPlanets;
@@ -88,8 +90,8 @@ public class Game implements IDataObject {
 
 		this();
 		
-		setNumber(number);
-	  	setTurn(0);
+		setGameNr(number);
+	  	setTurn(1);
 
 		for (int i = 0; i < Math.min(NR_OF_PLAYERS, users.length); i++) {
 			fPlayers.add(new Player(users[i], i + 1));
@@ -167,12 +169,12 @@ public class Game implements IDataObject {
 		return DISTANCES[fromPlanetNr - 1][toPlanetNr - 1];
 	}	
 
-	public int getNumber() {
-		return fNumber;
+	public int getGameNr() {
+		return fGameNr;
 	}
 	
-	public void setNumber(int number) {
-		fNumber = number;
+	public void setGameNr(int number) {
+		fGameNr = number;
 	}
 	
 	public PlayerList getPlayers() {
@@ -252,43 +254,41 @@ public class Game implements IDataObject {
 	/**
 	 * Play a full turn for this game with the given commands.
 	 */
-	public void playTurn(CommandList cmdList) {
+	public void playTurn() {
 		
-		// TODO: cmdList from CommandCache (per player)
+		CommandList allCommands = new CommandList();
+		PlayerMoveCache moveCache = AshesOfEmpire.getInstance().getMoveCache(); 
 		
 		//  7.1 Zuerst werden die neuen PV berechnet. Änderungen werden sofort wirksam,
 		//      noch vor den Flugbewegungen. Das gilt auch für den Wechsel des Heimatplaneten
 		//      und alle Namensänderungen.
 		
-		// increase turn
-		fTurn += 1;
-		
-		// generate turn secrets for next turn
-		for (int i = 1; i <= NR_OF_PLAYERS; i++) {
-			// getPlayer(i).setTurnSecret(TurnSecretGenerator.generateSecret());
-		}		
-		
 		// execute player commands
 		// (declare, homeplanet, planetname, playername, spy)
-		for (int i = 1; i <= NR_OF_PLAYERS; i++) {
-			getPlayer(i).executeCommands(this, cmdList);
+		for (Player player : fPlayers) {
+			PlayerMove move = moveCache.get(getGameNr(), player.getPlayerNr(), getTurn());
+			CommandList commands = (move != null) ? move.getCommands() : null;
+			if (commands != null) {
+				allCommands.add(commands);
+				player.executeCommands(this, commands);
+			}
 		}		
 		
 		// turn start for each player
 		// (update and report political terms, update pp, update fm and tm)
-		for (int i = 1; i <= NR_OF_PLAYERS; i++) {
-			getPlayer(i).startTurn(this);
+		for (Player player : fPlayers) {
+			player.startTurn(this);
 		}
 		
 		// play turn for each planet
-		for (int i = 1; i <= NR_OF_PLANETS; i++) {
-			getPlanet(i).playTurn(this, cmdList);
+		for (Planet planet : fPlanets) {
+			planet.playTurn(this, allCommands);
 		}		
   
 		// turn end for each player
 		// (calculate gnp totals, report player status)
-		for (int i = 1; i <= NR_OF_PLAYERS; i++) {
-			getPlayer(i).endTurn(this);
+		for (Player player: fPlayers) {
+			player.endTurn(this);
 		}
   
 		//  7.10 Zum Abschluß wird die GNP-Tabelle berechnet.
@@ -334,6 +334,22 @@ public class Game implements IDataObject {
 	  	}
 	  	*/
 		
+		// increase turn
+		fTurn += 1;
+		
+		// generate turn secrets for next turn
+		for (Player player : fPlayers) {
+			PlayerMove move = new PlayerMove();
+			move.setGameNr(getGameNr());
+			move.setPlayerNr(player.getPlayerNr());
+			move.setTurn(getTurn());
+			move.setTurnSecret(TurnSecretGenerator.generateSecret());
+			move.setModified(true);
+			moveCache.add(move);
+		}
+		
+		// mark this game as modified (so it will be saved by the cache)
+		setModified(true);
 
 	}
 	
@@ -389,7 +405,7 @@ public class Game implements IDataObject {
 			}
 		}
 		
-		Message message = new Message(Topic.GNP);
+		Message message = new Message(Topic.GROSS_NATIONAL_PRODUCT);
 
 		StringBuilder line = new StringBuilder();
 		line.append("Player ");
