@@ -71,7 +71,7 @@ public class PlayerMoveCache {
 		return success;
 	}
 	
-	public boolean save(PlayerMove move) {
+	private boolean save(PlayerMove move) {
 		if ((move == null) || (fDataAccess == null)) {
 			return false;
 		}

@@ -9,9 +9,10 @@ public class User implements IDataObject {
 	private long fId;
 	private boolean fModified;
 	
-	private String fName;
+	private String fUserName;
 	private String fRealName;
 	private String fEmail;
+	private String fSecret;
 	private Date fRegistered;
 	private Date fLastProcessed;
 	private int fGamesJoined;	
@@ -36,12 +37,12 @@ public class User implements IDataObject {
 		fModified = modified;
 	}
 	
-	public String getName() {
-		return fName;
+	public String getUserName() {
+		return fUserName;
 	}
 	
-	public void setName(String name) {
-		fName = name;
+	public void setUserName(String name) {
+		fUserName = name;
 	}
 	
 	public String getRealName() {
@@ -58,6 +59,14 @@ public class User implements IDataObject {
 	
 	public void setEmail(String email) {
 		fEmail = email;
+	}
+	
+	public String getSecret() {
+		return fSecret;
+	}
+	
+	public void setSecret(String secret) {
+		fSecret = secret;
 	}
 	
 	public Date getRegistered() {

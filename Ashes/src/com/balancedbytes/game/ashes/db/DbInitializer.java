@@ -34,9 +34,10 @@ public class DbInitializer {
 		String sql = new StringBuilder()
 			.append("CREATE TABLE users (")
 			.append(" id IDENTITY NOT NULL PRIMARY KEY,")  // identity = auto-incrementing long integer
-			.append(" name VARCHAR(32) NOT NULL,")
+			.append(" user_name VARCHAR(32) NOT NULL,")
 			.append(" real_name VARCHAR(80),")
 			.append(" email VARCHAR(100) NOT NULL,")
+			.append(" secret VARCHAR(32),")
 			.append(" registered TIMESTAMP NOT NULL,")
 			.append(" last_processed TIMESTAMP NOT NULL,")
 			.append(" games_joined INTEGER NOT NULL,")
@@ -103,7 +104,7 @@ public class DbInitializer {
 	
 	private void addTestData() throws SQLException {
 		User userTecBeast = new User();
-		userTecBeast.setName("TecBeast");
+		userTecBeast.setUserName("TecBeast");
 		userTecBeast.setRealName("Georg Seipler");
 		userTecBeast.setEmail(userTecBeast.getRealName().toLowerCase().replace(' ', '@') + ".de");  // spam protection
 		fDbManager.getUserDataAccess().create(userTecBeast);

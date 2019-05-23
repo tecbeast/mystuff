@@ -8,6 +8,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
 import com.balancedbytes.game.ashes.AshesException;
+import com.balancedbytes.game.ashes.AshesUtil;
 import com.balancedbytes.game.ashes.db.DbManager;
 import com.balancedbytes.game.ashes.db.UserDataAccess;
 
@@ -28,19 +29,19 @@ public class UserCache {
 		}
 	}
 	
-	public User get(String name) {
-		if (name == null) {
+	public User get(String userName) {
+		if (!AshesUtil.isProvided(userName)) {
 			return null;
 		}
-		User user = fUserByName.get(name);
+		User user = fUserByName.get(userName);
 		if (user != null) {
 			return user;
 		}
 		if (fDataAccess != null) {
 			try {
-				user = fDataAccess.findByName(name);
+				user = fDataAccess.findByUserName(userName);
 			} catch (SQLException sqle) {
-				LOG.error("Error finding user(" + name + ") in database.", sqle);
+				LOG.error("Error finding user(" + userName + ") in database.", sqle);
 			}
 			add(user);
 		}
@@ -51,7 +52,7 @@ public class UserCache {
 		if (user == null) {
 			return;
 		}
-		fUserByName.put(user.getName(), user);
+		fUserByName.put(user.getUserName(), user);
 	}
 
 	public boolean save() {
@@ -64,7 +65,7 @@ public class UserCache {
 		return success;
 	}
 	
-	public boolean save(User user) {
+	private boolean save(User user) {
 		if ((user == null) || (fDataAccess == null)) {
 			return false;
 		}
@@ -75,7 +76,7 @@ public class UserCache {
 			}
 			return success;
 		} catch (SQLException sqle) {
-			throw new AshesException("Error saving user(" + user.getName() + ") in database.", sqle);
+			throw new AshesException("Error saving user(" + user.getUserName() + ") in database.", sqle);
 		}
 	}
 

@@ -54,6 +54,11 @@ public class MailManagerImap implements IMailManager, IAshesPropertyKey {
 		fMailPassword = properties.getProperty(MAIL_PASSWORD, null);
 	}
 	
+	@Override
+	public String getEmailAddress() {
+		return fMailFrom;
+	}
+	
 	/**
 	 * 
 	 */

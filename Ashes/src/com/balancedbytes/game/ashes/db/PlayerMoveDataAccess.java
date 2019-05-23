@@ -64,7 +64,7 @@ public class PlayerMoveDataAccess {
 			return false;
 		}
 		try (Connection c = fDbManager.getConnection()) {
-			PreparedStatement ps = c.prepareStatement(SQL_CREATE);
+			PreparedStatement ps = c.prepareStatement(SQL_CREATE, new String[] { "id" });
 			ps.setInt(1, move.getGameNr());
 			ps.setInt(2, move.getPlayerNr());
 			ps.setInt(3, move.getTurn());
@@ -75,6 +75,10 @@ public class PlayerMoveDataAccess {
 			ps.setBlob(8, createCommandListBlob(c, move));
 			boolean success = (ps.executeUpdate() > 0);
 			c.commit();
+			ResultSet rs = ps.getGeneratedKeys();
+            while (rs.next()) {
+            	move.setId(rs.getLong(1));
+            }
 			return success;
 		}
 	}

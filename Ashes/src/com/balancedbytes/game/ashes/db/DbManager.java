@@ -48,11 +48,15 @@ public class DbManager implements IAshesPropertyKey {
 	}
 	
 	public void startServer() throws SQLException {
-		fDbServer.start();
+		if (fDbServer != null) {
+			fDbServer.start();
+		}
 	}
 	
 	public void stopServer() {
-		fDbServer.stop();
+		if (fDbServer != null) {
+			fDbServer.stop();
+		}
 	}
 
 	public Connection getConnection() throws SQLException {

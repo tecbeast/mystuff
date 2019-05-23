@@ -7,6 +7,8 @@ public interface IMailManager {
 	public static final String MAIL_MODE_IMAP = "imap";
 	public static final String MAIL_MODE_FILES = "files";
 	
+	public String getEmailAddress();
+	
 	public void init(Properties properties);
 	
 	public void processMails();

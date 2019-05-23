@@ -9,18 +9,24 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Properties;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+
 import com.balancedbytes.game.ashes.AshesException;
 import com.balancedbytes.game.ashes.AshesUtil;
 import com.balancedbytes.game.ashes.IAshesPropertyKey;
 
 public class MailManagerFiles implements IMailManager, IAshesPropertyKey {
 	
+	private static final Log LOG = LogFactory.getLog(MailManagerFiles.class);
+
 	private static final String MAIL_FILE_PREFIX = "mail";
 	private static final String MAIL_FILE_SUFFIX = ".txt";
 	
 	private File fMailDirIn;
 	private File fMailDirOut;
 	private int fLastMailNr;
+	private String fMailFrom;
 	
 	public MailManagerFiles() {
 		super();
@@ -30,14 +36,20 @@ public class MailManagerFiles implements IMailManager, IAshesPropertyKey {
 	public void init(Properties properties) {
 		File baseDir = new File(properties.getProperty(ASHES_DIR));
 		fMailDirIn = new File(baseDir, properties.getProperty(MAIL_DIR_IN));
-		if (!fMailDirIn.exists() || fMailDirIn.isDirectory()) {
-			throw new AshesException("Invalid incoming mail directory.");
+		if (!fMailDirIn.exists() || !fMailDirIn.isDirectory()) {
+			throw new AshesException("Invalid incoming mail directory \"" + fMailDirIn.getAbsolutePath() + "\"");
 		}
 		fMailDirOut = new File(baseDir, properties.getProperty(MAIL_DIR_OUT));
-		if (!fMailDirOut.exists() || fMailDirOut.isDirectory()) {
-			throw new AshesException("Invalid outgoing mail directory.");
+		if (!fMailDirOut.exists() || !fMailDirOut.isDirectory()) {
+			throw new AshesException("Invalid outgoing mail directory \"" + fMailDirOut.getAbsolutePath() + "\"");
 		}
 		fLastMailNr = findLastMailNumber();
+		fMailFrom = properties.getProperty(MAIL_FROM, null);
+	}
+	
+	@Override
+	public String getEmailAddress() {
+		return fMailFrom;
 	}
 	
 	@Override
@@ -81,6 +93,7 @@ public class MailManagerFiles implements IMailManager, IAshesPropertyKey {
 		File outFile = new File(fMailDirOut, fileName);
 		try {
 			mail.writeTo(new FileWriter(outFile));
+			LOG.info("Mail sent to " + mail.getTo() + ": " + mail.getSubject());
 		} catch (IOException ioe) {
 			throw new AshesException("Error writing mail.", ioe);
 		}
