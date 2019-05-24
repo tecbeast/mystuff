@@ -30,12 +30,12 @@ public class DbManager implements IAshesPropertyKey {
 		List<String> dbServerArgs = new ArrayList<String>();
 		dbServerArgs.add("-ifNotExists");
 		String dbServerPort = properties.getProperty(DB_SERVER_PORT);
-		if (AshesUtil.isProvided(dbServerPort)) {
+		if (AshesUtil.provided(dbServerPort)) {
 			dbServerArgs.add("-tcpPort");
 			dbServerArgs.add(dbServerPort);
 		}
 		String dbServerDir = properties.getProperty(DB_SERVER_DIR);
-		if (AshesUtil.isProvided(dbServerDir)) {
+		if (AshesUtil.provided(dbServerDir)) {
 			dbServerArgs.add("-baseDir");
 			dbServerArgs.add(dbServerDir);
 		}

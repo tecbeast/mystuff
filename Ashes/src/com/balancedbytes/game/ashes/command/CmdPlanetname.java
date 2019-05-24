@@ -98,7 +98,7 @@ public class CmdPlanetname extends Command {
 	public String toString() {
 		return new StringBuilder()
 			.append("planetname ")
-			.append('"').append(AshesUtil.toString(getPlanetName())).append('"')
+			.append('"').append(AshesUtil.print(getPlanetName())).append('"')
 			.append(" on ").append(getPlanetNr())
 			.toString();
 	}

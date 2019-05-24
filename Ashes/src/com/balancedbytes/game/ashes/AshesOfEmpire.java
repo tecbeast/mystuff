@@ -18,7 +18,9 @@ import com.balancedbytes.game.ashes.mail.IMailManager;
 import com.balancedbytes.game.ashes.mail.MailManagerFiles;
 import com.balancedbytes.game.ashes.mail.MailManagerImap;
 import com.balancedbytes.game.ashes.model.GameCache;
+import com.balancedbytes.game.ashes.model.PlayerMove;
 import com.balancedbytes.game.ashes.model.PlayerMoveCache;
+import com.balancedbytes.game.ashes.model.User;
 import com.balancedbytes.game.ashes.model.UserCache;
 
 public class AshesOfEmpire implements IAshesPropertyKey {
@@ -106,7 +108,29 @@ public class AshesOfEmpire implements IAshesPropertyKey {
 		return fMoveCache;
 	}
 	
-	public void run() {
+	public void initDb() throws SQLException {
+		LOG.trace("initDb()");
+		getDbManager().getDbInitializer().init(true);
+	}
+	
+	public void exportUsers() throws SQLException {
+		LOG.trace("exportUsers");
+		System.out.println(User.CSV_HEADER);
+		for (User user : getDbManager().getUserDataAccess().findAll()) {
+			System.out.println(user.toCsv());
+		}
+	}
+
+	public void exportMoves() throws SQLException {
+		LOG.trace("exportMoves()");
+		System.out.println(PlayerMove.CSV_HEADER);
+		for (PlayerMove move : getDbManager().getPlayerMoveDataAccess().findAll()) {
+			System.out.println(move.toCsv());
+		}
+	}
+
+	public void process() {
+		LOG.trace("process()");
 		getMailManager().processMails();
 		getUserCache().save();
 		getMoveCache().save();
@@ -119,10 +143,20 @@ public class AshesOfEmpire implements IAshesPropertyKey {
 			File dir = (dirname != null) ? new File(dirname) : new File(AshesOfEmpire.class.getResource("/").toURI());
 			AshesOfEmpire ashes = getInstance();
 			ashes.init(dir);
-			if (AshesUtil.isProvided(args) && "initdb".equalsIgnoreCase(args[0])) {
-				ashes.getDbManager().getDbInitializer().init(false);
+			if (AshesUtil.provided(args)) {
+				if ("initdb".equalsIgnoreCase(args[0])) {
+					ashes.initDb();
+				}
+				if ("export".equalsIgnoreCase(args[0]) && (args.length > 1)) {
+					if ("users".equalsIgnoreCase(args[1])) {
+						ashes.exportUsers();
+					}
+					if ("moves".equalsIgnoreCase(args[1])) {
+						ashes.exportMoves();
+					}
+				}
 			} else {
-				ashes.run();
+				ashes.process();
 			}
 		} catch (Exception any) {
 			LOG.error("", any);

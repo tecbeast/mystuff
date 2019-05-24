@@ -85,7 +85,7 @@ public class CmdResearch extends Command {
 	public JsonObject toJson() {
 		JsonObjectWrapper json = new JsonObjectWrapper(super.toJson());
 		json.add(COUNT, getCount());
-		json.add(IMPROVEMENT, AshesUtil.toString(getImprovement()));
+		json.add(IMPROVEMENT, AshesUtil.print(getImprovement()));
 		json.add(PLANET_NR, getPlanetNr());
 		json.add(PLANET_NAME, getPlanetName());
 		return json.toJsonObject();
@@ -97,7 +97,7 @@ public class CmdResearch extends Command {
 		JsonObjectWrapper json = new JsonObjectWrapper(jsonValue.asObject());
 		setCount(json.getInt(COUNT));
 		String imprString = json.getString(IMPROVEMENT);
-		setImprovement(AshesUtil.isProvided(imprString) ? Improvement.valueOf(imprString) : null);
+		setImprovement(AshesUtil.provided(imprString) ? Improvement.valueOf(imprString) : null);
 		setPlanetNr(json.getInt(PLANET_NR));
 		setPlanetName(json.getString(PLANET_NAME));
 		return this;

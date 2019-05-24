@@ -92,7 +92,7 @@ public class MailManagerImap implements IMailManager, IAshesPropertyKey {
 				FlagTerm unseenFlagTerm = new FlagTerm(seen, false);
 				Message messages[] = inbox.search(unseenFlagTerm);
 	
-				if (AshesUtil.isProvided(messages)) {
+				if (AshesUtil.provided(messages)) {
 					for (int i = 0; i < messages.length; i++) {
 						Mail mail = new Mail();
 						mail.setSubject(messages[i].getSubject());

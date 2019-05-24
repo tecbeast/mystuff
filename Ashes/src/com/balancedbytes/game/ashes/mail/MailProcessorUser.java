@@ -19,7 +19,7 @@ public class MailProcessorUser {
 	}
 	
 	public Mail process(Mail mail) {
-		if ((mail == null) || !AshesUtil.isProvided(mail.getSubject())) {
+		if ((mail == null) || !AshesUtil.provided(mail.getSubject())) {
 			return null;
 		}
 		try (Scanner subjectScanner = new Scanner(mail.getSubject())) {
@@ -39,7 +39,7 @@ public class MailProcessorUser {
 	
 	private Mail processUserRegistration(String userName, String mailBody) {
 
-		if (!AshesUtil.isProvided(userName) || !AshesUtil.isProvided(mailBody)) {
+		if (!AshesUtil.provided(userName) || !AshesUtil.provided(mailBody)) {
 			return null;
 		}
 		
@@ -85,7 +85,7 @@ public class MailProcessorUser {
 				return createMailRegistrationRejected(user, "ERROR: This username is in use.");
 			}
 
-			if (AshesUtil.isProvided(secret)) {
+			if (AshesUtil.provided(secret)) {
 
 				if (!user.getSecret().equals(secret)) {
 					return createMailRegistrationRejected(user, "ERROR: Invalid secret.");
@@ -102,7 +102,7 @@ public class MailProcessorUser {
 			
 		} else {
 
-			if (AshesUtil.isProvided(realName) && AshesUtil.isProvided(email)) {
+			if (AshesUtil.provided(realName) && AshesUtil.provided(email)) {
 				try {
 					InternetAddress.parse(email, true);  // check email 
 				} catch (AddressException ae) {

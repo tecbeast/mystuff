@@ -5,6 +5,8 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Timestamp;
+import java.util.ArrayList;
+import java.util.List;
 
 import com.balancedbytes.game.ashes.model.User;
 
@@ -12,6 +14,8 @@ public class UserDataAccess {
 
 	private DbManager fDbManager;
 	
+	private static final String SQL_FIND_ALL =
+		"SELECT * FROM users";
 	private static final String SQL_FIND_BY_USER_NAME =
 		"SELECT * FROM users WHERE user_name = ?";
 	private static final String SQL_CREATE =
@@ -28,6 +32,18 @@ public class UserDataAccess {
 	protected UserDataAccess(DbManager dbManager) {
 		fDbManager = dbManager;
 	}
+
+	public List<User> findAll() throws SQLException {
+		List<User> users = new ArrayList<User>();
+		try (Connection c = fDbManager.getConnection()) {
+			PreparedStatement ps = c.prepareStatement(SQL_FIND_ALL);
+		    ResultSet rs = ps.executeQuery();
+			while (rs.next()) {
+	        	users.add(processRow(rs));
+	        }
+		}
+		return users;
+	}
 	
 	public User findByUserName(String userName) throws SQLException {
 		if (userName == null) {
@@ -41,7 +57,6 @@ public class UserDataAccess {
 			while (rs.next()) {
 	        	user = processRow(rs);
 	        }
-			c.commit();
 		}
 		return user;
 	}

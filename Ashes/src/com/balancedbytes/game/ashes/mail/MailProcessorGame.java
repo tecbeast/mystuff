@@ -30,7 +30,7 @@ public class MailProcessorGame {
 	// game 1 player 2 turn 3 move
 	// game 1 player 2 turn 3 message 5
 	public Mail process(Mail mail) {
-		if ((mail == null) || !AshesUtil.isProvided(mail.getSubject())) {
+		if ((mail == null) || !AshesUtil.provided(mail.getSubject())) {
 			return null;
 		}
 		try (Scanner subjectScanner = new Scanner(mail.getSubject())) {
@@ -88,7 +88,7 @@ public class MailProcessorGame {
 	
 	private Mail processGameMove(PlayerMove move, String mailBody) {
 		
-		if ((move == null) || !AshesUtil.isProvided(mailBody)) {
+		if ((move == null) || !AshesUtil.provided(mailBody)) {
 			return null;
 		}		
 		
@@ -141,7 +141,7 @@ public class MailProcessorGame {
 
 	private Mail processGameMessage(PlayerMove move, int receiver, String mailBody) {
 		
-		if ((move == null) || !AshesUtil.isProvided(mailBody)) {
+		if ((move == null) || !AshesUtil.provided(mailBody)) {
 			return null;
 		}		
 		

@@ -86,7 +86,7 @@ public class CmdBuild extends Command {
 	public JsonObject toJson() {
 		JsonObjectWrapper json = new JsonObjectWrapper(super.toJson());
 		json.add(COUNT, getCount());
-		json.add(UNIT, AshesUtil.toString(getUnit()));
+		json.add(UNIT, AshesUtil.print(getUnit()));
 		json.add(PLANET_NR, getPlanetNr());
 		json.add(PLANET_NAME, getPlanetName());
 		return json.toJsonObject();
@@ -98,7 +98,7 @@ public class CmdBuild extends Command {
 		JsonObjectWrapper json = new JsonObjectWrapper(jsonValue.asObject());
 		setCount(json.getInt(COUNT));
 		String unitString = json.getString(UNIT);
-		setUnit(AshesUtil.isProvided(unitString) ? Unit.valueOf(unitString) : null);
+		setUnit(AshesUtil.provided(unitString) ? Unit.valueOf(unitString) : null);
 		setPlanetNr(json.getInt(PLANET_NR));
 		setPlanetName(json.getString(PLANET_NAME));
 		return this;

@@ -13,6 +13,8 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Timestamp;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.zip.GZIPInputStream;
 import java.util.zip.GZIPOutputStream;
 
@@ -24,6 +26,8 @@ public class PlayerMoveDataAccess {
 
 	private static final String CHARSET = "UTF-8";
 	
+	private static final String SQL_FIND_ALL =
+		"SELECT * FROM player_moves";
 	private static final String SQL_FIND_BY_GAME_NR_PLAYER_NR_TURN =
 		"SELECT * FROM player_moves WHERE game_nr = ? AND player_nr = ? AND turn = ?";
 	private static final String SQL_CREATE =
@@ -41,6 +45,18 @@ public class PlayerMoveDataAccess {
 	
 	protected PlayerMoveDataAccess(DbManager dbManager) {
 		fDbManager = dbManager;
+	}
+	
+	public List<PlayerMove> findAll() throws SQLException {
+		List<PlayerMove> moves = new ArrayList<PlayerMove>();
+		try (Connection c = fDbManager.getConnection()) {
+			PreparedStatement ps = c.prepareStatement(SQL_FIND_ALL);
+		    ResultSet rs = ps.executeQuery();
+			while (rs.next()) {
+	        	moves.add(processRow(rs));
+	        }
+		}
+		return moves;
 	}
 	
 	public PlayerMove findByGameNrPlayerNrTurn(int gameNr, int playerNr, int turn) throws SQLException {

@@ -47,7 +47,7 @@ public class CmdAnnounce extends Command {
 	public String toString() {
 		return new StringBuilder()
 			.append("announce ")
-			.append('"').append(AshesUtil.toString(getText())).append('"')
+			.append('"').append(AshesUtil.print(getText())).append('"')
 			.toString();
 	}
 

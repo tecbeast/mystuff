@@ -10,7 +10,7 @@ public class MailProcessor {
 	}
 	
 	public void process(Mail mail) {
-		if ((mail == null) || !AshesUtil.isProvided(mail.getSubject())) {
+		if ((mail == null) || !AshesUtil.provided(mail.getSubject())) {
 			return;
 		}
 		Mail result = null;

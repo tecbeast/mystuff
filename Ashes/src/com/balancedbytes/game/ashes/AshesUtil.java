@@ -1,22 +1,26 @@
 package com.balancedbytes.game.ashes;
 
+import java.text.SimpleDateFormat;
 import java.util.Collection;
+import java.util.Date;
 
 public final class AshesUtil {
+	
+	private static final SimpleDateFormat TIMESTAMP_FORMAT = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 
-	public static String toString(Object obj) {
+	public static String print(Object obj) {
 		return (obj != null) ? obj.toString() : "";
 	}
 	
-	public static boolean isProvided(String str) {
+	public static boolean provided(String str) {
 		return (str != null) && (str.length() > 0);
 	}
 
-	public static boolean isProvided(Object[] array) {
+	public static boolean provided(Object[] array) {
 		return (array != null) && (array.length > 0);
 	}
 	
-	public static boolean isProvided(Collection<?> collection) {
+	public static boolean provided(Collection<?> collection) {
 		return (collection != null) && (collection.size() > 0);
 	}
 	
@@ -41,7 +45,7 @@ public final class AshesUtil {
 	}
 	
 	public static String stripLeadingZeroes(String numberString) {
-		if (!isProvided(numberString)) {
+		if (!provided(numberString)) {
 			return numberString;
 		}
 		int start = 0;
@@ -55,7 +59,7 @@ public final class AshesUtil {
 	}
 	
 	public static boolean isNumeric(String str) {
-		if (!isProvided(str)) {
+		if (!provided(str)) {
 			return false;
 		}
 	    for (char c : str.toCharArray()) {
@@ -64,6 +68,13 @@ public final class AshesUtil {
 	        }
 	    }
 	    return true;
+	}
+
+	public static String asTimestamp(Date date) {
+		if (date == null) {
+			return "";
+		}
+		return TIMESTAMP_FORMAT.format(date);
 	}
 	
 }

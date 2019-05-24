@@ -143,7 +143,7 @@ public class CmdSend extends Command {
 	public JsonObject toJson() {
 		JsonObjectWrapper json = new JsonObjectWrapper(super.toJson());
 		json.add(COUNT, getCount());
-		json.add(UNIT, AshesUtil.toString(getUnit()));
+		json.add(UNIT, AshesUtil.print(getUnit()));
 		json.add(FROM_PLANET_NR, getFromPlanetNr());
 		json.add(FROM_PLANET_NAME, getFromPlanetName());
 		json.add(TO_PLANET_NR, getToPlanetNr());
@@ -157,7 +157,7 @@ public class CmdSend extends Command {
 		JsonObjectWrapper json = new JsonObjectWrapper(jsonValue.asObject());
 		setCount(json.getInt(COUNT));
 		String unitString = json.getString(UNIT);
-		setUnit(AshesUtil.isProvided(unitString) ? Unit.valueOf(unitString) : null);
+		setUnit(AshesUtil.provided(unitString) ? Unit.valueOf(unitString) : null);
 		setFromPlanetNr(json.getInt(FROM_PLANET_NR));
 		setFromPlanetName(json.getString(FROM_PLANET_NAME));
 		setToPlanetNr(json.getInt(TO_PLANET_NR));

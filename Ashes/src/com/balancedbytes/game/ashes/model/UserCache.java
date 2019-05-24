@@ -30,7 +30,7 @@ public class UserCache {
 	}
 	
 	public User get(String userName) {
-		if (!AshesUtil.isProvided(userName)) {
+		if (!AshesUtil.provided(userName)) {
 			return null;
 		}
 		User user = fUserByName.get(userName);

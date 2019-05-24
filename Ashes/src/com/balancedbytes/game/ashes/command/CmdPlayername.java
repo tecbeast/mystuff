@@ -60,7 +60,7 @@ public class CmdPlayername extends Command {
 	public String toString() {
 		return new StringBuilder()
 			.append("playername ")
-			.append('"').append(AshesUtil.toString(getPlayerName())).append('"')
+			.append('"').append(AshesUtil.print(getPlayerName())).append('"')
 			.toString();
 	}
 

@@ -2,9 +2,13 @@ package com.balancedbytes.game.ashes.model;
 
 import java.util.Date;
 
+import com.balancedbytes.game.ashes.AshesUtil;
 import com.balancedbytes.game.ashes.db.IDataObject;
+import com.balancedbytes.game.ashes.db.ICsvExportable;
 
-public class User implements IDataObject {
+public class User implements IDataObject, ICsvExportable {
+
+	public static final String CSV_HEADER = "UserName;RealName;Email;Secret;Registered;LastProcessed;GamesJoined;GamesFinished;GamesWon";
 	
 	private long fId;
 	private boolean fModified;
@@ -107,6 +111,28 @@ public class User implements IDataObject {
 	
 	public void setGamesWon(int gamesWon) {
 		fGamesWon = gamesWon;
+	}
+	
+	public String toCsv() {
+		StringBuilder result = new StringBuilder();
+		result.append(AshesUtil.print(fUserName));
+		result.append(CSV_SEPARATOR);
+		result.append(AshesUtil.print(fRealName));
+		result.append(CSV_SEPARATOR);
+		result.append(AshesUtil.print(fEmail));
+		result.append(CSV_SEPARATOR);
+		result.append(AshesUtil.print(fSecret));
+		result.append(CSV_SEPARATOR);
+		result.append(AshesUtil.asTimestamp(fRegistered));
+		result.append(CSV_SEPARATOR);
+		result.append(AshesUtil.asTimestamp(fLastProcessed));
+		result.append(CSV_SEPARATOR);
+		result.append(fGamesJoined);
+		result.append(CSV_SEPARATOR);
+		result.append(fGamesFinished);
+		result.append(CSV_SEPARATOR);
+		result.append(fGamesWon);
+		return result.toString();
 	}
 
 }

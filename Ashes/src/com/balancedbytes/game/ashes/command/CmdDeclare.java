@@ -77,7 +77,7 @@ public class CmdDeclare extends Command {
 		JsonObjectWrapper json = new JsonObjectWrapper(super.toJson());
 		json.add(OTHER_PLAYER_NR, getOtherPlayerNr());
 		json.add(OTHER_PLAYER_NAME, getOtherPlayerName());
-		json.add(POLITICAL_TERM, AshesUtil.toString(getPoliticalTerm()));
+		json.add(POLITICAL_TERM, AshesUtil.print(getPoliticalTerm()));
 		return json.toJsonObject();
 	}
 
@@ -88,7 +88,7 @@ public class CmdDeclare extends Command {
 		setOtherPlayerNr(json.getInt(OTHER_PLAYER_NR));
 		setOtherPlayerName(json.getString(OTHER_PLAYER_NAME));
 		String ptString = json.getString(POLITICAL_TERM);
-		setPoliticalTerm(AshesUtil.isProvided(ptString) ? PoliticalTerm.valueOf(ptString) : null);
+		setPoliticalTerm(AshesUtil.provided(ptString) ? PoliticalTerm.valueOf(ptString) : null);
 		return this;
 	}
 	

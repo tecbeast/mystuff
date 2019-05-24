@@ -3,6 +3,7 @@ package com.balancedbytes.game.ashes.db;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.util.Date;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -107,6 +108,8 @@ public class DbInitializer {
 		userTecBeast.setUserName("TecBeast");
 		userTecBeast.setRealName("Georg Seipler");
 		userTecBeast.setEmail(userTecBeast.getRealName().toLowerCase().replace(' ', '@') + ".de");  // spam protection
+		userTecBeast.setLastProcessed(new Date());
+		userTecBeast.setRegistered(userTecBeast.getLastProcessed());
 		fDbManager.getUserDataAccess().create(userTecBeast);
 	}
 
