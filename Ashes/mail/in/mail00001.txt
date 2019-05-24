@@ -1,6 +1,6 @@
-Subject: user register Kalimar
+Subject: register user Kalimar
 From: kalimar@test.de
 To:
 
-name Georg Seipler
+name "Georg Seipler"
 email georg.seipler@test.de

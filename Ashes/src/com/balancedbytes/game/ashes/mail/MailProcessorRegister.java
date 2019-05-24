@@ -1,7 +1,7 @@
 package com.balancedbytes.game.ashes.mail;
 
 import java.util.Date;
-import java.util.Scanner;
+import java.util.Map;
 
 import javax.mail.internet.AddressException;
 import javax.mail.internet.InternetAddress;
@@ -12,29 +12,32 @@ import com.balancedbytes.game.ashes.TurnSecretGenerator;
 import com.balancedbytes.game.ashes.model.User;
 import com.balancedbytes.game.ashes.model.UserCache;
 
-public class MailProcessorUser {
+public class MailProcessorRegister {
+
+	public static final String REGISTER = "register";
 	
-	protected MailProcessorUser() {
+	private static final String USER = "user";
+	private static final String NAME = "name";
+	private static final String EMAIL = "email";
+	private static final String SECRET = "secret";
+	
+	protected MailProcessorRegister() {
 		super();
 	}
 	
-	public Mail process(Mail mail) {
+	public void process(Mail mail) {
+		
 		if ((mail == null) || !AshesUtil.provided(mail.getSubject())) {
-			return null;
+			return;
 		}
-		try (Scanner subjectScanner = new Scanner(mail.getSubject())) {
-			if (!subjectScanner.hasNext() || !subjectScanner.next().equalsIgnoreCase("user")) {
-				return null;
-			}
-			String action = subjectScanner.hasNext() ? subjectScanner.next() : null;
-			if ("register".equalsIgnoreCase(action)) {
-				if (!subjectScanner.hasNext()) {
-					return null;
-				}
-				return processUserRegistration(subjectScanner.next(), mail.getBody());
-			}
-		}
-		return null;
+		
+		Map<String, String> tokenMap = MailProcessorUtil.buildTokenMap(
+			REGISTER, new String[] { USER }, mail.getSubject()
+		);
+		
+		IMailManager mailManager = AshesOfEmpire.getInstance().getMailManager();
+		mailManager.sendMail(processUserRegistration(tokenMap.get(USER), mail.getBody()));
+		
 	}
 	
 	private Mail processUserRegistration(String userName, String mailBody) {
@@ -43,38 +46,9 @@ public class MailProcessorUser {
 			return null;
 		}
 		
-		// TODO: improvement (support quotes)
-		//		String rx = "[^\"\\s]+|\"(\\\\.|[^\\\\\"])*\"";
-		//		Scanner scanner = new Scanner("P 160 SomethingElse \"A string literal\" end");
-		//		System.out.println(scanner.findInLine(rx)); // => P
-		//		System.out.println(scanner.findInLine(rx)); // => 160
-		//		System.out.println(scanner.findInLine(rx)); // => SomethingElse
-		//		System.out.println(scanner.findInLine(rx)); // => "A string literal"
-		//		System.out.println(scanner.findInLine(rx)); // => end
-		
-		String email = null;
-		String secret = null;		
-		String realName = null;
-		
-		try (Scanner scanner = new Scanner(mailBody)) {
-			while (scanner.hasNextLine()) {
-				if (scanner.hasNext()) {
-					String command = scanner.next();
-					if (scanner.hasNext()) {
-						String value = scanner.nextLine().trim();
-						if ("name".equalsIgnoreCase(command)) {
-							realName = value;
-						}
-						if ("email".equalsIgnoreCase(command)) {
-							email = value;
-						}
-						if ("secret".equalsIgnoreCase(command)) {
-							secret = value;
-						}
-					}
-				}
-			}
-		}
+		Map<String, String> tokenMap = MailProcessorUtil.buildTokenMap(
+			new String[] { NAME, EMAIL, SECRET }, mailBody
+		);
 		
 		UserCache userCache = AshesOfEmpire.getInstance().getUserCache();
 		User user = userCache.get(userName);
@@ -85,9 +59,9 @@ public class MailProcessorUser {
 				return createMailRegistrationRejected(user, "ERROR: This username is in use.");
 			}
 
-			if (AshesUtil.provided(secret)) {
+			if (AshesUtil.provided(tokenMap.get(SECRET))) {
 
-				if (!user.getSecret().equals(secret)) {
+				if (!user.getSecret().equals(tokenMap.get(SECRET))) {
 					return createMailRegistrationRejected(user, "ERROR: Invalid secret.");
 				
 				} else {
@@ -98,23 +72,27 @@ public class MailProcessorUser {
 					return createMailUserRegistration(user);
 				}
 				
-			} // else treat as new user
+			} else  {
+
+				if (checkValues(tokenMap)) {
+					user.setRealName(tokenMap.get(NAME));
+					user.setEmail(tokenMap.get(EMAIL));
+					user.setSecret(TurnSecretGenerator.generateSecret());
+					user.setLastProcessed(new Date());
+					user.setModified(true);
+					return createMailUserVerification(user);
+				}
+				
+			}
 			
 		} else {
 
-			if (AshesUtil.provided(realName) && AshesUtil.provided(email)) {
-				try {
-					InternetAddress.parse(email, true);  // check email 
-				} catch (AddressException ae) {
-					return createMailRegistrationRejected(user, "ERROR: Invalid email address.");
-				}
-				if (user == null) {
-					user = new User();
-					user.setUserName(userName);
-					userCache.add(user);
-				}
-				user.setRealName(realName);
-				user.setEmail(email);
+			if (checkValues(tokenMap)) {
+				user = new User();
+				user.setUserName(userName);
+				userCache.add(user);
+				user.setRealName(tokenMap.get(NAME));
+				user.setEmail(tokenMap.get(EMAIL));
 				user.setSecret(TurnSecretGenerator.generateSecret());
 				user.setLastProcessed(new Date());
 				user.setModified(true);
@@ -125,6 +103,18 @@ public class MailProcessorUser {
 		
 		return null;
 		
+	}
+	
+	private boolean checkValues(Map<String, String> tokenMap) {
+		if (AshesUtil.provided(tokenMap.get(NAME)) && AshesUtil.provided(tokenMap.get(EMAIL))) {
+			try {
+				InternetAddress.parse(tokenMap.get(EMAIL), true);  // check email 
+			} catch (AddressException ae) {
+				return false;
+			}
+			return true;
+		}
+		return false;
 	}
 	
 	private Mail createMailUserRegistration(User user) {
@@ -176,7 +166,7 @@ public class MailProcessorUser {
 		body.append(System.lineSeparator());
 		body.append("To finish your registration please respond to this email with a subject of");
 		body.append(System.lineSeparator());
-		body.append("user register ").append(user.getUserName());
+		body.append("register user ").append(user.getUserName());
 		body.append(System.lineSeparator());
 		body.append("The body of that mail needs to contain the given secret.");
 		body.append(System.lineSeparator());
