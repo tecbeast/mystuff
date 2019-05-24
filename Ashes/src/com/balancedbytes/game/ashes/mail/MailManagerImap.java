@@ -101,9 +101,8 @@ public class MailManagerImap implements IMailManager, IAshesPropertyKey {
 						addBodyPart(messages[i], body);
 						mail.setBody(body.toString());
 						mails.add(mail);
-						messages[i].setFlag(Flags.Flag.SEEN, true);
-						// TODO: change to this after testing
-						// messages[i].setFlag(Flags.Flag.DELETED, true);
+						// messages[i].setFlag(Flags.Flag.SEEN, false);
+						messages[i].setFlag(Flags.Flag.DELETED, true);
 					}
 				}
 
@@ -130,18 +129,16 @@ public class MailManagerImap implements IMailManager, IAshesPropertyKey {
 		
 		Properties properties = System.getProperties();
 		properties.setProperty(MAIL_SMTP_HOST, fMailHostSmtp);
-		properties.setProperty(MAIL_USER, fMailUser);
-		properties.setProperty(MAIL_PASSWORD, fMailPassword);
 		Session session = Session.getDefaultInstance(properties);
 
 		try {
 		
 			MimeMessage message = new MimeMessage(session);
-			message.setFrom(new InternetAddress(fMailFrom));
+			message.setFrom(new InternetAddress(mail.getFrom()));
 			message.addRecipient(Message.RecipientType.TO, new InternetAddress(mail.getTo()));
 			message.setSubject(mail.getSubject());
 			message.setContent(mail.getBody(), "text/plain");
-			Transport.send(message);
+			Transport.send(message, fMailUser, fMailPassword);
 		
 			LOG.info("Mail sent to " + mail.getTo() + ": " + mail.getSubject());
 			

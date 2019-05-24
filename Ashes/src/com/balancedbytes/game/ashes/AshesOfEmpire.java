@@ -106,18 +106,26 @@ public class AshesOfEmpire implements IAshesPropertyKey {
 		return fMoveCache;
 	}
 	
+	public void run() {
+		getMailManager().processMails();
+		getUserCache().save();
+		getMoveCache().save();
+		getGameCache().save();
+	}
+	
 	public static void main(String[] args) {
 		try {
 			String dirname = System.getProperties().getProperty(ASHES_DIR, null);
 			File dir = (dirname != null) ? new File(dirname) : new File(AshesOfEmpire.class.getResource("/").toURI());
-			getInstance().init(dir);
+			AshesOfEmpire ashes = getInstance();
+			ashes.init(dir);
 			if (AshesUtil.isProvided(args) && "initdb".equalsIgnoreCase(args[0])) {
-				getInstance().getDbManager().getDbInitializer().init(true);
+				ashes.getDbManager().getDbInitializer().init(false);
 			} else {
-				getInstance().getMailManager().processMails();
-			}			
+				ashes.run();
+			}
 		} catch (Exception any) {
-			LOG.error(any);
+			LOG.error("", any);
 		} finally {
 			getInstance().getDbManager().stopServer();
 		}

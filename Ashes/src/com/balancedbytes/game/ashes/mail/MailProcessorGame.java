@@ -21,53 +21,52 @@ import com.balancedbytes.game.ashes.model.UserCache;
 import com.balancedbytes.game.ashes.parser.Parser;
 import com.balancedbytes.game.ashes.parser.ParserException;
 
-public class MailProcessorGameSubject {
+public class MailProcessorGame {
 	
-	protected MailProcessorGameSubject() {
+	protected MailProcessorGame() {
 		super();
 	}
 	
 	// game 1 player 2 turn 3 move
 	// game 1 player 2 turn 3 message 5
-	public void process(Mail mail) {
+	public Mail process(Mail mail) {
 		if ((mail == null) || !AshesUtil.isProvided(mail.getSubject())) {
-			return;
+			return null;
 		}
 		try (Scanner subjectScanner = new Scanner(mail.getSubject())) {
 			if (!subjectScanner.hasNext() || !subjectScanner.next().equalsIgnoreCase("game")) {
-				return;
+				return null;
 			}
 			int gameNr = subjectScanner.hasNextInt() ? subjectScanner.nextInt() : 0;
 			if (gameNr <= 0) {
-				return;
+				return null;
 			}
 			int playerNr = 0;
 			if ("player".equalsIgnoreCase(subjectScanner.hasNext() ? subjectScanner.next() : null)) {
 				playerNr = subjectScanner.hasNextInt() ? subjectScanner.nextInt() : 0;
 			}
 			if ((playerNr <= 0) || (playerNr > Game.NR_OF_PLAYERS)) {
-				return;
+				return null;
 			}
 			int turn = 0;
 			if ("turn".equalsIgnoreCase(subjectScanner.hasNext() ? subjectScanner.next() : null)) {
 				turn = subjectScanner.hasNextInt() ? subjectScanner.nextInt() : 0;
 			}
 			if (turn <= 0) {
-				return;
+				return null;
 			}
-			Mail result = null;
 			String action = subjectScanner.hasNext() ? subjectScanner.next() : null;
 			if ("move".equalsIgnoreCase(action)) {
-				result = processGameMove(findMove(gameNr, playerNr, turn), mail.getBody());
+				return processGameMove(findMove(gameNr, playerNr, turn), mail.getBody());
 			}
 			if ("message".equalsIgnoreCase(action) && subjectScanner.hasNextInt()) {
 				int receiver = subjectScanner.nextInt();
 				if ((receiver >= 1) && (receiver <= Game.NR_OF_PLAYERS)) {
-					result = processGameMessage(findMove(gameNr, playerNr, turn), receiver, mail.getBody());
+					return processGameMessage(findMove(gameNr, playerNr, turn), receiver, mail.getBody());
 				}
 			}
-			AshesOfEmpire.getInstance().getMailManager().sendMail(result);
 		}
+		return null;
 	}
 	
 	private PlayerMove findMove(int gameNr, int playerNr, int turn) {
@@ -106,17 +105,17 @@ public class MailProcessorGameSubject {
 		if (allCommands != null) {
 			CommandList turnSecretCmds = allCommands.extract(CommandType.TURNSECRET);
 			if (turnSecretCmds.size() == 0) {
-				return createMailMoveRejected(move, "No turnsecret provided.");
+				return createMailMoveRejected(move, "ERROR: No turnsecret provided.");
 
 			} else {
 				CmdTurnsecret turnSecretCmd = (CmdTurnsecret) turnSecretCmds.get(0);
 				if (!turnSecretCmd.getSecret().equals(move.getTurnSecret())) {
-					return createMailMoveRejected(move, "Invalid turnsecret provided.");
+					return createMailMoveRejected(move, "ERROR: Invalid turnsecret provided.");
 				
 				} else { 
 					Game game = AshesOfEmpire.getInstance().getGameCache().get(move.getGameNr());
 					if ((game == null) || (game.getTurn() != move.getTurn())) {
-						return createMailMoveRejected(move, "Unknown game or wrong turn.");
+						return createMailMoveRejected(move, "ERROR: Unknown game or wrong turn.");
 					
 					} else {
 						move.setCommands(allCommands);
@@ -168,10 +167,10 @@ public class MailProcessorGameSubject {
 		}
 		
 		if (turnsecret == null) {
-			return createMailMessageRejected(move, "No turnsecret provided.");
+			return createMailMessageRejected(move, "ERROR: No turnsecret provided.");
 		
 		} else if (!turnsecret.equals(move.getTurnSecret())) {
-			return createMailMessageRejected(move, "Invalid turnsecret provided.");
+			return createMailMessageRejected(move, "ERROR: Invalid turnsecret provided.");
 		
 		} else {
 

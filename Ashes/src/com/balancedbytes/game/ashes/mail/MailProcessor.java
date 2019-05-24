@@ -1,5 +1,6 @@
 package com.balancedbytes.game.ashes.mail;
 
+import com.balancedbytes.game.ashes.AshesOfEmpire;
 import com.balancedbytes.game.ashes.AshesUtil;
 
 public class MailProcessor {
@@ -12,13 +13,15 @@ public class MailProcessor {
 		if ((mail == null) || !AshesUtil.isProvided(mail.getSubject())) {
 			return;
 		}
+		Mail result = null;
 		String subject = mail.getSubject().toLowerCase();
 		if (subject.startsWith("game")) {
-			new MailProcessorGameSubject().process(mail);
+			result = new MailProcessorGame().process(mail);
 		} 
 		if (subject.startsWith("user")) {
-			new MailProcessorUserSubject().process(mail);
+			result = new MailProcessorUser().process(mail);
 		}
+		AshesOfEmpire.getInstance().getMailManager().sendMail(result);
 	}
 
 }

@@ -4,7 +4,7 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.sql.Date;
+import java.sql.Timestamp;
 
 import com.balancedbytes.game.ashes.model.User;
 
@@ -20,7 +20,7 @@ public class UserDataAccess {
 		+ " VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)";
 	private static final String SQL_UPDATE =
 		"UPDATE users"
-		+ " real_name = ?, email = ?, secret = ?, last_processed = ?, games_joined = ?, games_finished = ?, games_won = ?"
+		+ " SET real_name = ?, email = ?, secret = ?, last_processed = ?, games_joined = ?, games_finished = ?, games_won = ?"
 		+ " WHERE id = ?";
 	private static final String SQL_DELETE =
 		"DELETE FROM users WHERE id = ?";
@@ -53,8 +53,10 @@ public class UserDataAccess {
 			ps.setString(2, user.getRealName());
 			ps.setString(3, user.getEmail());
 			ps.setString(4, user.getSecret());
-			ps.setDate(5, new Date(System.currentTimeMillis()));
-			ps.setDate(6, new Date(System.currentTimeMillis()));
+			Timestamp registered = (user.getRegistered() != null) ? new Timestamp(user.getRegistered().getTime()) : null;
+			ps.setTimestamp(5, registered);
+			Timestamp lastProcessed = (user.getLastProcessed() != null) ? new Timestamp(user.getLastProcessed().getTime()) : null;
+			ps.setTimestamp(6, lastProcessed);
 			ps.setInt(7, user.getGamesJoined());
 			ps.setInt(8, user.getGamesFinished());
 			ps.setInt(9, user.getGamesWon());
@@ -74,8 +76,8 @@ public class UserDataAccess {
 			ps.setString(1, user.getRealName());
 			ps.setString(2, user.getEmail());
 			ps.setString(3, user.getSecret());
-			Date lastProcessed = (user.getLastProcessed() != null) ? new Date(user.getLastProcessed().getTime()) : null;
-			ps.setDate(4, lastProcessed);			
+			Timestamp lastProcessed = (user.getLastProcessed() != null) ? new Timestamp(user.getLastProcessed().getTime()) : null;
+			ps.setTimestamp(4, lastProcessed);			
 			ps.setInt(5, user.getGamesJoined());
 			ps.setInt(6, user.getGamesFinished());
 			ps.setInt(7, user.getGamesWon());
@@ -103,8 +105,8 @@ public class UserDataAccess {
 		user.setRealName(rs.getString("real_name"));
 		user.setEmail(rs.getString("email"));
 		user.setSecret(rs.getString("secret"));
-		user.setRegistered(rs.getDate("registered"));
-		user.setLastProcessed(rs.getDate("last_processed"));
+		user.setRegistered(rs.getTimestamp("registered"));
+		user.setLastProcessed(rs.getTimestamp("last_processed"));
 		user.setGamesJoined(rs.getInt("games_joined"));
 		user.setGamesFinished(rs.getInt("games_finished"));
 		user.setGamesWon(rs.getInt("games_won"));
