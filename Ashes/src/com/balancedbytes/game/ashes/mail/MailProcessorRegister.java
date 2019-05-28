@@ -32,9 +32,13 @@ public class MailProcessorRegister {
 		}
 		
 		Map<String, String> tokenMap = MailProcessorUtil.buildTokenMap(
-			REGISTER, new String[] { USER }, mail.getSubject()
+			new String[] { REGISTER, USER }, mail.getSubject()
 		);
 		
+		if (!tokenMap.containsKey(REGISTER)) {
+			return;
+		}
+
 		IMailManager mailManager = AshesOfEmpire.getInstance().getMailManager();
 		mailManager.sendMail(processUserRegistration(tokenMap.get(USER), mail.getBody()));
 		

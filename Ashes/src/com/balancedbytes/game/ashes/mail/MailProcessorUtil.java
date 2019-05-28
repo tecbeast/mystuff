@@ -9,8 +9,8 @@ import java.util.Set;
 
 import com.balancedbytes.game.ashes.AshesOfEmpire;
 import com.balancedbytes.game.ashes.AshesUtil;
-import com.balancedbytes.game.ashes.model.PlayerMove;
-import com.balancedbytes.game.ashes.model.PlayerMoveCache;
+import com.balancedbytes.game.ashes.model.Move;
+import com.balancedbytes.game.ashes.model.MoveCache;
 import com.balancedbytes.game.ashes.model.User;
 import com.balancedbytes.game.ashes.model.UserCache;
 
@@ -22,13 +22,6 @@ public class MailProcessorUtil {
 	 * 
 	 */
 	public static Map<String, String> buildTokenMap(String[] tokens, String text) {
-		return buildTokenMap(null, tokens, text);
-	}
-	
-	/**
-	 * 
-	 */
-	public static Map<String, String> buildTokenMap(String startToken, String[] tokens, String text) {
 		Map<String, String> tokenMap = new HashMap<String, String>();
 		if (!AshesUtil.provided(text) || !AshesUtil.provided(tokens)) {
 			return tokenMap;
@@ -40,19 +33,16 @@ public class MailProcessorUtil {
 				String token = scanner.findInLine(TOKEN_REG_EX);
 				if (token == null) {
 					scanner.nextLine();
-				} else if (valueToken != null) {
-					tokenMap.put(valueToken, removeQuotes(token));
-					valueToken = null;
+					continue;
+				}
+				token = token.toLowerCase();
+				if (tokenSet.contains(token)) {
+					tokenMap.put(token, "");
+					valueToken = token;
 				} else {
-					token = token.toLowerCase();
-					if ((startToken != null) && !tokenMap.containsKey(startToken)) {
-						if (startToken.equals(token)) {
-							tokenMap.put(startToken, "");
-						}
-					} else {
-						if (tokenSet.contains(token)) {
-							valueToken = token;
-						}
+					if (valueToken != null) {
+						tokenMap.put(valueToken, removeQuotes(token));
+						valueToken = null;
 					}
 				}
 			}
@@ -63,9 +53,9 @@ public class MailProcessorUtil {
 	/**
 	 * 
 	 */
-	public static PlayerMove findMove(int gameNr, int playerNr, int turn) {
-		PlayerMoveCache moveCache = AshesOfEmpire.getInstance().getMoveCache();
-		PlayerMove move = moveCache.get(gameNr, playerNr, turn);
+	public static Move findMove(int gameNr, int playerNr, int turn) {
+		MoveCache moveCache = AshesOfEmpire.getInstance().getMoveCache();
+		Move move = moveCache.get(gameNr, playerNr, turn);
 		if (move == null) {
 			return null;
 		}

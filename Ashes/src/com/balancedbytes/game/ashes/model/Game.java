@@ -257,7 +257,7 @@ public class Game implements IDataObject {
 	public void playTurn() {
 		
 		CommandList allCommands = new CommandList();
-		PlayerMoveCache moveCache = AshesOfEmpire.getInstance().getMoveCache(); 
+		MoveCache moveCache = AshesOfEmpire.getInstance().getMoveCache(); 
 		
 		//  7.1 Zuerst werden die neuen PV berechnet. Änderungen werden sofort wirksam,
 		//      noch vor den Flugbewegungen. Das gilt auch für den Wechsel des Heimatplaneten
@@ -266,7 +266,7 @@ public class Game implements IDataObject {
 		// execute player commands
 		// (declare, homeplanet, planetname, playername, spy)
 		for (Player player : fPlayers) {
-			PlayerMove move = moveCache.get(getGameNr(), player.getPlayerNr(), getTurn());
+			Move move = moveCache.get(getGameNr(), player.getPlayerNr(), getTurn());
 			CommandList commands = (move != null) ? move.getCommands() : null;
 			if (commands != null) {
 				allCommands.add(commands);
@@ -339,7 +339,7 @@ public class Game implements IDataObject {
 		
 		// generate turn secrets for next turn
 		for (Player player : fPlayers) {
-			PlayerMove move = new PlayerMove();
+			Move move = new Move();
 			move.setGameNr(getGameNr());
 			move.setPlayerNr(player.getPlayerNr());
 			move.setTurn(getTurn());

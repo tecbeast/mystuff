@@ -73,12 +73,16 @@ public class DbManager implements IAshesPropertyKey {
 		return new UserDataAccess(this);
 	}
 	
-	public PlayerMoveDataAccess getPlayerMoveDataAccess() {
-		return new PlayerMoveDataAccess(this);
+	public MoveDataAccess getMoveDataAccess() {
+		return new MoveDataAccess(this);
 	}
 	
 	public GameDataAccess getGameDataAccess() {
 		return new GameDataAccess(this);
+	}
+	
+	public JoinDataAccess getJoinDataAccess() {
+		return new JoinDataAccess(this);
 	}
 
 }

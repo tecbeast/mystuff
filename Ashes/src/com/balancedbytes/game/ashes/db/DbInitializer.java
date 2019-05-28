@@ -48,11 +48,25 @@ public class DbInitializer {
 			.toString();
 		return statement.executeUpdate(sql);
 	}
-	
-	private int createTablePlayerMoves(Statement statement) throws SQLException {
-		LOG.info("create table player_moves");
+
+	private int createTableJoins(Statement statement) throws SQLException {
+		LOG.info("create table joins");
 		String sql = new StringBuilder()
-			.append("CREATE TABLE player_moves (")
+			.append("CREATE TABLE joins (")
+			.append(" id IDENTITY NOT NULL PRIMARY KEY,")  // identity = auto-incrementing long integer
+			.append(" user_name VARCHAR(32) NOT NULL,")
+			.append(" game_name VARCHAR(80),")
+			.append(" home_planets VARCHAR(16),")  // comma-separated list
+			.append(" joined DATETIME")
+			.append(");")
+			.toString();
+		return statement.executeUpdate(sql);
+	}
+
+	private int createTableMoves(Statement statement) throws SQLException {
+		LOG.info("create table moves");
+		String sql = new StringBuilder()
+			.append("CREATE TABLE moves (")
 			.append(" id IDENTITY NOT NULL PRIMARY KEY,")  // identity = auto-incrementing long integer
 			.append(" game_nr INTEGER NOT NULL,")
 			.append(" player_nr INTEGER NOT NULL,")
@@ -88,12 +102,14 @@ public class DbInitializer {
 		Statement statement = connection.createStatement();
 
 		dropTable(statement, "games");
-		dropTable(statement, "player_moves");
+		dropTable(statement, "moves");
+		dropTable(statement, "joins");
 		dropTable(statement, "users");
 		connection.commit();
 
 		createTableUsers(statement);
-		createTablePlayerMoves(statement);
+		createTableMoves(statement);
+		createTableJoins(statement);
 		createTableGames(statement);
 		connection.commit();
 		

@@ -6,24 +6,24 @@ import java.util.Map;
 
 import com.balancedbytes.game.ashes.AshesException;
 import com.balancedbytes.game.ashes.db.DbManager;
-import com.balancedbytes.game.ashes.db.PlayerMoveDataAccess;
+import com.balancedbytes.game.ashes.db.MoveDataAccess;
 
-public class PlayerMoveCache {
+public class MoveCache {
 	
-	private Map<String, PlayerMove> fMoveByGamePlayerTurn;
-	private PlayerMoveDataAccess fDataAccess;
+	private Map<String, Move> fMoveByGamePlayerTurn;
+	private MoveDataAccess fDataAccess;
 	
-	public PlayerMoveCache() {
-		fMoveByGamePlayerTurn = new HashMap<String, PlayerMove>();
+	public MoveCache() {
+		fMoveByGamePlayerTurn = new HashMap<String, Move>();
 	}
 	
 	public void init(DbManager dbManager) {
 		if (dbManager != null) {
-			fDataAccess = dbManager.getPlayerMoveDataAccess();
+			fDataAccess = dbManager.getMoveDataAccess();
 		}
 	}
 
-	private String createKey(PlayerMove move) {
+	private String createKey(Move move) {
 		if (move == null) {
 			return null;
 		}
@@ -38,15 +38,15 @@ public class PlayerMoveCache {
 			.toString();
 	}
 	
-	public void add(PlayerMove move) {
+	public void add(Move move) {
 		if (move == null) {
 			return;
 		}
 		fMoveByGamePlayerTurn.put(createKey(move), move);
 	}
 	
-	public PlayerMove get(int gameNr, int playerNr, int turn) {
-		PlayerMove move = fMoveByGamePlayerTurn.get(createKey(gameNr, playerNr, turn));
+	public Move get(int gameNr, int playerNr, int turn) {
+		Move move = fMoveByGamePlayerTurn.get(createKey(gameNr, playerNr, turn));
 		if (move != null) {
 			return move;
 		}
@@ -63,7 +63,7 @@ public class PlayerMoveCache {
 	
 	public boolean save() {
 		boolean success = true;
-		for (PlayerMove move : fMoveByGamePlayerTurn.values()) {
+		for (Move move : fMoveByGamePlayerTurn.values()) {
 			if (move.isModified()) {
 				success &= save(move);
 			}
@@ -71,7 +71,7 @@ public class PlayerMoveCache {
 		return success;
 	}
 	
-	private boolean save(PlayerMove move) {
+	private boolean save(Move move) {
 		if ((move == null) || (fDataAccess == null)) {
 			return false;
 		}

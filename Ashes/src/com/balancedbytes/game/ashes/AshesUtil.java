@@ -1,8 +1,10 @@
 package com.balancedbytes.game.ashes;
 
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Date;
+import java.util.List;
 
 public final class AshesUtil {
 	
@@ -75,6 +77,39 @@ public final class AshesUtil {
 			return "";
 		}
 		return TIMESTAMP_FORMAT.format(date);
+	}
+	
+	public static String join(Collection<?> collection, String separator) {
+		if ((collection == null) || (separator == null)) {
+			return null;
+		}
+		boolean first = true;
+		StringBuilder result = new StringBuilder();
+		for (Object element : collection) {
+			if (first) {
+				first = false;
+			} else {
+				result.append(separator);
+			}
+			result.append(print(element));
+		}
+		return result.toString();
+	}
+	
+	public static List<Integer> splitIntegerList(String listString, String separator) {
+		List<Integer> result = new ArrayList<Integer>();
+		if ((listString == null) || (separator == null)) {
+			return result;
+		}
+		String[] elements = listString.split(separator);
+		for (String element : elements) {
+			if (isNumeric(element)) {
+				result.add(Integer.parseInt(element));
+			} else {
+				result.add(0);
+			}
+		}
+		return result;
 	}
 	
 }

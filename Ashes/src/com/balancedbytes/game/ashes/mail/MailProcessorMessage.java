@@ -10,7 +10,7 @@ import com.balancedbytes.game.ashes.AshesOfEmpire;
 import com.balancedbytes.game.ashes.AshesUtil;
 import com.balancedbytes.game.ashes.model.Game;
 import com.balancedbytes.game.ashes.model.GameCache;
-import com.balancedbytes.game.ashes.model.PlayerMove;
+import com.balancedbytes.game.ashes.model.Move;
 import com.balancedbytes.game.ashes.model.User;
 import com.balancedbytes.game.ashes.model.UserCache;
 
@@ -35,9 +35,12 @@ public class MailProcessorMessage {
 		}
 		
 		Map<String, String> tokenMap = MailProcessorUtil.buildTokenMap(
-			MESSAGE, new String[] { GAME, TURN, PLAYER, TO }, mail.getSubject()
+			new String[] { MESSAGE, GAME, TURN, PLAYER, TO }, mail.getSubject()
 		);
 		
+		if (!tokenMap.containsKey(MESSAGE)) {
+			return;
+		}
 		int gameNr = AshesUtil.isNumeric(tokenMap.get(GAME)) ? Integer.parseInt(tokenMap.get(GAME)) : 0;
 		if (gameNr < 1) {
 			return;
@@ -56,12 +59,12 @@ public class MailProcessorMessage {
 		}
 		
 		IMailManager mailManager = AshesOfEmpire.getInstance().getMailManager();
-		PlayerMove move = MailProcessorUtil.findMove(gameNr, playerNr, turn);
+		Move move = MailProcessorUtil.findMove(gameNr, playerNr, turn);
 		mailManager.sendMail(processMessage(move, toNr, mail.getBody()));
 		
 	}
 		
-	private Mail processMessage(PlayerMove move, int receiver, String mailBody) {
+	private Mail processMessage(Move move, int receiver, String mailBody) {
 		
 		if ((move == null) || !AshesUtil.provided(mailBody)) {
 			return null;
@@ -108,7 +111,7 @@ public class MailProcessorMessage {
 
 	}
 
-	private Mail createMailMessageRejected(PlayerMove move, String error) {
+	private Mail createMailMessageRejected(Move move, String error) {
 		Mail mail = new Mail();
 		mail.setFrom(AshesOfEmpire.getInstance().getMailManager().getEmailAddress());
 		mail.setSubject(new StringBuilder()
@@ -124,7 +127,7 @@ public class MailProcessorMessage {
 		return mail;
 	}
 
-	private Mail createMailPlayerMessage(PlayerMove move, User receiver, String message) {
+	private Mail createMailPlayerMessage(Move move, User receiver, String message) {
 		Mail mail = new Mail();
 		mail.setFrom(AshesOfEmpire.getInstance().getMailManager().getEmailAddress());
 		mail.setSubject(new StringBuilder()

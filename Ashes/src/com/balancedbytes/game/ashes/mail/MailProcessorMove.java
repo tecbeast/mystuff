@@ -11,7 +11,7 @@ import com.balancedbytes.game.ashes.command.CommandList;
 import com.balancedbytes.game.ashes.command.CommandType;
 import com.balancedbytes.game.ashes.command.ValidationResult;
 import com.balancedbytes.game.ashes.model.Game;
-import com.balancedbytes.game.ashes.model.PlayerMove;
+import com.balancedbytes.game.ashes.model.Move;
 import com.balancedbytes.game.ashes.parser.Parser;
 import com.balancedbytes.game.ashes.parser.ParserException;
 
@@ -35,9 +35,12 @@ public class MailProcessorMove {
 		}
 		
 		Map<String, String> tokenMap = MailProcessorUtil.buildTokenMap(
-			MOVE, new String[] { GAME, TURN, PLAYER }, mail.getSubject()
+			new String[] { MOVE, GAME, TURN, PLAYER }, mail.getSubject()
 		);
 		
+		if (!tokenMap.containsKey(MOVE)) {
+			return;
+		}
 		int gameNr = AshesUtil.isNumeric(tokenMap.get(GAME)) ? Integer.parseInt(tokenMap.get(GAME)) : 0;
 		if (gameNr < 1) {
 			return;
@@ -52,12 +55,12 @@ public class MailProcessorMove {
 		}
 		
 		IMailManager mailManager = AshesOfEmpire.getInstance().getMailManager();
-		PlayerMove move = MailProcessorUtil.findMove(gameNr, playerNr, turn);
+		Move move = MailProcessorUtil.findMove(gameNr, playerNr, turn);
 		mailManager.sendMail(processMove(move, mail.getBody()));
 
 	}
 	
-	private Mail processMove(PlayerMove move, String mailBody) {
+	private Mail processMove(Move move, String mailBody) {
 		
 		if ((move == null) || !AshesUtil.provided(mailBody)) {
 			return null;
@@ -110,7 +113,7 @@ public class MailProcessorMove {
 
 	}
 
-	private Mail createMailMoveAccepted(PlayerMove move) {
+	private Mail createMailMoveAccepted(Move move) {
 		Mail mail = new Mail();
 		mail.setFrom(AshesOfEmpire.getInstance().getMailManager().getEmailAddress());
 		mail.setSubject(new StringBuilder()
@@ -126,7 +129,7 @@ public class MailProcessorMove {
 		return mail;
 	}
 	
-	private Mail createMailMoveRejected(PlayerMove move, String error) {
+	private Mail createMailMoveRejected(Move move, String error) {
 		Mail mail = new Mail();
 		mail.setFrom(AshesOfEmpire.getInstance().getMailManager().getEmailAddress());
 		mail.setSubject(new StringBuilder()

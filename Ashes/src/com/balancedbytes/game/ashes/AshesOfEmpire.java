@@ -18,8 +18,10 @@ import com.balancedbytes.game.ashes.mail.IMailManager;
 import com.balancedbytes.game.ashes.mail.MailManagerFiles;
 import com.balancedbytes.game.ashes.mail.MailManagerImap;
 import com.balancedbytes.game.ashes.model.GameCache;
-import com.balancedbytes.game.ashes.model.PlayerMove;
-import com.balancedbytes.game.ashes.model.PlayerMoveCache;
+import com.balancedbytes.game.ashes.model.Join;
+import com.balancedbytes.game.ashes.model.JoinCache;
+import com.balancedbytes.game.ashes.model.Move;
+import com.balancedbytes.game.ashes.model.MoveCache;
 import com.balancedbytes.game.ashes.model.User;
 import com.balancedbytes.game.ashes.model.UserCache;
 
@@ -31,13 +33,15 @@ public class AshesOfEmpire implements IAshesPropertyKey {
 	private DbManager fDbManager;
 	private IMailManager fMailManager;
 	private UserCache fUserCache;
-	private PlayerMoveCache fMoveCache;
+	private JoinCache fJoinCache;
+	private MoveCache fMoveCache;
 	private GameCache fGameCache;
 
 	private AshesOfEmpire() {
 		fDbManager = new DbManager();
 		fUserCache = new UserCache();
-		fMoveCache = new PlayerMoveCache();
+		fJoinCache = new JoinCache();
+		fMoveCache = new MoveCache();
 		fGameCache = new GameCache();
 		fMailManager = new MailManagerImap();
 	}
@@ -84,6 +88,7 @@ public class AshesOfEmpire implements IAshesPropertyKey {
 			throw new AshesException("Error starting db server.", sqle);
 		}
 		fUserCache.init(fDbManager);
+		fJoinCache.init(fDbManager);
 		fMoveCache.init(fDbManager);
 		fGameCache.init(fDbManager);
 	}
@@ -100,11 +105,15 @@ public class AshesOfEmpire implements IAshesPropertyKey {
 		return fUserCache;
 	}
 	
+	public JoinCache getJoinCache() {
+		return fJoinCache;
+	}
+	
 	public GameCache getGameCache() {
 		return fGameCache;
 	}
 	
-	public PlayerMoveCache getMoveCache() {
+	public MoveCache getMoveCache() {
 		return fMoveCache;
 	}
 	
@@ -123,9 +132,17 @@ public class AshesOfEmpire implements IAshesPropertyKey {
 
 	public void exportMoves() throws SQLException {
 		LOG.trace("exportMoves()");
-		System.out.println(PlayerMove.CSV_HEADER);
-		for (PlayerMove move : getDbManager().getPlayerMoveDataAccess().findAll()) {
+		System.out.println(Move.CSV_HEADER);
+		for (Move move : getDbManager().getMoveDataAccess().findAll()) {
 			System.out.println(move.toCsv());
+		}
+	}
+
+	public void exportJoins() throws SQLException {
+		LOG.trace("exportJoins()");
+		System.out.println(Join.CSV_HEADER);
+		for (Join join : getDbManager().getJoinDataAccess().findAll()) {
+			System.out.println(join.toCsv());
 		}
 	}
 
@@ -133,6 +150,7 @@ public class AshesOfEmpire implements IAshesPropertyKey {
 		LOG.trace("process()");
 		getMailManager().processMails();
 		getUserCache().save();
+		getJoinCache().save();
 		getMoveCache().save();
 		getGameCache().save();
 	}
@@ -150,6 +168,9 @@ public class AshesOfEmpire implements IAshesPropertyKey {
 				if ("export".equalsIgnoreCase(args[0]) && (args.length > 1)) {
 					if ("users".equalsIgnoreCase(args[1])) {
 						ashes.exportUsers();
+					}
+					if ("joins".equalsIgnoreCase(args[1])) {
+						ashes.exportJoins();
 					}
 					if ("moves".equalsIgnoreCase(args[1])) {
 						ashes.exportMoves();

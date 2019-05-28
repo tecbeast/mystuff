@@ -8,7 +8,7 @@ import com.balancedbytes.game.ashes.command.ValidationResult;
 import com.balancedbytes.game.ashes.db.ICsvExportable;
 import com.balancedbytes.game.ashes.db.IDataObject;
 
-public class PlayerMove implements IDataObject, ICsvExportable {
+public class Move implements IDataObject, ICsvExportable {
 
 	public static final String CSV_HEADER = "GameNr;Turn;PlayerNr;Deadline;Received;UserName;TurnSecret;NrOfCommands";
 
@@ -27,7 +27,7 @@ public class PlayerMove implements IDataObject, ICsvExportable {
 	private transient User fUser;
 	private transient ValidationResult fValidationResult;
 	
-	public PlayerMove() {
+	public Move() {
 		super();
 	}
 	

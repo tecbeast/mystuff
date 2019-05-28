@@ -19,36 +19,36 @@ import java.util.zip.GZIPInputStream;
 import java.util.zip.GZIPOutputStream;
 
 import com.balancedbytes.game.ashes.command.CommandList;
-import com.balancedbytes.game.ashes.model.PlayerMove;
+import com.balancedbytes.game.ashes.model.Move;
 import com.eclipsesource.json.Json;
 
-public class PlayerMoveDataAccess {
+public class MoveDataAccess {
 
 	private static final String CHARSET = "UTF-8";
 	
 	private static final String SQL_FIND_ALL =
-		"SELECT * FROM player_moves";
+		"SELECT * FROM moves";
 	private static final String SQL_FIND_BY_GAME_NR_PLAYER_NR_TURN =
-		"SELECT * FROM player_moves WHERE game_nr = ? AND player_nr = ? AND turn = ?";
+		"SELECT * FROM moves WHERE game_nr = ? AND player_nr = ? AND turn = ?";
 	private static final String SQL_CREATE =
-		"INSERT INTO player_moves"
+		"INSERT INTO moves"
 		+ " (game_nr, player_nr, turn, deadline, received, user_name, turn_secret, command_list)"
 		+ " VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
 	private static final String SQL_UPDATE =
-		"UPDATE player_moves"
+		"UPDATE moves"
 		+ " SET deadline = ?, received = ?, user_name = ?, turn_secret = ?, command_list = ?"
 		+ " WHERE id = ?";
 	private static final String SQL_DELETE =
-		"DELETE FROM player_moves WHERE id = ?";
+		"DELETE FROM moves WHERE id = ?";
 
 	private DbManager fDbManager;
 	
-	protected PlayerMoveDataAccess(DbManager dbManager) {
+	protected MoveDataAccess(DbManager dbManager) {
 		fDbManager = dbManager;
 	}
 	
-	public List<PlayerMove> findAll() throws SQLException {
-		List<PlayerMove> moves = new ArrayList<PlayerMove>();
+	public List<Move> findAll() throws SQLException {
+		List<Move> moves = new ArrayList<Move>();
 		try (Connection c = fDbManager.getConnection()) {
 			PreparedStatement ps = c.prepareStatement(SQL_FIND_ALL);
 		    ResultSet rs = ps.executeQuery();
@@ -59,8 +59,8 @@ public class PlayerMoveDataAccess {
 		return moves;
 	}
 	
-	public PlayerMove findByGameNrPlayerNrTurn(int gameNr, int playerNr, int turn) throws SQLException {
-		PlayerMove playerMove = null;
+	public Move findByGameNrPlayerNrTurn(int gameNr, int playerNr, int turn) throws SQLException {
+		Move playerMove = null;
 		try (Connection c = fDbManager.getConnection()) {
 			PreparedStatement ps = c.prepareStatement(SQL_FIND_BY_GAME_NR_PLAYER_NR_TURN);
 			ps.setInt(1, gameNr);
@@ -75,7 +75,7 @@ public class PlayerMoveDataAccess {
 		return playerMove;
 	}
 	
-	public boolean create(PlayerMove move) throws SQLException {
+	public boolean create(Move move) throws SQLException {
 		if (move == null) {
 			return false;
 		}
@@ -99,7 +99,7 @@ public class PlayerMoveDataAccess {
 		}
 	}
 	
-	public boolean update(PlayerMove move) throws SQLException {
+	public boolean update(Move move) throws SQLException {
 		if (move == null) {
 			return false;
 		}
@@ -127,18 +127,18 @@ public class PlayerMoveDataAccess {
 		}
 	}
 
-	protected PlayerMove processRow(ResultSet rs) throws SQLException {
-		PlayerMove playerMove = new PlayerMove();
-		playerMove.setId(rs.getLong("id"));
-		playerMove.setGameNr(rs.getInt("game_nr"));
-		playerMove.setPlayerNr(rs.getInt("player_nr"));
-		playerMove.setTurn(rs.getInt("turn"));
-		playerMove.setDeadline(rs.getTimestamp("deadline"));
-		playerMove.setReceived(rs.getTimestamp("received"));
-		playerMove.setUserName(rs.getString("user_name"));
-		playerMove.setTurnSecret(rs.getString("turn_secret"));
-		playerMove.setCommands(readCommandList(rs.getBinaryStream("command_list")));
-		return playerMove;
+	protected Move processRow(ResultSet rs) throws SQLException {
+		Move move = new Move();
+		move.setId(rs.getLong("id"));
+		move.setGameNr(rs.getInt("game_nr"));
+		move.setPlayerNr(rs.getInt("player_nr"));
+		move.setTurn(rs.getInt("turn"));
+		move.setDeadline(rs.getTimestamp("deadline"));
+		move.setReceived(rs.getTimestamp("received"));
+		move.setUserName(rs.getString("user_name"));
+		move.setTurnSecret(rs.getString("turn_secret"));
+		move.setCommands(readCommandList(rs.getBinaryStream("command_list")));
+		return move;
 	}
 	
 	private CommandList readCommandList(InputStream binaryStream) throws SQLException {
@@ -152,7 +152,7 @@ public class PlayerMoveDataAccess {
 		}
 	}
 	
-	private Blob createCommandListBlob(Connection connection, PlayerMove move) throws SQLException {
+	private Blob createCommandListBlob(Connection connection, Move move) throws SQLException {
 		if ((connection == null) || (move == null) || (move.getCommands() == null) || (move.getCommands().size() == 0)) {
 			return null;
 		}
