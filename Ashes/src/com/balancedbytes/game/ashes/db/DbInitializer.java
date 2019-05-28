@@ -24,14 +24,14 @@ public class DbInitializer {
 	}
 	
 	private int dropTable(Statement statement, String table) throws SQLException {
-		LOG.trace("drop table " + table);
+		LOG.trace("dropTable(" + table + ")");
 		StringBuilder sql = new StringBuilder();
 		sql.append("DROP TABLE IF EXISTS ").append(table).append(";");
 		return statement.executeUpdate(sql.toString());
 	}
 
 	private int createTableUsers(Statement statement) throws SQLException {
-		LOG.trace("create table users");
+		LOG.trace("createTableUsers()");
 		String sql = new StringBuilder()
 			.append("CREATE TABLE users (")
 			.append(" id IDENTITY NOT NULL PRIMARY KEY,")  // identity = auto-incrementing long integer
@@ -50,7 +50,7 @@ public class DbInitializer {
 	}
 
 	private int createTableJoins(Statement statement) throws SQLException {
-		LOG.trace("create table joins");
+		LOG.trace("createTableJoins()");
 		String sql = new StringBuilder()
 			.append("CREATE TABLE joins (")
 			.append(" id IDENTITY NOT NULL PRIMARY KEY,")  // identity = auto-incrementing long integer
@@ -64,7 +64,7 @@ public class DbInitializer {
 	}
 
 	private int createTableMoves(Statement statement) throws SQLException {
-		LOG.trace("create table moves");
+		LOG.trace("createTableMoves()");
 		String sql = new StringBuilder()
 			.append("CREATE TABLE moves (")
 			.append(" id IDENTITY NOT NULL PRIMARY KEY,")  // identity = auto-incrementing long integer
@@ -82,7 +82,7 @@ public class DbInitializer {
 	}
 	
 	private int createTableGames(Statement statement) throws SQLException {
-		LOG.trace("create table games");
+		LOG.trace("createTableGames()");
 		String sql = new StringBuilder()
 			.append("CREATE TABLE games (")
 			.append(" id IDENTITY NOT NULL PRIMARY KEY,")  // identity = auto-incrementing long integer
@@ -121,7 +121,7 @@ public class DbInitializer {
 	}
 	
 	private void addTestData() throws SQLException {
-		LOG.trace("add test data");
+		LOG.trace("addTestData()");
 		User userTecBeast = new User();
 		userTecBeast.setUserName("TecBeast");
 		userTecBeast.setRealName("Georg Seipler");

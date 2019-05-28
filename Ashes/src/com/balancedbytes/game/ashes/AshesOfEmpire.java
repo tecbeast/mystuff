@@ -149,6 +149,7 @@ public class AshesOfEmpire implements IAshesPropertyKey {
 	}
 	
 	public String generateSecret() {
+		LOG.trace("generateSecret()");
 		if (fTestMode) {
 			return "aTestSecret";
 		} else {
