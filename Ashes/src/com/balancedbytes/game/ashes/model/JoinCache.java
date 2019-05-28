@@ -51,19 +51,17 @@ public class JoinCache {
 	}
 	
 	public List<Join> getByGameName(String gameName) {
-		if (!AshesUtil.provided(gameName)) {
-			return null;
-		}
+		String myGameName = AshesUtil.print(gameName);
 		List<Join> joins = new ArrayList<Join>();
 		if (fDataAccess != null) {
 			try {
-				joins.addAll(fDataAccess.findByGameName(gameName));
+				joins.addAll(fDataAccess.findByGameName(myGameName));
 			} catch (SQLException sqle) {
-				LOG.error("Error finding joins(" + gameName + ") in database.", sqle);
+				LOG.error("Error finding joins(" + myGameName + ") in database.", sqle);
 			}
 		}
 		for (Join join : fJoinByUserName.values()) {
-			if ((join.getId() == 0) && gameName.equals(join.getGameName())) {
+			if ((join.getId() == 0) && myGameName.equals(join.getGameName())) {
 				joins.add(join);
 			}
 		}

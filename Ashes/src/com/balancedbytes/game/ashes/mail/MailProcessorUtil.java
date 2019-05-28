@@ -35,10 +35,10 @@ public class MailProcessorUtil {
 					scanner.nextLine();
 					continue;
 				}
-				token = token.toLowerCase();
-				if (tokenSet.contains(token)) {
-					tokenMap.put(token, "");
-					valueToken = token;
+				String tokenLc = token.toLowerCase();
+				if (tokenSet.contains(tokenLc)) {
+					tokenMap.put(tokenLc, "");
+					valueToken = tokenLc;
 				} else {
 					if (valueToken != null) {
 						tokenMap.put(valueToken, removeQuotes(token));

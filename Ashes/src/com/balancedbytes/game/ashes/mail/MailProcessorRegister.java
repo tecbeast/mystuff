@@ -8,7 +8,6 @@ import javax.mail.internet.InternetAddress;
 
 import com.balancedbytes.game.ashes.AshesOfEmpire;
 import com.balancedbytes.game.ashes.AshesUtil;
-import com.balancedbytes.game.ashes.TurnSecretGenerator;
 import com.balancedbytes.game.ashes.model.User;
 import com.balancedbytes.game.ashes.model.UserCache;
 
@@ -81,7 +80,7 @@ public class MailProcessorRegister {
 				if (checkValues(tokenMap)) {
 					user.setRealName(tokenMap.get(NAME));
 					user.setEmail(tokenMap.get(EMAIL));
-					user.setSecret(TurnSecretGenerator.generateSecret());
+					user.setSecret(AshesOfEmpire.getInstance().generateSecret());
 					user.setLastProcessed(new Date());
 					user.setModified(true);
 					return createMailUserVerification(user);
@@ -97,7 +96,7 @@ public class MailProcessorRegister {
 				userCache.add(user);
 				user.setRealName(tokenMap.get(NAME));
 				user.setEmail(tokenMap.get(EMAIL));
-				user.setSecret(TurnSecretGenerator.generateSecret());
+				user.setSecret(AshesOfEmpire.getInstance().generateSecret());
 				user.setLastProcessed(new Date());
 				user.setModified(true);
 				return createMailUserVerification(user);

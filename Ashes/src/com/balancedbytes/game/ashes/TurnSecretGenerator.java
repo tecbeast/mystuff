@@ -11,7 +11,7 @@ public final class TurnSecretGenerator {
 	/**
 	 * Generate the next secure random token in the series.
 	 */
-	public static String generateSecret() {
+	protected static String generateSecret() {
 		char[] buf = new char[LENGTH];
 		for (int i = 0; i < buf.length; i++) {
 	        buf[i] = SYMBOLS[RANDOM.nextInt(SYMBOLS.length)];

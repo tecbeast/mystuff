@@ -29,6 +29,10 @@ public class MailProcessor {
 					new MailProcessorRegister().process(mail);
 					return;
 				}
+				if (MailProcessorJoin.JOIN.equals(token)) {
+					new MailProcessorJoin().process(mail);
+					return;
+				}
 			}
 		}
 	}

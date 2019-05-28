@@ -10,7 +10,6 @@ import java.util.Map;
 import java.util.Random;
 
 import com.balancedbytes.game.ashes.AshesOfEmpire;
-import com.balancedbytes.game.ashes.TurnSecretGenerator;
 import com.balancedbytes.game.ashes.command.CommandList;
 import com.balancedbytes.game.ashes.db.IDataObject;
 
@@ -343,7 +342,7 @@ public class Game implements IDataObject {
 			move.setGameNr(getGameNr());
 			move.setPlayerNr(player.getPlayerNr());
 			move.setTurn(getTurn());
-			move.setTurnSecret(TurnSecretGenerator.generateSecret());
+			move.setTurnSecret(AshesOfEmpire.getInstance().generateSecret());
 			move.setModified(true);
 			moveCache.add(move);
 		}

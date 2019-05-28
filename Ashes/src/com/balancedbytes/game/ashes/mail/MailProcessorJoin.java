@@ -60,7 +60,7 @@ public class MailProcessorJoin {
 		UserCache userCache = AshesOfEmpire.getInstance().getUserCache();
 		User user = userCache.get(userName);
 		
-		if (user == null) {
+		if ((user == null) || (user.getRegistered() == null)) {
 			return null;
 		}
 		
@@ -69,7 +69,7 @@ public class MailProcessorJoin {
 		
 		if (join == null) {
 			join = new Join();
-			join.setUserName(userName);
+			join.setUserName(user.getUserName());
 			joinCache.add(join);
 		}
 		
@@ -104,7 +104,8 @@ public class MailProcessorJoin {
 		body.append("Homeplanet\t").append(AshesUtil.join(join.getHomePlanets(), ","));
 		body.append(System.lineSeparator());
 		body.append(System.lineSeparator());
-		body.append("This game has currently " + nrOfJoins + " players.");
+		body.append("This game has currently ").append(nrOfJoins);
+		body.append((nrOfJoins == 1) ? " player." : " players.");
 		mail.setBody(body.toString());
 		return mail;
 	}

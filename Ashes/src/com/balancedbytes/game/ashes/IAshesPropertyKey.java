@@ -4,10 +4,8 @@ public interface IAshesPropertyKey {
 	
 	// AshesOfEmpire
 	String ASHES_DIR = "ashes.dir";
+	String ASHES_TEST = "ashes.test";
 	
-	// IMailManager
-	String MAIL_MODE = "mail.mode";
-
 	// MailManagerFiles
 	String MAIL_DIR_IN = "mail.dir.in";
 	String MAIL_DIR_OUT = "mail.dir.out";

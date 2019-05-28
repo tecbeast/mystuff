@@ -36,6 +36,7 @@ public class AshesOfEmpire implements IAshesPropertyKey {
 	private JoinCache fJoinCache;
 	private MoveCache fMoveCache;
 	private GameCache fGameCache;
+	private boolean fTestMode;
 
 	private AshesOfEmpire() {
 		fDbManager = new DbManager();
@@ -50,7 +51,8 @@ public class AshesOfEmpire implements IAshesPropertyKey {
 		return INSTANCE;
 	}
 	
-	private void init(File dir) {
+	private void init(File dir, boolean testMode) {
+		fTestMode = testMode;
 		try {
 			try (BufferedInputStream in = new BufferedInputStream(new FileInputStream(new File(dir, "conf/log.properties")))) {
 				LogManager.getLogManager().readConfiguration(in);
@@ -67,7 +69,7 @@ public class AshesOfEmpire implements IAshesPropertyKey {
 		} catch (IOException ioe) {
 			throw new AshesException("Error reading mail properties.", ioe);
 		}
-		if (IMailManager.MAIL_MODE_FILES.equals(mailProperties.getProperty(MAIL_MODE, ""))) {
+		if (fTestMode) {
 			fMailManager = new MailManagerFiles();
 			mailProperties.setProperty(ASHES_DIR, dir.getAbsolutePath());
 		}
@@ -145,6 +147,14 @@ public class AshesOfEmpire implements IAshesPropertyKey {
 			System.out.println(join.toCsv());
 		}
 	}
+	
+	public String generateSecret() {
+		if (fTestMode) {
+			return "aTestSecret";
+		} else {
+			return TurnSecretGenerator.generateSecret();
+		}
+	}
 
 	public void process() {
 		LOG.trace("process()");
@@ -157,10 +167,11 @@ public class AshesOfEmpire implements IAshesPropertyKey {
 	
 	public static void main(String[] args) {
 		try {
-			String dirname = System.getProperties().getProperty(ASHES_DIR, null);
-			File dir = (dirname != null) ? new File(dirname) : new File(AshesOfEmpire.class.getResource("/").toURI());
+			String dirName = System.getProperties().getProperty(ASHES_DIR, null);
+			String testMode = System.getProperties().getProperty(ASHES_TEST, null);
+			File dir = (dirName != null) ? new File(dirName) : new File(AshesOfEmpire.class.getResource("/").toURI());
 			AshesOfEmpire ashes = getInstance();
-			ashes.init(dir);
+			ashes.init(dir, Boolean.parseBoolean(testMode));
 			if (AshesUtil.provided(args)) {
 				if ("initdb".equalsIgnoreCase(args[0])) {
 					ashes.initDb();
