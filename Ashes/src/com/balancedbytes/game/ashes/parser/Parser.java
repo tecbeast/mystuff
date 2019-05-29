@@ -23,6 +23,7 @@ import com.balancedbytes.game.ashes.command.CmdResearch;
 import com.balancedbytes.game.ashes.command.CmdSend;
 import com.balancedbytes.game.ashes.command.CmdSpy;
 import com.balancedbytes.game.ashes.command.CmdTurnsecret;
+import com.balancedbytes.game.ashes.command.CmdVote;
 import com.balancedbytes.game.ashes.command.Command;
 import com.balancedbytes.game.ashes.command.CommandList;
 import com.balancedbytes.game.ashes.model.Improvement;
@@ -37,7 +38,7 @@ import com.eclipsesource.json.WriterConfig;
  * <pre>
  *          parse -> statements
  *     statements -> statement statements | onBlock statements | (0)
- *      statement -> onBlockStmt ON planet | declare | playerName | announce | turnsecret
+ *      statement -> onBlockStmt ON planet | declare | playerName | announce | turnsecret | vote
  *        onBlock -> ON planet DO onBlockStmts DONE
  *   onBlockStmts -> onBlockStmt onBlockStmts | (0)
  *    onBlockStmt -> build | homeplanet | planetName | research | send | spy
@@ -57,6 +58,7 @@ import com.eclipsesource.json.WriterConfig;
  *       sendUnit -> FI | TR | C0 | C1 | C2 | C3 | C4 | C5 | C6 | C7 | C7 | C8 | C9
  *            spy -> SPY
  *     turnsecret -> TURNSECRET WORD
+ *           vote -> NUMBER
  * </pre>
  * <b>Note:</b>
  * non-terminal symbols are in small letters and terminals in big,
@@ -503,6 +505,21 @@ public class Parser {
 			throw new ParserException("RESEARCH: " + pe.getMessage());
 		}
 	}
+	
+	/**
+	 * 
+	 */
+	private CmdVote vote() {
+		LOG.trace("vote()");
+		try {
+			match(ParserToken.VOTE);
+			CmdVote cmd = new CmdVote();
+			cmd.setNrOfTurns(number());
+			return cmd;
+		} catch (ParserException pe) {
+			throw new ParserException("VOTE: " + pe.getMessage());
+		}
+	}
 
 	/**
 	 *
@@ -682,6 +699,8 @@ public class Parser {
 				return playername();
 			case TURNSECRET:
 				return turnsecret();
+			case VOTE:
+				return vote();
 			default:
 				return onBlockStmt(null);
 		}
@@ -705,6 +724,7 @@ public class Parser {
 				case SEND:
 				case SPY:
 				case TURNSECRET:
+				case VOTE:
 					cmdList = new CommandList().add(statement());
 					return cmdList.add(statements());
 				case ON:

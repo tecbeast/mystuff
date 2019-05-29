@@ -10,7 +10,8 @@ public enum CommandType {
 	PLAYERNAME,
 	RESEARCH,
 	SEND,
-	SPY,
-	TURNSECRET;
+	SPY,	
+	TURNSECRET,
+	VOTE;
 	
 }

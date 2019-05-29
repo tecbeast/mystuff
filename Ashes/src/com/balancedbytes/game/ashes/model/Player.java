@@ -34,6 +34,7 @@ public class Player implements IJsonSerializable {
 	private static final String FIGHTER_MORALE = "fighterMorale";
 	private static final String TRANSPORTER_MORALE = "transporterMorale";
 	private static final String POLITICAL_TERMS = "politicalTerms";
+	private static final String VOTE = "vote";
 
 	private String fUserName;
 	private String fPlayerName;
@@ -43,6 +44,7 @@ public class Player implements IJsonSerializable {
 	private int fFighterMorale;      // percent (min = 50%, max = 150%)
 	private int fTransporterMorale;  // percent (min = 50%, max = 150%)
 	private PoliticalTerm[] fPoliticalTerms;
+	private int fVote;
 	
 	private transient Report fReport;
 	private transient Map<Category, Integer> fGnpTotals;
@@ -54,11 +56,11 @@ public class Player implements IJsonSerializable {
 		fGnpTotals = Category.buildEmptyMap();
 	}
 	
-	public Player(String userName, int number) {
+	public Player(String userName, int playerNr) {
 		
 		this();
 
-		fPlayerNr = number;
+		setPlayerNr(playerNr);
 
 		setUserName(userName);
 		setHomePlanetNr(fPlayerNr);
@@ -113,6 +115,10 @@ public class Player implements IJsonSerializable {
 		return fPlayerNr;
 	}
 	
+	protected void setPlayerNr(int playerNr) {
+		fPlayerNr = playerNr;
+	}
+	
 	public int getPoliticalPoints() {
 		return fPoliticalPoints;
 	}
@@ -160,6 +166,14 @@ public class Player implements IJsonSerializable {
 		if ((otherPlayer >= 0) && (otherPlayer < fPoliticalTerms.length)) {
 			fPoliticalTerms[otherPlayer] = politicalTerm;
 		}
+	}
+	
+	public int getVote() {
+		return fVote;
+	}
+	
+	public void setVote(int vote) {
+		fVote = vote;
 	}
 	
 	public Map<Category, Integer> getGnpTotals() {
@@ -436,13 +450,14 @@ public class Player implements IJsonSerializable {
 			ptArray.add(fPoliticalTerms[i].toString());
 		}
 		json.add(POLITICAL_TERMS, ptArray);
+		json.add(VOTE, getVote());
 		return json.toJsonObject();
 	}
 	
 	@Override
 	public Player fromJson(JsonValue jsonValue) {
 		JsonObjectWrapper json = new JsonObjectWrapper(jsonValue.asObject());
-		fPlayerNr = json.getInt(PLAYER_NR);
+		setPlayerNr(json.getInt(PLAYER_NR));
 		setUserName(json.getString(USER_NAME));
 		setPlayerName(json.getString(PLAYER_NAME));
 		setHomePlanetNr(json.getInt(HOME_PLANET_NR));
@@ -455,6 +470,7 @@ public class Player implements IJsonSerializable {
 				setPoliticalTerm(i, PoliticalTerm.valueOf(ptArray.get(i).asString()));
 			}
 		}
+		setVote(json.getInt(VOTE));
 		return this;
 	}
   

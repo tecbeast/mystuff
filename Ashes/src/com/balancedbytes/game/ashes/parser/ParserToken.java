@@ -22,6 +22,7 @@ public enum ParserToken {
 	DECLARE,
 	HOMEPLANET,
 	SPY,
+	VOTE,
 
 	PDU,
 	FP,
