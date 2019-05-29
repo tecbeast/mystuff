@@ -36,7 +36,7 @@ public class MailProcessorUtil {
 					continue;
 				}
 				String tokenLc = token.toLowerCase();
-				if (tokenSet.contains(tokenLc)) {
+				if (tokenSet.contains(tokenLc) && !tokenMap.containsKey(tokenLc)) {
 					tokenMap.put(tokenLc, "");
 					valueToken = tokenLc;
 				} else {

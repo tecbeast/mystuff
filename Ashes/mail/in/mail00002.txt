@@ -1,5 +1,9 @@
-Subject: register user Kalimar
-From: kalimar@test.de
-To:
+Subject: Re: Register User Kalimar - Please verify
+From: ashesofempire@balancedbytes.com
+To: georg.seipler@test.de
 
-secret aTestSecret
+> Name   "Georg Seipler"
+> Secret aTestSecret
+
+> To finish your registration simply respond to this email.
+> The body of that mail needs to contain the secret shown above.
