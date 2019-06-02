@@ -135,7 +135,7 @@ public class CmdSend extends Command {
 		Planet fromPlanet = game.getPlanet(fFromPlanetNr);
 		FleetList fleets = fromPlanet.findFleetsForPlayerNr(getPlayerNr());
 		if (fleets.totalShips() == 0) {
-			result.add("You have no fleet to send from " + fromPlanet.getName() + " (" + fromPlanet.getNumber() + ").");
+			result.add("You have no fleet to send from " + fromPlanet.getPlanetName() + " (" + fromPlanet.getPlanetNr() + ").");
 		}
 	}
 	

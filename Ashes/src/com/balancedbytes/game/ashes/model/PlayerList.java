@@ -1,6 +1,7 @@
 package com.balancedbytes.game.ashes.model;
 
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.Iterator;
 import java.util.List;
 
@@ -41,6 +42,15 @@ public class PlayerList implements IJsonSerializable, Iterable<Player> {
 	@Override
 	public Iterator<Player> iterator() {
 		return fPlayers.iterator();
+	}
+	
+	public void sortByPlayerNr() {
+		fPlayers.sort(new Comparator<Player>() {
+			@Override
+			public int compare(Player o1, Player o2) {
+				return o1.getPlayerNr() - o2.getPlayerNr();
+			}
+		});
 	}
 	
 	@Override
