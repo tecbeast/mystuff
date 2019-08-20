@@ -48,7 +48,7 @@ public class MailManagerFiles implements IMailManager, IAshesPropertyKey {
 	}
 	
 	@Override
-	public String getEmailAddress() {
+	public String getMailFrom() {
 		return fMailFrom;
 	}
 	

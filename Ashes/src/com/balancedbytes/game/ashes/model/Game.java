@@ -324,30 +324,17 @@ public class Game implements IDataObject {
 		
 		// TODO ...
 
-	  	/*
-	  	Session session = Session.getDefaultInstance(AshesOfEmpire.getProperties(), null);
-	  	for (int i = 0; i < NR_PLAYERS; i++) {
-	  	  Report report = players[i].getReport();
-	  	  String subject =  "Ashes Of Empire Game " + nr + " Turn " + turn + " Player " +  i;
-	  	  getPlayer(i).mailTo(session, subject, report.toString());
-	  	}
-	  	*/
-		
-		// increase turn
-		fTurn += 1;
-		
-		// generate turn secrets for next turn
+		// generate turn secrets for next turn and send reports
 		for (Player player : fPlayers) {
-			Move move = new Move();
-			move.setGameNr(getGameNr());
-			move.setPlayerNr(player.getPlayerNr());
-			move.setTurn(getTurn());
-			move.setTurnSecret(AshesOfEmpire.getInstance().generateSecret());
-			move.setModified(true);
-			moveCache.add(move);
+			Move move = moveCache.create(player.getPlayerNr(), getGameNr(), getTurn() + 1);
+			Report report = player.getReport();
+			report.add(new Message(Topic.TURN_SECRET).add(move.getTurnSecret()));
+			report.sendMail(this, player);
 		}
-		
-		// mark this game as modified (so it will be saved by the cache)
+
+		// increase turn
+		// and mark this game as modified (so it will be saved by the cache)
+		fTurn += 1;
 		setModified(true);
 
 	}

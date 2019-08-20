@@ -12,23 +12,38 @@ public class GameCache {
 	
 	private Map<Integer, Game> fGameByNumber;
 	private GameDataAccess fDataAccess;
+	private int fMaxGameNr;
 	
 	public GameCache() {
 		fGameByNumber = new HashMap<Integer, Game>();
 	}
 	
-	public void init(DbManager dbManager) {
+	public void init(DbManager dbManager) throws SQLException {
 		if (dbManager != null) {
 			fDataAccess = dbManager.getGameDataAccess();
 		}
+		fMaxGameNr = fDataAccess.findMaxGameNr();
 	}
 	
-	public void add(Game game) {
+	public int getMaxGameNr() {
+		return fMaxGameNr;
+	}
+	
+	private void add(Game game) {
 		if (game == null) {
 			return;
 		}
 		fGameByNumber.put(game.getGameNr(), game);
 	}
+	
+	public Game create(String[] users) {
+		fMaxGameNr++;
+		Game game = new Game(getMaxGameNr(), users);
+		game.setModified(true);
+		add(game);
+		return game;
+	}
+	
 	
 	public Game get(int gameNr) {
 		Game game = fGameByNumber.get(gameNr);
@@ -59,11 +74,11 @@ public class GameCache {
 			return false;
 		}
 		try {
-			if (game.getId() > 0) {
-				return fDataAccess.update(game);
-			} else {
-				return fDataAccess.create(game);
+			boolean success = (game.getId() > 0) ? fDataAccess.update(game) : fDataAccess.create(game);
+			if (success) {
+				game.setModified(false);
 			}
+			return success;
 		} catch (SQLException sqle) {
 			throw new AshesException("Error saving game(" + game.getGameNr() + ") in database.", sqle);
 		}

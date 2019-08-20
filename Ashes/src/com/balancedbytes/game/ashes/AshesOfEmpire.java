@@ -92,7 +92,11 @@ public class AshesOfEmpire implements IAshesPropertyKey {
 		fUserCache.init(fDbManager);
 		fJoinCache.init(fDbManager);
 		fMoveCache.init(fDbManager);
-		fGameCache.init(fDbManager);
+		try {
+			fGameCache.init(fDbManager);
+		} catch (SQLException sqle) {
+			throw new AshesException("Error initializing game cache.", sqle);
+		}
 	}
 	
 	public DbManager getDbManager() {

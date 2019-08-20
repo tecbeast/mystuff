@@ -26,6 +26,10 @@ public final class AshesUtil {
 		return (collection != null) && (collection.size() > 0);
 	}
 	
+	public static <T> T firstElement(List<T> list) {
+		return provided(list) ? list.get(0) : null;
+	}
+	
 	public static String leftpad(String text, int length) {
 	    return String.format("%" + length + "." + length + "s", text);
 	}

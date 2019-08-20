@@ -19,6 +19,8 @@ public class MailProcessorJoin {
 	private static final String GAME = "game";
 	private static final String USER = "user";
 	private static final String HOMEPLANET = "homeplanet";
+
+	private static final String DEFAULT = "default";
 	
 	protected MailProcessorJoin() {
 		super();
@@ -43,6 +45,10 @@ public class MailProcessorJoin {
 		IMailManager mailManager = AshesOfEmpire.getInstance().getMailManager();
 		String userName = AshesUtil.print(tokenMap.get(USER));
 		String gameName = AshesUtil.print(tokenMap.get(GAME));
+		if (!AshesUtil.provided(gameName)) {
+			gameName = DEFAULT;
+		}
+		
 		mailManager.sendMail(processJoinGame(userName, gameName, mail.getBody()));
 		
 	}
@@ -91,7 +97,7 @@ public class MailProcessorJoin {
 	
 	private Mail createMailJoined(Join join, int nrOfJoins, User user) {
 		Mail mail = new Mail();
-		mail.setFrom(AshesOfEmpire.getInstance().getMailManager().getEmailAddress());
+		mail.setFrom(AshesOfEmpire.getInstance().getMailManager().getMailFrom());
 		if (AshesUtil.provided(join.getGameName())) {
 			mail.setSubject("Joined game " + join.getGameName() + "successfully.");
 		} else {
@@ -104,7 +110,7 @@ public class MailProcessorJoin {
 		body.append("Homeplanet\t").append(AshesUtil.join(join.getHomePlanets(), ","));
 		body.append(System.lineSeparator());
 		body.append(System.lineSeparator());
-		body.append("This game has currently ").append(nrOfJoins);
+		body.append("This game has now ").append(nrOfJoins);
 		body.append((nrOfJoins == 1) ? " player." : " players.");
 		mail.setBody(body.toString());
 		return mail;

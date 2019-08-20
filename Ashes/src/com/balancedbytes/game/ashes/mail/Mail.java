@@ -25,37 +25,41 @@ public class Mail {
 		return fSubject;
 	}
 	
-	public void setSubject(String subject) {
+	public Mail setSubject(String subject) {
 		fSubject = subject;
+		return this;
 	}
 
 	public String getBody() {
 		return fBody;
 	}
 	
-	public void setBody(String body) {
+	public Mail setBody(String body) {
 		fBody = body;
+		return this;
 	}
 	
 	public String getFrom() {
 		return fFrom;
 	}
 	
-	public void setFrom(String from) {
+	public Mail setFrom(String from) {
 		fFrom = from;
+		return this;
 	}
 	
 	public String getTo() {
 		return fTo;
 	}
 	
-	public void setTo(String to) {
+	public Mail setTo(String to) {
 		fTo = to;
+		return this;
 	}
 	
-	public void writeTo(Writer writer) throws IOException {
+	public Mail writeTo(Writer writer) throws IOException {
 		if (writer == null) {
-			return;
+			return null;
 		}
 		try (BufferedWriter out = new BufferedWriter(writer)) {
 			out.write(SUBJECT_PREFIX);
@@ -78,6 +82,7 @@ public class Mail {
 				out.write(getBody());
 			}
 		}
+		return this;
 	}
 	
 	public Mail readFrom(Reader reader) throws IOException {

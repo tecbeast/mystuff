@@ -4,7 +4,7 @@ import java.util.Properties;
 
 public interface IMailManager {
 	
-	public String getEmailAddress();
+	public String getMailFrom();
 	
 	public void init(Properties properties);
 	

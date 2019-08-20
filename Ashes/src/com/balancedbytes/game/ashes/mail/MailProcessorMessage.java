@@ -113,7 +113,7 @@ public class MailProcessorMessage {
 
 	private Mail createMailMessageRejected(Move move, String error) {
 		Mail mail = new Mail();
-		mail.setFrom(AshesOfEmpire.getInstance().getMailManager().getEmailAddress());
+		mail.setFrom(AshesOfEmpire.getInstance().getMailManager().getMailFrom());
 		mail.setSubject(new StringBuilder()
 			.append("Game ").append(move.getGameNr())
 			.append(" Player ").append(move.getPlayerNr())
@@ -129,7 +129,7 @@ public class MailProcessorMessage {
 
 	private Mail createMailPlayerMessage(Move move, User receiver, String message) {
 		Mail mail = new Mail();
-		mail.setFrom(AshesOfEmpire.getInstance().getMailManager().getEmailAddress());
+		mail.setFrom(AshesOfEmpire.getInstance().getMailManager().getMailFrom());
 		mail.setSubject(new StringBuilder()
 			.append("Message from Player ").append(move.getPlayerNr()).append(".")
 			.toString());

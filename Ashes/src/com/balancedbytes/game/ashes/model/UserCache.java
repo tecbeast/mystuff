@@ -1,6 +1,7 @@
 package com.balancedbytes.game.ashes.model;
 
 import java.sql.SQLException;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -8,6 +9,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
 import com.balancedbytes.game.ashes.AshesException;
+import com.balancedbytes.game.ashes.AshesOfEmpire;
 import com.balancedbytes.game.ashes.AshesUtil;
 import com.balancedbytes.game.ashes.db.DbManager;
 import com.balancedbytes.game.ashes.db.UserDataAccess;
@@ -48,11 +50,23 @@ public class UserCache {
 		return user;
 	}
 	
-	public void add(User user) {
+	private void add(User user) {
 		if (user == null) {
 			return;
 		}
 		fUserByName.put(user.getUserName(), user);
+	}
+	
+	public User create(String userName, String realName, String email) {
+		User user = new User();
+		user.setUserName(userName);
+		user.setRealName(realName);
+		user.setEmail(email);
+		user.setSecret(AshesOfEmpire.getInstance().generateSecret());
+		user.setLastProcessed(new Date());
+		user.setModified(true);
+		add(user);
+		return user;
 	}
 
 	public boolean save() {

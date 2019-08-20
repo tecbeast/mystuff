@@ -11,6 +11,7 @@ public enum Topic {
 	PLANET,
 	POLITICS,
 	REVOLT,
-	STATUS;
+	STATUS,
+	TURN_SECRET;
 	
 }

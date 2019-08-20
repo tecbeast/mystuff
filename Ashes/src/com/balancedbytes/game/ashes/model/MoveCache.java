@@ -5,6 +5,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 import com.balancedbytes.game.ashes.AshesException;
+import com.balancedbytes.game.ashes.AshesOfEmpire;
 import com.balancedbytes.game.ashes.db.DbManager;
 import com.balancedbytes.game.ashes.db.MoveDataAccess;
 
@@ -38,11 +39,22 @@ public class MoveCache {
 			.toString();
 	}
 	
-	public void add(Move move) {
+	private void add(Move move) {
 		if (move == null) {
 			return;
 		}
 		fMoveByGamePlayerTurn.put(createKey(move), move);
+	}
+	
+	public Move create(int playerNr, int gameNr, int turn) {
+		Move move = new Move();
+		move.setGameNr(gameNr);
+		move.setPlayerNr(playerNr);
+		move.setTurn(turn);
+		move.setTurnSecret(AshesOfEmpire.getInstance().generateSecret());
+		move.setModified(true);
+		add(move);
+		return move;
 	}
 	
 	public Move get(int gameNr, int playerNr, int turn) {

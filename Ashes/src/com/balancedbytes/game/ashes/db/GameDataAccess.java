@@ -27,6 +27,8 @@ public class GameDataAccess {
 	
 	private static final String SQL_FIND_BY_GAME_NR =
 		"SELECT * FROM games WHERE game_nr = ?";
+	private static final String SQL_FIND_MAX_GAME_NR = 
+		"SELECT MAX(game_nr) AS max_game_nr FROM games"; 
 	private static final String SQL_CREATE =
 		"INSERT INTO games"
 		+ " (game_nr, turn, last_update, player_list, planet_list)"
@@ -56,6 +58,19 @@ public class GameDataAccess {
 			c.commit();
 		}
 		return game;
+	}
+
+	public int findMaxGameNr() throws SQLException {
+		int maxGameNr = 1;
+		try (Connection c = fDbManager.getConnection()) {
+			PreparedStatement ps = c.prepareStatement(SQL_FIND_MAX_GAME_NR);
+		    ResultSet rs = ps.executeQuery();
+			while (rs.next()) {
+	        	maxGameNr = rs.getInt(1);
+	        }
+			c.commit();
+		}
+		return maxGameNr;
 	}
 
 	public boolean create(Game game) throws SQLException {

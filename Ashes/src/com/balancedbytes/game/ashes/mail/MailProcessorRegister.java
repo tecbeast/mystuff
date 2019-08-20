@@ -91,14 +91,7 @@ public class MailProcessorRegister {
 		} else {
 
 			if (checkValues(tokenMap)) {
-				user = new User();
-				user.setUserName(userName);
-				userCache.add(user);
-				user.setRealName(tokenMap.get(NAME));
-				user.setEmail(tokenMap.get(EMAIL));
-				user.setSecret(AshesOfEmpire.getInstance().generateSecret());
-				user.setLastProcessed(new Date());
-				user.setModified(true);
+				user = userCache.create(userName, tokenMap.get(NAME), tokenMap.get(EMAIL));
 				return createMailUserVerification(user);
 			}
 			
@@ -122,7 +115,7 @@ public class MailProcessorRegister {
 	
 	private Mail createMailUserRegistration(User user) {
 		Mail mail = new Mail();
-		mail.setFrom(AshesOfEmpire.getInstance().getMailManager().getEmailAddress());
+		mail.setFrom(AshesOfEmpire.getInstance().getMailManager().getMailFrom());
 		mail.setSubject("User registration successful.");
 		mail.setTo(user.getEmail());
 		StringBuilder body = new StringBuilder();
@@ -138,7 +131,7 @@ public class MailProcessorRegister {
 
 	private Mail createMailRegistrationRejected(User user, String error) {
 		Mail mail = new Mail();
-		mail.setFrom(AshesOfEmpire.getInstance().getMailManager().getEmailAddress());
+		mail.setFrom(AshesOfEmpire.getInstance().getMailManager().getMailFrom());
 		mail.setSubject("User registration rejected.");
 		mail.setTo(user.getEmail());
 		StringBuilder body = new StringBuilder();
@@ -156,7 +149,7 @@ public class MailProcessorRegister {
 
 	private Mail createMailUserVerification(User user) {
 		Mail mail = new Mail();
-		mail.setFrom(AshesOfEmpire.getInstance().getMailManager().getEmailAddress());
+		mail.setFrom(AshesOfEmpire.getInstance().getMailManager().getMailFrom());
 		StringBuilder subject = new StringBuilder();
 		subject.append("Register User ").append(user.getUserName());
 		subject.append(" - Please verify");

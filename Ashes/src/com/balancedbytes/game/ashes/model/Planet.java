@@ -749,7 +749,7 @@ public class Planet implements IJsonSerializable {
 	 */
 	private void battle(Game game) {
   	
-		Message report = new Message(Topic.BATTLE);
+		Message message = new Message(Topic.BATTLE);
 
 		// calculate attack strength and defense strength
 		int af = 0, df = 0, as = 0, ds = 0;
@@ -796,7 +796,7 @@ public class Planet implements IJsonSerializable {
 	  	if (as > 0) {
   
 	  		Player owner = game.getPlayer(fPlayerNr);
-	  		report.add("Battle at " + fName + " (" + fNumber + ") Owner: " + owner.getPlayerName() + " (" + owner.getPlayerNr() + ")");
+	  		message.add("Battle at " + fName + " (" + fNumber + ") Owner: " + owner.getPlayerName() + " (" + owner.getPlayerNr() + ")");
   
 	  		if (ds > 0) {
 	  			
@@ -852,7 +852,7 @@ public class Planet implements IJsonSerializable {
 	  					line.append(atkFleet.getFighters());
 	  				}
 	  				line.append(" FI)");
-	  				report.add(line.toString());
+	  				message.add(line.toString());
   
 	  				atkPlayer.setFighterMorale(atkPlayer.getFighterMorale() + atkWin[i] - atkLoss[i] + atkBonus);
 	  				atkFleet.setFighters(atkFleet.getFighters() - atkLoss[i]);
@@ -873,7 +873,7 @@ public class Planet implements IJsonSerializable {
 	  					line.append(defFleet.getFighters());
 	  				}
 	  				line.append(" FI)");
-	  				report.add(line.toString());
+	  				message.add(line.toString());
 	  				
 	  				defPlayer.setFighterMorale(defPlayer.getFighterMorale() + defWin[j] - defLoss[j] + defBonus);
 	  				defFleet.setFighters(defFleet.getFighters() - defLoss[j]);
@@ -885,24 +885,24 @@ public class Planet implements IJsonSerializable {
 	  			for (int i = 0; i < attacker.size(); i++) {
 	  				Fleet atkFleet = attacker.get(i);
 	  				Player atkPlayer = game.getPlayer(atkFleet.getPlayerNr());
-	  				report.add(atkPlayer.getPlayerName() + " (" + atkPlayer.getPlayerNr() + ") attacks with " + atkFleet.getFighters() + " FI");
+	  				message.add(atkPlayer.getPlayerName() + " (" + atkPlayer.getPlayerNr() + ") attacks with " + atkFleet.getFighters() + " FI");
 	  			}
 	  			
-	  			report.add("no resistance");
+	  			message.add("no resistance");
 	  			
 	  		}
 	  		
 	  		if (as > ds) {
 	  			
 	  			if (ds > 0) {
-	  				report.add("The defenders flee to their homeplanet (-" + defender.totalTransporters() + " TR)");
+	  				message.add("The defenders flee to their homeplanet (-" + defender.totalTransporters() + " TR)");
 	  				defender.removeTransporters();
 	  				flee(game, defender);
 	  			}
 	  			
 	  		} else {
 	  			
-	  			report.add("The attackers flee to their homeplanet (-" + attacker.totalTransporters() + " TR)");
+	  			message.add("The attackers flee to their homeplanet (-" + attacker.totalTransporters() + " TR)");
 	  			attacker.removeTransporters();
 	  			flee(game, attacker);
 	  			
@@ -948,7 +948,7 @@ public class Planet implements IJsonSerializable {
 	  			Fleet atkFleet = attacker.get(i);
 	  			Player atkPlayer = game.getPlayer(atkFleet.getPlayerNr());
 	  			if (atkFleet.getTransporters() > 0) {
-	  				report.add(atkPlayer.getPlayerName() + " (" + atkPlayer.getPlayerNr() + ") attempts landing with " + atkFleet.getTransporters() + " TR (-" + atkLoss[i] + " TR)");
+	  				message.add(atkPlayer.getPlayerName() + " (" + atkPlayer.getPlayerNr() + ") attempts landing with " + atkFleet.getTransporters() + " TR (-" + atkLoss[i] + " TR)");
 	  				atkPlayer.setTransporterMorale(atkPlayer.getTransporterMorale() + atkWin[i] - atkLoss[i] + atkBonus);
 	  				atkFleet.setTransporters(atkFleet.getTransporters() - atkLoss[i]);
 	  			}
@@ -958,7 +958,7 @@ public class Planet implements IJsonSerializable {
 	  			pduLoss = getPlanetaryDefenseUnits();
 	  		}
   
-	  		report.add("Planet defends with " + fPlanetaryDefenseUnits + " PDU (-" + pduLoss + " PDU)");
+	  		message.add("Planet defends with " + fPlanetaryDefenseUnits + " PDU (-" + pduLoss + " PDU)");
 	  		fPlanetaryDefenseUnits -= pduLoss;
   
 	  		// planet conquered
@@ -986,34 +986,34 @@ public class Planet implements IJsonSerializable {
 	  			if (trMax > 0) {
 	  				Player newOwner = game.getPlayer(attacker.get(conquerer).getPlayerNr());
 	  				changeOwner(newOwner.getPlayerNr());
-	  				report.add(newOwner.getPlayerName() + " (" + newOwner.getPlayerNr() + ")  conquers the planet.");
+	  				message.add(newOwner.getPlayerName() + " (" + newOwner.getPlayerNr() + ")  conquers the planet.");
 	  			}
   
 	  		// revolution attempt
 	  		} else {
   
-	  			report.add("Planet defends successfully.");
+	  			message.add("Planet defends successfully.");
   
 	  			pduLoss = revolt(game);
   
 	  			if ((fPlanetaryDefenseUnits > 0) && (pduLoss > 0)) {
-	  				report.add("Riots destroy further " + pduLoss + " PDU");
+	  				message.add("Riots destroy further " + pduLoss + " PDU");
 	  			} else if (fPlanetaryDefenseUnits == 0) {
-	  				report.add("The population takes advantage and revolts.");
+	  				message.add("The population takes advantage and revolts.");
 	  			}
 	  			
 	  		}
 	  		
 	  	}
   
-	  	if (report.size() > 0) {
+	  	if (message.size() > 0) {
 	  		Player owner = game.getPlayer(getPlayerNr());
-	  		owner.getReport().add(report);
+	  		owner.getReport().add(message);
 	  		for (int i = 0; i < involved.size(); i++) {
 	  			Fleet fleet = involved.get(i);
 	  			if (fleet.getPlayerNr() != getPlayerNr()) {
 	  				Player player = game.getPlayer(fleet.getPlayerNr());
-	  				player.getReport().add(report);
+	  				player.getReport().add(message);
 	  			}
 	  		}
 	  	}
