@@ -36,14 +36,13 @@ public class GameCache {
 		fGameByNumber.put(game.getGameNr(), game);
 	}
 	
-	public Game create(String[] users) {
+	public Game create() {
 		fMaxGameNr++;
-		Game game = new Game(getMaxGameNr(), users);
+		Game game = new Game(getMaxGameNr());
 		game.setModified(true);
 		add(game);
 		return game;
-	}
-	
+	}	
 	
 	public Game get(int gameNr) {
 		Game game = fGameByNumber.get(gameNr);

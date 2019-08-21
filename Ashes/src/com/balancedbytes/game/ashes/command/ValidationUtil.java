@@ -25,7 +25,7 @@ public final class ValidationUtil {
 		}
 		for (int i = 1; i <= 40; i++) {
 			Planet planet = game.getPlanet(i);
-			if ((planet != null) && (planet.getName() != null) && planet.getName().equalsIgnoreCase(planetName)) {
+			if ((planet != null) && (planet.getPlanetName() != null) && planet.getPlanetName().equalsIgnoreCase(planetName)) {
 				return i;
 			}
 		}

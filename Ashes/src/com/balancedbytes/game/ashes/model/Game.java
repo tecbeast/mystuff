@@ -85,16 +85,14 @@ public class Game implements IDataObject {
 	/**
 	 * Start a new Game with given planets.
 	 */
-	public Game(int number, String[] users) {
+	public Game(int gameNr) {
 
 		this();
 		
-		setGameNr(number);
-	  	setTurn(1);
+		setGameNr(gameNr);
+	  	setTurn(0);
 
-		for (int i = 0; i < Math.min(NR_OF_PLAYERS, users.length); i++) {
-			fPlayers.add(new Player(users[i], i + 1));
-		}
+	  	fPlayers.add(new Enemy());
 	  	
 	  	// planet name, planet number, player, WF, HD, PR, FI, TR, PDU
   		fPlanets.add(new Planet("Earth",            1, 1, 240, 6,  683, 15,  4,  6));
@@ -176,6 +174,11 @@ public class Game implements IDataObject {
 		fGameNr = number;
 	}
 	
+	public void addPlayer(Player player) {
+		fPlayers.add(player);
+		fPlayers.sortByPlayerNr();
+	}
+	
 	public PlayerList getPlayers() {
 		return fPlayers;
 	}
@@ -203,7 +206,7 @@ public class Game implements IDataObject {
 	 * Player with given number
 	 */
 	public Player getPlayer(int nr) {
-		return fPlayers.get(nr - 1);
+		return fPlayers.get(nr);
 	}
 
 	/**
@@ -262,16 +265,20 @@ public class Game implements IDataObject {
 		//      noch vor den Flugbewegungen. Das gilt auch für den Wechsel des Heimatplaneten
 		//      und alle Namensänderungen.
 		
-		// execute player commands
-		// (declare, homeplanet, planetname, playername, spy)
-		for (Player player : fPlayers) {
-			Move move = moveCache.get(getGameNr(), player.getPlayerNr(), getTurn());
-			CommandList commands = (move != null) ? move.getCommands() : null;
-			if (commands != null) {
-				allCommands.add(commands);
-				player.executeCommands(this, commands);
+		if (getTurn() > 0) {
+			
+			// execute player commands
+			// (declare, homeplanet, planetname, playername, spy)
+			for (Player player : fPlayers) {
+				Move move = moveCache.get(getGameNr(), player.getPlayerNr(), getTurn());
+				CommandList commands = (move != null) ? move.getCommands() : null;
+				if (commands != null) {
+					allCommands.add(commands);
+					player.executeCommands(this, commands);
+				}
 			}
-		}		
+			
+		}
 		
 		// turn start for each player
 		// (update and report political terms, update pp, update fm and tm)

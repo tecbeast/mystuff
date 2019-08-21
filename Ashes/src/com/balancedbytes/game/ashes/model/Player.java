@@ -54,6 +54,7 @@ public class Player implements IJsonSerializable {
 	protected Player() {
 		fReport = new Report();
 		fGnpTotals = Category.buildEmptyMap();
+		fPoliticalTerms = new PoliticalTerm[9];
 	}
 	
 	public Player(String userName, int playerNr) {
@@ -72,7 +73,6 @@ public class Player implements IJsonSerializable {
 		
 		// you start at WAR with neutral,
 		// at PEACE with yourself and at NEUTRAL with anyone else
-		fPoliticalTerms = new PoliticalTerm[9];
 		for (int i = 0; i < fPoliticalTerms.length; i++) {
 			if (i == 0) {
 				setPoliticalTerm(i, PoliticalTerm.WAR);
@@ -155,6 +155,10 @@ public class Player implements IJsonSerializable {
 		}
 	}
 	
+	public PoliticalTerm[] getPoliticalTerms() {
+		return fPoliticalTerms;
+	}
+	
 	public PoliticalTerm getPoliticalTerm(int otherPlayer) {
 		if ((otherPlayer < 0) || (otherPlayer > fPoliticalTerms.length)) {
 			return null;
@@ -206,16 +210,16 @@ public class Player implements IJsonSerializable {
 	private void executeHomeplanet(Game game, CmdHomeplanet homeplanetCmd) {
 		Planet homePlanet = game.getPlanet(homeplanetCmd.getPlanetNr());
 		if ((homePlanet != null) && (homePlanet.getPlayerNr() == fPlayerNr)) {
-			fHomePlanetNr = homePlanet.getNumber();
-			LOG.debug("Player " + fPlayerNr + " sets homeplanet on " + homePlanet.getNumber());
+			fHomePlanetNr = homePlanet.getPlanetNr();
+			LOG.debug("Player " + fPlayerNr + " sets homeplanet on " + homePlanet.getPlanetNr());
 		}					
 	}
 	
 	private void executePlanetname(Game game, CmdPlanetname planetnameCmd) {
 		Planet namedPlanet = game.getPlanet(planetnameCmd.getPlanetNr());
 		if ((namedPlanet != null) && (namedPlanet.getPlayerNr() == fPlayerNr)) {
-			namedPlanet.setName(planetnameCmd.getName());
-			LOG.debug("Player " + fPlayerNr + " renames planet " + namedPlanet.getNumber() +  " to " + namedPlanet.getName());
+			namedPlanet.setPlanetName(planetnameCmd.getName());
+			LOG.debug("Player " + fPlayerNr + " renames planet " + namedPlanet.getPlanetNr() +  " to " + namedPlanet.getPlanetName());
 		}
 	}
 
@@ -293,9 +297,9 @@ public class Player implements IJsonSerializable {
 				getReport().add(new Message(Topic.INTELLIGENCE).add("Spy has been caught."));
 	  			Player planetOwner = game.getPlayer(planet.getPlayerNr());
 	  			planetOwner.getReport().add(new Message(Topic.INTELLIGENCE).add("A spy from " + fPlayerName + " (" + fPlayerNr + ") has been caught"
-	  				+ " on " + planet.getName() + " ("+ planet.getNumber() + ")"));
+	  				+ " on " + planet.getPlanetName() + " ("+ planet.getPlanetNr() + ")"));
 			}
-			LOG.debug("Player " + fPlayerNr + " uses level " + spyLevel + " spy on " + planet.getNumber() + (detected ? " - caught" : " - not caught"));			
+			LOG.debug("Player " + fPlayerNr + " uses level " + spyLevel + " spy on " + planet.getPlanetNr() + (detected ? " - caught" : " - not caught"));			
 		}		
 	}
 		
@@ -370,15 +374,19 @@ public class Player implements IJsonSerializable {
 		}
 		getReport().add(message);
 
-		// modify political points
-		setPoliticalPoints(getPoliticalPoints() + ppMod);		
-		
-		// raise fighter and transporter morale by 5% each turn (max. 100%)
-		if (getFighterMorale() <= 95) {
-			setFighterMorale(getFighterMorale() + 5);
-		}
-		if (getTransporterMorale() <= 95) {
-			setTransporterMorale(getTransporterMorale() + 5);
+		if (game.getTurn() > 0) {
+			
+			// modify political points
+			setPoliticalPoints(getPoliticalPoints() + ppMod);		
+			
+			// raise fighter and transporter morale by 5% each turn (max. 100%)
+			if (getFighterMorale() <= 95) {
+				setFighterMorale(getFighterMorale() + 5);
+			}
+			if (getTransporterMorale() <= 95) {
+				setTransporterMorale(getTransporterMorale() + 5);
+			}
+			
 		}
 		
 	}

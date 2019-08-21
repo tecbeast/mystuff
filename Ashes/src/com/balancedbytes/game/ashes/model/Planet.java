@@ -22,8 +22,8 @@ import com.eclipsesource.json.JsonValue;
  */
 public class Planet implements IJsonSerializable {
 	
-	private static final String NUMBER = "number";
-	private static final String NAME = "name";
+	private static final String PLANET_NR = "planetNr";
+	private static final String PLANET_NAME = "planetName";
 	private static final String PLAYER_NR = "playerNr";
 	private static final String WORKFORCE = "workforce";
 	private static final String FIGHTER_YARDS = "fighterYards";
@@ -42,8 +42,8 @@ public class Planet implements IJsonSerializable {
 	private static final String GROSS_INDUSTRIAL_PRODUCT = "grossIndustrialProduct";
 	private static final String FLIGHT_QUEUE = "flightQueue";
 	
-	private int fNumber;
-	private String fName;
+	private int fPlanetNr;
+	private String fPlanetName;
 	private int fPlayerNr;
 	
 	private int fWorkforce;
@@ -95,8 +95,8 @@ public class Planet implements IJsonSerializable {
 		
 		this();
 
-		fName = name;
-		fNumber = number;
+		fPlanetName = name;
+		fPlanetNr = number;
 		fPlayerNr = playerNr;
 		fWorkforce = workforce;
 		fPlanetaryDefenseUnits = planetaryDefenseUnits;
@@ -111,7 +111,7 @@ public class Planet implements IJsonSerializable {
 
 		fFlightQueue[0].add(new Fleet(fPlayerNr, fighters, transporters));
 
-		if (playerNr == fNumber) {
+		if (playerNr == fPlanetNr) {
 			fPlanetaryMorale = 150;
 		} else {
 			fPlanetaryMorale = 100;
@@ -130,16 +130,16 @@ public class Planet implements IJsonSerializable {
 
 	}
 	  
-	public String getName() {
-		return fName;
+	public String getPlanetName() {
+		return fPlanetName;
 	}
 	
-	public void setName(String name) {
-		fName = name;
+	public void setPlanetName(String name) {
+		fPlanetName = name;
 	}
 
-	public int getNumber() {
-		return fNumber;
+	public int getPlanetNr() {
+		return fPlanetNr;
 	}
 	
 	public int getPlayerNr() {
@@ -195,7 +195,7 @@ public class Planet implements IJsonSerializable {
 	 */
 	private boolean build(Game game, CmdBuild buildCommand) {
 		
-		if ((game == null) || (buildCommand == null) || (buildCommand.getPlanetNr() != getNumber())) {
+		if ((game == null) || (buildCommand == null) || (buildCommand.getPlanetNr() != getPlanetNr())) {
 			return false;
 		}
 		
@@ -444,11 +444,11 @@ public class Planet implements IJsonSerializable {
 			return;
 		}
 		
-		int distance = Game.getDistance(getNumber(), toPlanetNr);
+		int distance = Game.getDistance(getPlanetNr(), toPlanetNr);
 		Planet destination = game.getPlanet(toPlanetNr);
 		// flight to a higher planet number is distance + 1
 		// because that planet's turn has not been played yet
-		destination.receive(fleet, (toPlanetNr > getNumber()) ? distance + 1 : distance);
+		destination.receive(fleet, (toPlanetNr > getPlanetNr()) ? distance + 1 : distance);
 		
 		Fleet orbit = fFlightQueue[0].forPlayer(fPlayerNr);
 		orbit.setFighters(orbit.getFighters() - fleet.getFighters());
@@ -489,8 +489,8 @@ public class Planet implements IJsonSerializable {
 				if ((fleet.getFighters() > 0) || (fleet.getTransporters() > 0)) {
 					Player otherPlayer = game.getPlayer(fleet.getPlayerNr());
 					Planet destination = game.getPlanet(otherPlayer.getHomePlanetNr());
-					int distance = Game.getDistance(getNumber(), destination.getNumber()) + 1;
-					destination.receive(fleet, (destination.getNumber() > getNumber()) ? distance + 1 : distance);
+					int distance = Game.getDistance(getPlanetNr(), destination.getPlanetNr()) + 1;
+					destination.receive(fleet, (destination.getPlanetNr() > getPlanetNr()) ? distance + 1 : distance);
 				}
 				
 				// this fleet no longer in flight queue
@@ -525,107 +525,121 @@ public class Planet implements IJsonSerializable {
 	 */
 	public void playTurn(Game game, CommandList cmdList) {
 
-		LOG.info("Planet " + getNumber() + " turn " + game.getTurn());
+		LOG.info("Planet " + getPlanetNr() + " turn " + game.getTurn());
 		
 		// fleet report to all friendly players (if higher than limit) and owner (who is friendly to himself)
   	  	reportFleet(game);
   
   	  	// report approaching cargoships
   	  	reportCargo(game);
+  	  	
+  	  	if (game.getTurn() > 0) {
 
-		//    7.2 Liegen entsprechende Befehle vor und sind ausreichend TR und Güter
-		//  vorhanden, werden Frachtschiffe beladen. Die verladenen Güter stehen in
-		//  derselben Runde nicht weiter zur Verfügung.
-
-		for (Command command : getSendCommands(cmdList, true)) {
-			send(game, (CmdSend) command);
-		}
-
-		//    7.3 Bei der Abwicklung der Flugbewegungen rückt jede Flotte um eine Etappe
-		//  auf ihrer Route vor. Neutrale Planeten schicken Flotten (FI und TR) aus ihrem
-		//  Orbit mit zufälligem Ziel auf die Reise.
-		
-	  	advanceFlightQueue();
-	  	
-		for (Command command : getSendCommands(cmdList, false)) {
-			send(game, (CmdSend) command);
-		}
-
-		//    7.4 Als nächstes werden alle Produktionsbefehle ausgeführt und zwar in der
-		//  Reihenfolge: PDU, FP, OP, RP, FY, TY, FI und TR. Reichen die vorhandenen A für
-		//  die angegebenen Produktionen nicht aus oder fehlen für den Bau von FI oder TR
-		//  Werften oder FUEL, ORE und RARE, wird die Produktion entsprechend gekürzt.
-		//  Viele SL weisen durch eine Meldung ("A short on (Planetennummer oder -name)",
-		//  o.ä. in den GM darauf hin.
-		//    Hierbei werden die Vorräte neu berechnet. Der Wert verringert sich
-		//  entsprechend dem Verbrauch durch den Bau von FI oder TR.
-		//    (Neutrale Planeten bauen auch und zwar in erster Linie FI und dann TR, die
-		//  restlichen A werden für FI-Werften und Fabriken aufgewendet).
-		
-		for (Command command : getOrderedBuildCommands(cmdList)) {
-			build(game, (CmdBuild) command);
-		}
-
-		//    7.5 Ist PDU kleiner als HD oder PP kleiner als 0, so wird eine Revolte
-		//  abgewickelt. Dies veröffentlicht der SL in den GM. Die Revolte kann auch dazu
-		//  führen, daß der Planet an Neutral fällt.
-		
-  	  	if ((fPlanetaryDefenseUnits < fHomeDefense) || (game.getPlayer(getPlayerNr()).getPoliticalPoints() < 0)) {
-  	  		revolt(game);
+			//    7.2 Liegen entsprechende Befehle vor und sind ausreichend TR und Güter
+			//  vorhanden, werden Frachtschiffe beladen. Die verladenen Güter stehen in
+			//  derselben Runde nicht weiter zur Verfügung.
+	
+  	  		if (getPlayerNr() > 0) {
+				for (Command command : filterSendCommands(cmdList, true)) {
+					send(game, (CmdSend) command);
+				}
+  	  		}
+	
+			//    7.3 Bei der Abwicklung der Flugbewegungen rückt jede Flotte um eine Etappe
+			//  auf ihrer Route vor. Neutrale Planeten schicken Flotten (FI und TR) aus ihrem
+			//  Orbit mit zufälligem Ziel auf die Reise.
+			
+		  	advanceFlightQueue();
+		  	
+		  	if (getPlayerNr() > 0) {
+				for (Command command : filterSendCommands(cmdList, false)) {
+					send(game, (CmdSend) command);
+				}
+		  	} else {
+		  		// TODO: enemy strategy
+		  	}
+	
+			//    7.4 Als nächstes werden alle Produktionsbefehle ausgeführt und zwar in der
+			//  Reihenfolge: PDU, FP, OP, RP, FY, TY, FI und TR. Reichen die vorhandenen A für
+			//  die angegebenen Produktionen nicht aus oder fehlen für den Bau von FI oder TR
+			//  Werften oder FUEL, ORE und RARE, wird die Produktion entsprechend gekürzt.
+			//  Viele SL weisen durch eine Meldung ("A short on (Planetennummer oder -name)",
+			//  o.ä. in den GM darauf hin.
+			//    Hierbei werden die Vorräte neu berechnet. Der Wert verringert sich
+			//  entsprechend dem Verbrauch durch den Bau von FI oder TR.
+			//    (Neutrale Planeten bauen auch und zwar in erster Linie FI und dann TR, die
+			//  restlichen A werden für FI-Werften und Fabriken aufgewendet).
+			
+		  	if (getPlayerNr() > 0) {
+				for (Command command : sortBuildCommands(filterBuildCommands(cmdList))) {
+					build(game, (CmdBuild) command);
+				}
+		  	} else {
+		  		// TODO: enemy strategy
+		  	}
+	
+			//    7.5 Ist PDU kleiner als HD oder PP kleiner als 0, so wird eine Revolte
+			//  abgewickelt. Dies veröffentlicht der SL in den GM. Die Revolte kann auch dazu
+			//  führen, daß der Planet an Neutral fällt.
+			
+	  	  	if ((fPlanetaryDefenseUnits < fHomeDefense) || (game.getPlayer(getPlayerNr()).getPoliticalPoints() < 0)) {
+	  	  		revolt(game);
+	  	  	}
+	
+			//    7.6 Erst danach wird produziert. (Vorräte erhöhen sich um Anzahl Fabriken
+			//  mal Produktionsrate). Übersteigt die Produktion die Lagerkapazität (Anzahl
+			//  Fabriken mal 10), so ist der Überschuß verloren. Anschließend werden
+			//  Planetenmoral (PM%), GIP, A, PR und HD neu berechnet (Steigt also HD infolge
+			//  eines Anstiegs von A über den Wert von PDU, kommt es nicht zur Revolte. Da die
+			//  Baubefehle vor der Revolte ausgeführt werden, können in der folgenden Runde
+			//  noch rechtzeitig PDU nachgebaut werden).
+			//    Bei neutralen Planeten ist PDU immer gleich HD. Dafür werden keine
+			//  Arbeitskräfte benötigt. Es werden hier auch keine weiteren PDU gebaut;
+	  	  	//  weitere PDU können jedoch von Frachtern stammen!
+		  	  
+		  	fFuelResources = Math.min(fFuelResources + fFuelPlants, fFuelPlants * 10);
+			fOreResources = Math.min(fOreResources + fOrePlants, fOrePlants * 10);
+			fRareResources = Math.min(fRareResources + fRarePlants, fRarePlants * 10);
+			
+		  	updateStockpilesAndGip();
+		  	
+		  	fPlanetaryMorale = Math.min(fPlanetaryMorale + 10, 250);
+			fWorkforce += fGrossIndustrialProduct / 40;
+			fProductionRate += fGrossIndustrialProduct / 12;  // pr += (gip / 200 / 60);
+			fHomeDefense = ((fWorkforce - 1) / 40) + 1;
+	
+			//    7.7 Befinden sich nun im Orbit (I) eines Planeten eine oder mehrere Flotten,
+			//  die zum Planetenbesitzer PV=0 haben, treten alle anwesenden Flotten in ein
+			//  Raumgefecht ein, sofern sie nicht zum Besitzer des Planeten neutral (PV=1)
+			//  sind.
+	
+			//    7.8 Hat der Besitzer des Planeten (oder seine Verbündeten) keine Raumschiffe
+			//  (mehr) im Orbit, also die Raumherrschaft verloren, wird anschließend ein
+			//  Landeversuch abgewickelt, falls noch angreifende Flotten da sind. Hat der
+			//  Planetenbesitzer dem Landeversuch abgewehrt, nutzt die Bevölkerung die Gunst
+			//  der Stunde und revoltiert. Hierbei zählt aber bereits die aktualisierte HD.
+	
+			battle(game);		
+	
+			//    7.9 Erst jetzt können eventuell angenommene Frachter entladen und wieder in
+			//  TR umgewandelt werden; andernfalls beziehen sie eine Warteposition in (D+0).
+			
+			//  Zu beachten ist, daß Frachter nur be- und entladen werden können, wenn man
+			//  die Lufthoheit über dem Planeten besitzt und dazu muß man einen (eigenen,
+			//  nicht alliierten) FI im Orbit haben.
+			//    Bei den Gütern ist zu berücksichtigen, daß sie sofort eingeladen werden. Das
+			//  heißt, wenn man zum Beispiel PDU verschifft, kann die Zahl der verbleibenden
+			//  dadurch unter HD fallen, wodurch (nach der Produktionsphase unter Umständen)
+			//  eine Revolte ausgelöst wird. Bei der Verschiffung von FUEL, ORE oder RARE
+			//  sollte auf dem Zielplaneten zum Zeitpunkt des Entladens ausreichend
+			//  Lagerkapazität vorhanden sein, weil der Überschuß sonst verloren geht.
+			
+			Fleet ownFleet = fFlightQueue[0].forPlayer(fPlayerNr);
+			if ((ownFleet != null) && (ownFleet.getFighters() > 0)) {
+				unloadCargo();
+			}
+			
   	  	}
-
-		//    7.6 Erst danach wird produziert. (Vorräte erhöhen sich um Anzahl Fabriken
-		//  mal Produktionsrate). Übersteigt die Produktion die Lagerkapazität (Anzahl
-		//  Fabriken mal 10), so ist der Überschuß verloren. Anschließend werden
-		//  Planetenmoral (PM%), GIP, A, PR und HD neu berechnet (Steigt also HD infolge
-		//  eines Anstiegs von A über den Wert von PDU, kommt es nicht zur Revolte. Da die
-		//  Baubefehle vor der Revolte ausgeführt werden, können in der folgenden Runde
-		//  noch rechtzeitig PDU nachgebaut werden).
-		//    Bei neutralen Planeten ist PDU immer gleich HD. Dafür werden keine
-		//  Arbeitskräfte benötigt. Es werden hier auch keine weiteren PDU gebaut;
-  	  	//  weitere PDU können jedoch von Frachtern stammen!
-	  	  
-	  	fFuelResources = Math.min(fFuelResources + fFuelPlants, fFuelPlants * 10);
-		fOreResources = Math.min(fOreResources + fOrePlants, fOrePlants * 10);
-		fRareResources = Math.min(fRareResources + fRarePlants, fRarePlants * 10);
-		
-	  	updateStockpilesAndGip();
-	  	
-	  	fPlanetaryMorale = Math.min(fPlanetaryMorale + 10, 250);
-		fWorkforce += fGrossIndustrialProduct / 40;
-		fProductionRate += fGrossIndustrialProduct / 12;  // pr += (gip / 200 / 60);
-		fHomeDefense = ((fWorkforce - 1) / 40) + 1;
-
-		//    7.7 Befinden sich nun im Orbit (I) eines Planeten eine oder mehrere Flotten,
-		//  die zum Planetenbesitzer PV=0 haben, treten alle anwesenden Flotten in ein
-		//  Raumgefecht ein, sofern sie nicht zum Besitzer des Planeten neutral (PV=1)
-		//  sind.
-
-		//    7.8 Hat der Besitzer des Planeten (oder seine Verbündeten) keine Raumschiffe
-		//  (mehr) im Orbit, also die Raumherrschaft verloren, wird anschließend ein
-		//  Landeversuch abgewickelt, falls noch angreifende Flotten da sind. Hat der
-		//  Planetenbesitzer dem Landeversuch abgewehrt, nutzt die Bevölkerung die Gunst
-		//  der Stunde und revoltiert. Hierbei zählt aber bereits die aktualisierte HD.
-
-		battle(game);		
-
-		//    7.9 Erst jetzt können eventuell angenommene Frachter entladen und wieder in
-		//  TR umgewandelt werden; andernfalls beziehen sie eine Warteposition in (D+0).
-		
-		//  Zu beachten ist, daß Frachter nur be- und entladen werden können, wenn man
-		//  die Lufthoheit über dem Planeten besitzt und dazu muß man einen (eigenen,
-		//  nicht alliierten) FI im Orbit haben.
-		//    Bei den Gütern ist zu berücksichtigen, daß sie sofort eingeladen werden. Das
-		//  heißt, wenn man zum Beispiel PDU verschifft, kann die Zahl der verbleibenden
-		//  dadurch unter HD fallen, wodurch (nach der Produktionsphase unter Umständen)
-		//  eine Revolte ausgelöst wird. Bei der Verschiffung von FUEL, ORE oder RARE
-		//  sollte auf dem Zielplaneten zum Zeitpunkt des Entladens ausreichend
-		//  Lagerkapazität vorhanden sein, weil der Überschuß sonst verloren geht.
-		
-		Fleet ownFleet = fFlightQueue[0].forPlayer(fPlayerNr);
-		if ((ownFleet != null) && (ownFleet.getFighters() > 0)) {
-			unloadCargo();
-		}
 
   	  	// report planet statistics
 		game.getPlayer(fPlayerNr).getReport().add(
@@ -634,25 +648,29 @@ public class Planet implements IJsonSerializable {
 
   	}
 
-	private CommandList getSendCommands(CommandList cmdList, boolean cargo) {
+	private CommandList filterSendCommands(CommandList cmdList, boolean cargo) {
 		return cmdList.filter(new ICommandFilter() {
 			@Override
 			public boolean filter(Command cmd) {
 				return (cmd.getType() == CommandType.SEND)
-					&& (((CmdSend) cmd).getFromPlanetNr() == getNumber())
+					&& (((CmdSend) cmd).getFromPlanetNr() == getPlanetNr())
 					&& (((CmdSend) cmd).isCargo() == cargo);
 			}
 		});
 	}
 
-	private CommandList getOrderedBuildCommands(CommandList cmdList) {
+	private CommandList filterBuildCommands(CommandList cmdList) {
 		return cmdList.filter(new ICommandFilter() {
 			@Override
 			public boolean filter(Command cmd) {
 				return (cmd.getType() == CommandType.BUILD)
-					&& (((CmdBuild) cmd).getPlanetNr() == getNumber());
+					&& (((CmdBuild) cmd).getPlanetNr() == getPlanetNr());
 			}
-		}).sort(new Comparator<Command>() {
+		});
+	}
+		
+	private CommandList sortBuildCommands(CommandList cmdList) {
+		return cmdList.sort(new Comparator<Command>() {
 			@Override
 			public int compare(Command c1, Command c2) {
 				int o1 = ((CmdBuild) c1).getUnit().getOrder();
@@ -785,7 +803,7 @@ public class Planet implements IJsonSerializable {
 		}
   
 		if (as > 0) {
-			LOG.info("Battle at " + fNumber + ":  AS " + as + " DS " + ds);
+			LOG.info("Battle at " + getPlanetNr() + ":  AS " + as + " DS " + ds);
 		}
   
 	  	int[] atkWin = new int[attacker.size()], atkLoss = new int[attacker.size()];
@@ -795,8 +813,8 @@ public class Planet implements IJsonSerializable {
 	  	// is there a fight ?
 	  	if (as > 0) {
   
-	  		Player owner = game.getPlayer(fPlayerNr);
-	  		message.add("Battle at " + fName + " (" + fNumber + ") Owner: " + owner.getPlayerName() + " (" + owner.getPlayerNr() + ")");
+	  		Player owner = game.getPlayer(getPlayerNr());
+	  		message.add("Battle at " + getPlanetName() + " (" + getPlanetNr() + ") Owner: " + owner.getPlayerName() + " (" + owner.getPlayerNr() + ")");
   
 	  		if (ds > 0) {
 	  			
@@ -1035,7 +1053,7 @@ public class Planet implements IJsonSerializable {
   			if (cargo.total() > 0) {
   				total += cargo.total();
   				StringBuilder line = new StringBuilder();
-  				line.append((getNumber() < 10) ? " " : "").append(getNumber());
+  				line.append((getPlanetNr() < 10) ? " " : "").append(getPlanetNr());
   				if (i == 0) {
   					line.append("   (I)");
   				} else if (i == 1) {
@@ -1054,7 +1072,7 @@ public class Planet implements IJsonSerializable {
   		}
   		
   		Message otherReport = new Message(Topic.CARGO);
-  		otherReport.add(total + " cargoships approaching " + fName + " (" + fNumber + ")");
+  		otherReport.add(total + " cargoships approaching " + getPlanetName() + " (" + getPlanetNr() + ")");
   		
   		for (int i = 1; i < 9; i++) {
   			Player player = game.getPlayer(i);
@@ -1097,7 +1115,7 @@ public class Planet implements IJsonSerializable {
 		  			
 		  			if (fFlightQueue[i].totalShips() > limit) {
 		  				if (line.length() == 0) {
-		  					line.append((getNumber() < 10) ? " " : "").append(getNumber()).append(" ");
+		  					line.append((getPlanetNr() < 10) ? " " : "").append(getPlanetNr()).append(" ");
 		  				}
 		  				if (i == 0) {
 		  					line.append(" (I) ");
@@ -1139,7 +1157,7 @@ public class Planet implements IJsonSerializable {
 		if (fPlanetaryDefenseUnits == 0) {
 			changeOwner(0);
 			Message report = new Message(Topic.REVOLT);
-			report.add("Revolution on " + fName + " (" + fNumber + ")");
+			report.add("Revolution on " + getPlanetName() + " (" + getPlanetNr() + ")");
 			report.add("Planet falls to neutral.");
 			game.addMessageToAllPlayerReports(report);
 		}
@@ -1154,8 +1172,8 @@ public class Planet implements IJsonSerializable {
 		Player owner = game.getPlayer(fPlayerNr);
 		
 		StringBuilder line = new StringBuilder();
-		line.append("Planet: ").append(fName);
-		line.append(" (").append(fNumber).append(")");
+		line.append("Planet: ").append(getPlanetName());
+		line.append(" (").append(getPlanetNr()).append(")");
 		line.append(" Owner: ").append(owner.getPlayerName());
 		line.append(" (").append(owner.getPlayerNr()).append(")");
 		message.add(line.toString());
@@ -1208,8 +1226,8 @@ public class Planet implements IJsonSerializable {
 	@Override
 	public JsonObject toJson() {
 		JsonObjectWrapper json = new JsonObjectWrapper(new JsonObject());
-		json.add(NUMBER, fNumber);
-		json.add(NAME, fName);
+		json.add(PLANET_NR, fPlanetNr);
+		json.add(PLANET_NAME, fPlanetName);
 		json.add(PLAYER_NR, fPlayerNr);
 		json.add(WORKFORCE, fWorkforce);
 		json.add(FIGHTER_YARDS, fFighterYards);
@@ -1237,8 +1255,8 @@ public class Planet implements IJsonSerializable {
 	@Override
 	public Planet fromJson(JsonValue jsonValue) {
 		JsonObjectWrapper json = new JsonObjectWrapper(jsonValue.asObject());
-		fNumber = json.getInt(NUMBER);
-		fName = json.getString(NAME);
+		fPlanetNr = json.getInt(PLANET_NR);
+		fPlanetName = json.getString(PLANET_NAME);
 		fPlayerNr = json.getInt(PLAYER_NR);
 		fWorkforce = json.getInt(WORKFORCE);
 		fFighterYards = json.getInt(FIGHTER_YARDS);
