@@ -2,9 +2,12 @@ package com.balancedbytes.game.ashes.model;
 
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -18,11 +21,13 @@ public class JoinCache {
 	
 	private static final Log LOG = LogFactory.getLog(JoinCache.class);
 	
-	private Map<String, Join> fJoinByUserName;
+	private Map<Long, Join> fJoinById;
+	private Set<Long> fDeletedIds;
 	private JoinDataAccess fDataAccess;
 	
 	public JoinCache() {
-		fJoinByUserName = new HashMap<String, Join>();
+		fJoinById = new HashMap<Long, Join>();
+		fDeletedIds = new HashSet<Long>();
 	}
 	
 	public void init(DbManager dbManager) {
@@ -31,57 +36,95 @@ public class JoinCache {
 		}
 	}
 	
-	public Join getByUserName(String userName) {
-		if (!AshesUtil.provided(userName)) {
-			return null;
-		}
-		Join join = fJoinByUserName.get(userName);
-		if (join != null) {
-			return join;
-		}
-		if (fDataAccess != null) {
-			try {
-				join = fDataAccess.findByUserName(userName);
-			} catch (SQLException sqle) {
-				LOG.error("Error finding join(" + userName + ") in database.", sqle);
-			}
-			add(join);
-		}
-		return join;
-	}
-	
-	public List<Join> getByGameName(String gameName) {
-		String myGameName = AshesUtil.print(gameName);
+	public List<Join> getByUserName(String userName) {
 		List<Join> joins = new ArrayList<Join>();
-		if (fDataAccess != null) {
-			try {
-				joins.addAll(fDataAccess.findByGameName(myGameName));
-			} catch (SQLException sqle) {
-				LOG.error("Error finding joins(" + myGameName + ") in database.", sqle);
+		if (!AshesUtil.provided(userName)) {
+			return joins;
+		}
+		for (Join join : fJoinById.values()) {
+			if (userName.equals(join.getUserName())) {
+				joins.add(join);
 			}
 		}
-		for (Join join : fJoinByUserName.values()) {
-			if ((join.getId() == 0) && myGameName.equals(join.getGameName())) {
-				joins.add(join);
+		if (joins.size() > 0) {
+			return joins;
+		}
+		if (fDataAccess != null) {
+			try {
+				List<Join> dbJoins = fDataAccess.findByUserName(userName);
+				for (Join join : dbJoins) {
+					add(join);
+					joins.add(join);
+				}					
+			} catch (SQLException sqle) {
+				LOG.error("Error finding joins for username \"" + userName + "\" in database.", sqle);
 			}
 		}
 		return joins;
 	}
 	
-	public void add(Join join) {
+	public List<Join> getByGameName(String gameName) {
+		List<Join> joins = new ArrayList<Join>();
+		if (!AshesUtil.provided(gameName)) {
+			return joins;
+		}
+		for (Join join : fJoinById.values()) {
+			if (gameName.equals(join.getGameName())) {
+				joins.add(join);
+			}
+		}
+		if (joins.size() > 0) {
+			return joins;
+		}
+		if (fDataAccess != null) {
+			try {
+				List<Join> dbJoins = fDataAccess.findByGameName(gameName);
+				for (Join join : dbJoins) {
+					add(join);
+					joins.add(join);
+				}
+			} catch (SQLException sqle) {
+				LOG.error("Error finding joins for gameName \"" + gameName + "\" in database.", sqle);
+			}
+		}
+		return joins;
+	}
+	
+	public Join create(String userName, String gameName) {
+		Join join = new Join();
+		join.setUserName(userName);
+		join.setGameName(gameName);
+		join.setJoined(new Date());
+		join.setModified(true);
+		add(join);
+		return join;
+	}
+	
+	private void add(Join join) {
 		if (join == null) {
 			return;
 		}
-		fJoinByUserName.put(join.getUserName(), join);
+		fJoinById.put(join.getId(), join);
+	}
+	
+	public void delete(Join join) {
+		if ((join != null) && (join.getId() > 0)) {
+			fJoinById.remove(join.getId());
+			fDeletedIds.add(join.getId());
+		}
 	}
 
 	public boolean save() {
 		boolean success = true;
-		for (Join join : fJoinByUserName.values()) {
+		for (Join join : fJoinById.values()) {
 			if (join.isModified()) {
 				success &= save(join);
 			}
 		}
+		for (Long id : fDeletedIds) {
+			success &= delete(id);
+		}
+		fDeletedIds.clear();
 		return success;
 	}
 	
@@ -97,6 +140,14 @@ public class JoinCache {
 			return success;
 		} catch (SQLException sqle) {
 			throw new AshesException("Error saving join(" + join.getUserName() + ") in database.", sqle);
+		}
+	}
+	
+	private boolean delete(long id) {
+		try {
+			return fDataAccess.delete(id);
+		} catch (SQLException sqle) {
+			throw new AshesException("Error deleting join(" + id + ") in database.", sqle);
 		}
 	}
 

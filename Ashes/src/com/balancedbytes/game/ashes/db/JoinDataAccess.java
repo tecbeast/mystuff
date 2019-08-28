@@ -48,17 +48,17 @@ public class JoinDataAccess {
 		return joins;
 	}
 	
-	public Join findByUserName(String userName) throws SQLException {
-		Join join = null;
+	public List<Join> findByUserName(String userName) throws SQLException {
+		List<Join> joins = new ArrayList<Join>();
 		try (Connection c = fDbManager.getConnection()) {
 			PreparedStatement ps = c.prepareStatement(SQL_FIND_BY_USER_NAME);
 			ps.setString(1, userName);
 		    ResultSet rs = ps.executeQuery();
 			while (rs.next()) {
-	        	join = processRow(rs);
+	        	joins.add(processRow(rs));
 	        }
 		}
-		return join;
+		return joins;
 	}
 
 	public List<Join> findByGameName(String gameName) throws SQLException {
@@ -120,7 +120,7 @@ public class JoinDataAccess {
 			return success;
 		}
 	}
-
+	
 	protected Join processRow(ResultSet rs) throws SQLException {
 		Join join = new Join();
 		join.setId(rs.getLong("id"));
